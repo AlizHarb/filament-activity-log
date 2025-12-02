@@ -1,0 +1,31 @@
+name: fix-php-code-style-issues
+
+on:
+  push:
+    paths:
+      - '**.php'
+      - 'pint.json'
+  pull_request:
+    paths:
+      - '**.php'
+      - 'pint.json'
+
+jobs:
+  php-code-styling:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Fix PHP code style issues
+        uses: aglipanci/laravel-pint-action@2.4
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Fix PHP code style issues

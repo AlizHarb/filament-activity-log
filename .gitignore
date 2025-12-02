@@ -1,0 +1,43 @@
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+phpstan_errors*.txt
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.testing
+.env.backup
+.env.example
+
+# Dependencies
+/vendor/
+/node_modules/
+composer.lock
+/coverage/
+/.phpunit.cache
+.phpunit.result.cache
+.php-cs-fixer.cache
+.phpstan.cache
+
+# Testing
+/build/
+phpunit.xml
+
+# IDE
+/.idea/
+/.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Private

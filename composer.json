@@ -1,0 +1,87 @@
+{
+  "name": "alizharb/filament-activity-log",
+  "description": "A powerful, feature-rich activity logging solution for FilamentPHP v4 with timeline views, dashboard widgets, and revert actions.",
+  "type": "filament-plugin",
+  "keywords": [
+    "filament",
+    "filament-plugin",
+    "activity-log",
+    "audit-log",
+    "laravel",
+    "spatie",
+    "activity-tracking",
+    "audit-trail",
+    "timeline",
+    "dashboard-widget",
+    "filament-v4",
+    "php",
+    "laravel-12"
+  ],
+  "homepage": "https://github.com/alizharb/filament-activity-log",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ali Harb",
+      "email": "harbzali@gmail.com",
+      "homepage": "https://github.com/alizharb",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/alizharb/filament-activity-log/issues",
+    "source": "https://github.com/alizharb/filament-activity-log",
+    "docs": "https://github.com/alizharb/filament-activity-log#readme"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/alizharb"
+    }
+  ],
+  "scripts": {
+    "test": "vendor/bin/pest",
+    "test-coverage": "vendor/bin/pest --coverage",
+    "format": "vendor/bin/pint"
+  },
+  "require": {
+    "php": "^8.2",
+    "filament/filament": "^4.0",
+    "spatie/laravel-activitylog": "^4.0",
+    "phiki/phiki": "^1.0"
+  },
+  "require-dev": {
+    "larastan/larastan": "^3.0",
+    "laravel/pint": "^1.0",
+    "orchestra/testbench": "^10.0",
+    "pestphp/pest": "^3.0",
+    "pestphp/pest-plugin-laravel": "^3.0",
+    "pestphp/pest-plugin-livewire": "^3.0",
+    "phpstan/phpstan": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "AlizHarb\\ActivityLog\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AlizHarb\\ActivityLog\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "AlizHarb\\ActivityLog\\ActivityLogServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true,
+      "php-http/discovery": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
