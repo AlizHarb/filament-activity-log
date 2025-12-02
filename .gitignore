@@ -41,3 +41,4 @@ phpunit.xml
 *.sublime-workspace
 
 # Private
+package_details.md

@@ -1,9 +1,5 @@
 # Filament Activity Log
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/alizharb/filament-activity-log.svg?style=flat-square)](https://packagist.org/packages/alizharb/filament-activity-log)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/alizharb/filament-activity-log/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/alizharb/filament-activity-log/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/alizharb/filament-activity-log.svg?style=flat-square)](https://packagist.org/packages/alizharb/filament-activity-log)
-
 **Filament Activity Log** is a powerful, feature-rich activity logging solution designed specifically for **FilamentPHP v4**. Built on top of the robust `spatie/laravel-activitylog`, it provides a seamless integration into your Filament admin panel with advanced timeline views, insightful dashboard widgets, and comprehensive configuration options.
 
 ## 🚀 Features
