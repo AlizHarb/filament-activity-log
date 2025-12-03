@@ -35,6 +35,8 @@ return [
             'overview' => 'Visão Geral',
             'changes' => 'Alterações',
             'raw_data' => 'Dados Brutos',
+            'old' => 'Antigo',
+            'new' => 'Novo',
         ],
         'entry' => [
             'log_name' => 'Nome do Registro',
@@ -51,7 +53,11 @@ return [
         ],
     ],
     'action' => [
-        'timeline' => 'Linha do Tempo',
+        'timeline' => [
+            'label' => 'Linha do Tempo',
+            'empty_state_title' => 'Nenhum registro de atividade encontrado',
+            'empty_state_description' => 'Ainda não há atividades registradas para este registro.',
+        ],
         'delete' => [
             'confirmation' => 'Tem certeza de que deseja excluir este registro de atividade? Esta ação não pode ser desfeita.',
             'heading' => 'Excluir Registro de Atividade',

@@ -96,6 +96,14 @@ public function panel(Panel $panel): Panel
 php artisan vendor:publish --tag="filament-activity-log-config"
 ```
 
+### Step 4: Publish Assets (Optional)
+
+If you need to customize the CSS or other assets:
+
+```bash
+php artisan vendor:publish --tag="filament-activity-log-styles"
+```
+
 ---
 
 ## 🎯 Quick Start

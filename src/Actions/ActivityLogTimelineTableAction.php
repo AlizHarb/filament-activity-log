@@ -42,35 +42,59 @@ class ActivityLogTimelineTableAction extends Action
 
         $this->schema(fn (\Filament\Schemas\Schema $schema) => $schema
             ->schema([
-                \Filament\Infolists\Components\ViewEntry::make('activities')
+                \Filament\Forms\Components\ViewField::make('activities')
                     ->label(__('filament-activity-log::activity.timeline'))
                     ->hiddenLabel()
-                    /** @phpstan-ignore-next-line */
                     ->view('filament-activity-log::timeline')
-                    ->getStateUsing(function (\Filament\Infolists\Components\ViewEntry $component) {
-                        /** @var \Illuminate\Database\Eloquent\Model $record */
+                    ->dehydrated(false)
+                    ->afterStateHydrated(function ($component) {
+                        /** @var \Illuminate\Database\Eloquent\Model|null $record */
                         $record = $component->getRecord();
 
-                        if ($record instanceof \Spatie\Activitylog\Models\Activity) {
-                            /** @phpstan-ignore-next-line */
-                            return $record->subject?->activities()->latest()->get() ?? collect();
-                        }
-
-                        if (method_exists($record, 'activities')) {
-                            return $record->activities()->latest()->get();
-                        }
-
-                        return $record->morphMany(\Spatie\Activitylog\Models\Activity::class, 'subject')->latest()->get();
+                        $component->state($this->getActivities($record));
                     }),
             ]));
 
-        $this->modalHeading(__('filament-activity-log::activity.action.timeline'));
-        $this->label(__('filament-activity-log::activity.action.timeline'));
+        $this->modalHeading(__('filament-activity-log::activity.action.timeline.label'));
+        $this->label(__('filament-activity-log::activity.action.timeline.label'));
         $this->color('gray');
         $this->icon('heroicon-m-clock');
         $this->modalSubmitAction(false);
         $this->modalCancelAction(false);
         $this->slideOver();
+    }
+
+    /**
+     * Retrieve activities for the given record.
+     *
+     * Fetches activities where the record is the subject or the causer.
+     */
+    protected function getActivities(?\Illuminate\Database\Eloquent\Model $record): \Illuminate\Support\Collection
+    {
+        if (! $record) {
+            return collect();
+        }
+
+        // Get activities where the record is the subject
+        if ($record instanceof \Spatie\Activitylog\Models\Activity) {
+            $subject = $record->subject;
+            /** @phpstan-ignore-next-line */
+            $activities = $subject ? $subject->activities()->latest()->get() : collect();
+        } elseif (method_exists($record, 'activities')) {
+            $activities = $record->activities()->latest()->get();
+        } else {
+            $activities = $record->morphMany(\Spatie\Activitylog\Models\Activity::class, 'subject')->latest()->get();
+        }
+
+        $activities = $activities ?? collect();
+
+        // If the record is a user (or has actions relationship), also include activities they caused
+        if (method_exists($record, 'actions')) {
+            $actions = $record->actions()->latest()->get();
+            $activities = $activities->merge($actions);
+        }
+
+        return $activities->sortByDesc('created_at');
     }
 
     /**

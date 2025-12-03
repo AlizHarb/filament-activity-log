@@ -11,6 +11,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Activities Relation Manager.
@@ -62,6 +63,18 @@ class ActivitiesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('description')
+            ->modifyQueryUsing(function (Builder $query) {
+                /** @var \Illuminate\Database\Eloquent\Model $record */
+                $record = $this->getOwnerRecord();
+
+                // If the record is a user (or has actions relationship), also include activities they caused
+                if (method_exists($record, 'actions')) {
+                    $query->orWhere(function (Builder $subQuery) use ($record) {
+                        $subQuery->where('causer_id', $record->getKey())
+                            ->where('causer_type', $record->getMorphClass());
+                    });
+                }
+            })
             ->columns([
                 TextColumn::make('log_name')
                     ->badge()

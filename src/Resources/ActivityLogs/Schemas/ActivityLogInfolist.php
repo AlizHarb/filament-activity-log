@@ -74,6 +74,10 @@ class ActivityLogInfolist
                                                         return null;
                                                     }
 
+                                                    if (! array_key_exists('view', $resource::getPages())) {
+                                                        return null;
+                                                    }
+
                                                     return $resource::getUrl('view', ['record' => $causer]);
                                                 })
                                                 ->visible(config('filament-activity-log.infolist.entries.causer', true)),
@@ -88,6 +92,10 @@ class ActivityLogInfolist
                                                     }
                                                     $resource = Filament::getModelResource($subject);
                                                     if (! $resource) {
+                                                        return null;
+                                                    }
+
+                                                    if (! array_key_exists('view', $resource::getPages())) {
                                                         return null;
                                                     }
 

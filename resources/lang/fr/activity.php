@@ -35,6 +35,8 @@ return [
             'overview' => 'Aperçu',
             'changes' => 'Changements',
             'raw_data' => 'Données brutes',
+            'old' => 'Ancien',
+            'new' => 'Nouveau',
         ],
         'entry' => [
             'log_name' => 'Nom du journal',
@@ -51,7 +53,11 @@ return [
         ],
     ],
     'action' => [
-        'timeline' => 'Chronologie',
+        'timeline' => [
+            'label' => 'Chronologie',
+            'empty_state_title' => 'Aucun journal d\'activité trouvé',
+            'empty_state_description' => 'Il n\'y a pas encore d\'activités enregistrées pour cet enregistrement.',
+        ],
         'delete' => [
             'confirmation' => 'Êtes-vous sûr de vouloir supprimer ce journal d\'activité ? Cette action est irréversible.',
             'heading' => 'Supprimer le journal d\'activité',

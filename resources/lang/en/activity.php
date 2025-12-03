@@ -35,6 +35,8 @@ return [
             'overview' => 'Overview',
             'changes' => 'Changes',
             'raw_data' => 'Raw Data',
+            'old' => 'Old',
+            'new' => 'New',
         ],
         'entry' => [
             'log_name' => 'Log Name',
@@ -51,7 +53,11 @@ return [
         ],
     ],
     'action' => [
-        'timeline' => 'Timeline',
+        'timeline' => [
+            'label' => 'Timeline',
+            'empty_state_title' => 'No activity logs found',
+            'empty_state_description' => 'There are no activities recorded for this record yet.',
+        ],
         'delete' => [
             'confirmation' => 'Are you sure you want to delete this activity log? This action cannot be undone.',
             'heading' => 'Delete Activity Log',
