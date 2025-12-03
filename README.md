@@ -1,97 +1,79 @@
-# Filament Activity Log
+# 🚀 Filament Activity Log
 
-**Filament Activity Log** is a powerful, feature-rich activity logging solution designed specifically for **FilamentPHP v4**. Built on top of the robust `spatie/laravel-activitylog`, it provides a seamless integration into your Filament admin panel with advanced timeline views, insightful dashboard widgets, and comprehensive configuration options.
+<div align="center">
+    <img src="https://banners.beyondco.de/Filament%20Activity%20Log.png?theme=light&packageManager=composer+require&packageName=alizharb%2Ffilament-activity-log&pattern=architect&style=style_1&description=Advanced+activity+tracking+for+Filament+v4&md=1&showWatermark=0&fontSize=100px&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg" alt="Filament Activity Log">
+</div>
 
-## 🚀 Features
+<div align="center">
 
-- **Full Filament v4 Support**: Designed and optimized for the latest Filament version.
-- **Laravel 12 Ready**: Fully compatible with Laravel 12 and PHP 8.2+.
-- **Beautiful Timeline View**: Visualize activity history with an intuitive timeline interface.
-- **Advanced Dashboard Widgets**:
-  - **Activity Chart**: Interactive line chart showing activity trends over time.
-  - **Latest Activity**: Real-time table widget displaying recent events.
-- **Deep Integration**:
-  - Global Search support (search by causer or subject).
-  - Automatic resource registration.
-  - Configurable navigation (Group, Icon, Sort, Badge).
-- **Highly Configurable**: Customize labels, colors, icons, and visibility via a simple config file.
-- **Role-Based Access Control**: Integrated with Laravel policies for secure access management.
-- **Dark Mode Support**: Looks stunning in both light and dark modes.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/alizharb/filament-activity-log.svg?style=for-the-badge&color=orange)](https://packagist.org/packages/alizharb/filament-activity-log)
+[![Total Downloads](https://img.shields.io/packagist/dt/alizharb/filament-activity-log.svg?style=for-the-badge&color=green)](https://packagist.org/packages/alizharb/filament-activity-log)
+[![PHP Version](https://img.shields.io/packagist/php-v/alizharb/filament-activity-log.svg?style=for-the-badge&color=purple)](https://packagist.org/packages/alizharb/filament-activity-log)
 
-## 📦 Installation
+</div>
 
-You can install the package via composer:
+<p align="center">
+    <strong>A powerful, feature-rich activity logging solution for FilamentPHP v4</strong><br>
+    Seamlessly track, view, and manage user activities with beautiful timelines and insightful dashboards.<br>
+    Built on <a href="https://spatie.be/docs/laravel-activitylog">spatie/laravel-activitylog</a>
+</p>
+
+---
+
+## 📖 Table of Contents
+
+- [Features](#-features)
+- [Requirements](#-requirements)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Core Features](#-core-features)
+- [Configuration](#️-configuration)
+- [Usage Examples](#-usage-examples)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
+## ✨ Features
+
+### 🎯 Core Functionality
+
+- **📦 Full Resource Integration** - Dedicated resource to browse, filter, and search logs
+- **⏱️ Timeline View** - Stunning slide-over timeline to visualize record history
+- **📊 Insightful Widgets** - Activity charts and latest activity tables
+- **🔗 Relation Manager** - Add activity history to any resource
+- **🎨 Highly Customizable** - Configure labels, colors, icons, and visibility
+- **🔐 Role-Based Access** - Fully compatible with Filament's authorization
+- **🌍 Dark Mode Support** - Beautiful in both light and dark modes
+
+---
+
+## 📋 Requirements
+
+| Requirement                                                                                         | Version | Status |
+| --------------------------------------------------------------------------------------------------- | ------- | ------ |
+| ![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat&logo=php&logoColor=white)            | 8.2+    | ✅     |
+| ![Laravel](https://img.shields.io/badge/Laravel-10+-FF2D20?style=flat&logo=laravel&logoColor=white) | 10+     | ✅     |
+| ![Filament](https://img.shields.io/badge/Filament-v4+-F59E0B?style=flat&logo=php&logoColor=white)   | v4+     | ✅     |
+
+**Dependencies:**
+
+- [Spatie Laravel Activitylog](https://spatie.be/docs/laravel-activitylog) - The robust foundation
+
+---
+
+## ⚡ Installation
+
+### Step 1: Install via Composer
 
 ```bash
 composer require alizharb/filament-activity-log
 ```
 
-You can publish and run the migrations with:
+### Step 2: Register the Plugin
 
-```bash
-php artisan vendor:publish --tag="filament-activity-log-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="filament-activity-log-config"
-```
-
-## 🔧 Configuration
-
-This is the contents of the published config file:
-
-```php
-return [
-    'resource' => [
-        'class' => \AlizHarb\ActivityLog\Resources\ActivityLogs\ActivityLogResource::class,
-        'group' => 'System',
-        'sort' => null,
-        'navigation_icon' => 'heroicon-o-clipboard-document-list',
-        'navigation_count_badge' => true,
-    ],
-
-    'widgets' => [
-        'enabled' => true,
-        'widgets' => [
-            \AlizHarb\ActivityLog\Widgets\ActivityChartWidget::class,
-            \AlizHarb\ActivityLog\Widgets\LatestActivityWidget::class,
-        ],
-
-        'activity_chart' => [
-            'enabled' => true,
-            'heading' => 'Activity Over Time',
-            'days' => 30,
-            'type' => 'line', // line, bar, etc.
-            'polling_interval' => null, // '10s', '1m'
-        ],
-
-        'latest_activity' => [
-            'enabled' => true,
-            'heading' => 'Latest Activities',
-            'limit' => 10,
-            'polling_interval' => null,
-            'columns' => [
-                'event' => true,
-                'causer' => true,
-                'subject_type' => true,
-                'description' => true,
-                'created_at' => true,
-            ],
-        ],
-    ],
-
-    'datetime_format' => 'M d, Y H:i:s',
-];
-```
-
-## ⚡ Usage
-
-### Registering the Plugin
-
-Add the `ActivityLogPlugin` to your Filament Panel provider (usually `AdminPanelProvider.php`):
+Add to your `AdminPanelProvider`:
 
 ```php
 use AlizHarb\ActivityLog\ActivityLogPlugin;
@@ -99,62 +81,210 @@ use AlizHarb\ActivityLog\ActivityLogPlugin;
 public function panel(Panel $panel): Panel
 {
     return $panel
-        // ...
         ->plugins([
             ActivityLogPlugin::make()
-                ->label('Activity Log')
-                ->pluralLabel('Activity Logs')
-                ->navigationGroup('System')
-                ->navigationIcon('heroicon-o-shield-check')
-                ->navigationSort(3)
-                ->navigationCountBadge(true),
+                ->label('Log')
+                ->pluralLabel('Logs')
+                ->navigationGroup('System'),
         ]);
 }
 ```
 
-### Logging Activity
+### Step 3: Publish Configuration (Optional)
 
-Since this package uses `spatie/laravel-activitylog` under the hood, you can use all its features. For example, in your Eloquent models:
+```bash
+php artisan vendor:publish --tag="filament-activity-log-config"
+```
+
+---
+
+## 🎯 Quick Start
+
+### 1. Enable Logging on Models
+
+Ensure your models use the `LogsActivity` trait:
 
 ```php
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-class User extends Model
+class User extends Authenticatable
 {
     use LogsActivity;
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logAll()
-            ->logOnlyDirty();
+            ->logAll();
     }
 }
 ```
 
-### Dashboard Widgets
+### 2. View Activities
 
-The package comes with two widgets that you can add to your dashboard:
+Navigate to the **Logs** resource in your admin panel to see all tracked activities.
 
-1.  **ActivityChartWidget**: Shows a trend of activities.
-2.  **LatestActivityWidget**: Shows a list of recent activities.
+---
 
-You can enable/disable them in the config or register them manually in your Panel provider if you prefer granular control.
+## 🎯 Core Features
 
-## 🛡️ Security
+### 📦 Activity Log Resource
 
-If you discover any security related issues, please email harbzali@gmail.com instead of using the issue tracker.
+A dedicated resource allows you to manage all activity logs.
 
-## 🙏 Acknowledgments
+**Features:**
 
-- This package is built on top of the excellent [spatie/laravel-activitylog](https://github.com/spatie/laravel-activitylog) package.
-- Special thanks to the [Filament](https://filamentphp.com) team for creating an amazing admin panel.
+- ✅ **Advanced Filtering** - Filter by causer, subject, event type, and date
+- ✅ **Global Search** - Search through log descriptions and properties
+- ✅ **Detailed View** - Inspect every detail of an activity log
 
-## 👤 Author
+### ⏱️ Timeline View
 
-- [Ali Harb](https://github.com/alizharb)
+Visualize the history of any record with a beautiful timeline.
+
+**Usage:**
+The timeline is available as a table action in the Relation Manager or can be added to any page.
+
+### 📊 Dashboard Widgets
+
+#### Activity Chart Widget
+
+Displays a line chart showing activity trends over time.
+
+```php
+use AlizHarb\ActivityLog\Widgets\ActivityChartWidget;
+
+public function getWidgets(): array
+{
+    return [
+        ActivityChartWidget::class,
+    ];
+}
+```
+
+#### Latest Activity Widget
+
+Shows a list of the most recent activities.
+
+```php
+use AlizHarb\ActivityLog\Widgets\LatestActivityWidget;
+
+public function getWidgets(): array
+{
+    return [
+        LatestActivityWidget::class,
+    ];
+}
+```
+
+### 🔗 Relation Manager
+
+Add an activity log history table to any of your existing resources (e.g., `UserResource`).
+
+```php
+use AlizHarb\ActivityLog\RelationManagers\ActivitiesRelationManager;
+
+public static function getRelations(): array
+{
+    return [
+        ActivitiesRelationManager::class,
+    ];
+}
+```
+
+---
+
+## ⚙️ Configuration
+
+You can customize almost every aspect of the package via the `filament-activity-log.php` config file.
+
+### Customizing Table Columns
+
+```php
+'table' => [
+    'columns' => [
+        'log_name' => [
+            'visible' => true,
+            'searchable' => true,
+            'sortable' => true,
+        ],
+        // ...
+    ],
+],
+```
+
+### Customizing Widgets
+
+```php
+'widgets' => [
+    'activity_chart' => [
+        'enabled' => true,
+        'days' => 30,
+        'fill_color' => 'rgba(16, 185, 129, 0.1)',
+        'border_color' => '#10b981',
+    ],
+    'latest_activity' => [
+        'enabled' => true,
+        'limit' => 10,
+    ],
+],
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+### Development Setup
+
+```bash
+# Clone repository
+git clone https://github.com/alizharb/filament-activity-log.git
+
+# Install dependencies
+composer install
+
+# Run tests
+composer test
+
+# Format code
+composer format
+```
+
+---
+
+## 💖 Sponsor This Project
+
+If this package helps you, consider sponsoring its development:
+
+<div align="center">
+
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub-red?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/alizharb)
+
+</div>
+
+Your support helps maintain and improve this package! 🙏
+
+---
+
+## 🐛 Issues & Support
+
+- 🐛 **Bug Reports**: [Create an issue](https://github.com/alizharb/filament-activity-log/issues)
+- 💡 **Feature Requests**: [Request a feature](https://github.com/alizharb/filament-activity-log/issues)
+- 💬 **Discussions**: [Join the discussion](https://github.com/alizharb/filament-activity-log/discussions)
+
+---
 
 ## 📄 License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE.md) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [FilamentPHP](https://filamentphp.com)
+- [Spatie Activitylog](https://spatie.be/docs/laravel-activitylog)
+- [Ali Harb](https://github.com/alizharb)
+- [All Contributors](../../contributors)
