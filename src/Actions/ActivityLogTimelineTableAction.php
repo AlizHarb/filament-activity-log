@@ -45,6 +45,7 @@ class ActivityLogTimelineTableAction extends Action
                 \Filament\Forms\Components\ViewField::make('activities')
                     ->label(__('filament-activity-log::activity.timeline'))
                     ->hiddenLabel()
+                    /** @phpstan-ignore-next-line */
                     ->view('filament-activity-log::timeline')
                     ->dehydrated(false)
                     ->afterStateHydrated(function ($component) {
