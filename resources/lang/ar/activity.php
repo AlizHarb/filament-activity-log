@@ -45,6 +45,8 @@ return [
             'description' => 'الوصف',
             'subject' => 'الموضوع',
             'causer' => 'المتسبب',
+            'ip_address' => 'عنوان IP',
+            'browser' => 'المتصفح',
             'attributes' => 'السمات',
             'old' => 'القديم',
             'key' => 'المفتاح',
@@ -70,6 +72,12 @@ return [
             'success' => 'تم التراجع عن التغييرات بنجاح',
             'no_old_data' => 'لا توجد بيانات قديمة متاحة للتراجع',
             'subject_not_found' => 'لم يتم العثور على نموذج الموضوع',
+        ],
+        'export' => [
+            'filename' => 'سجلات_النشاط',
+            'notification' => [
+                'completed' => 'اكتمل تصدير سجل النشاط وتم تصدير :successful_rows :rows_label.',
+            ],
         ],
     ],
     'filters' => 'تصفية',

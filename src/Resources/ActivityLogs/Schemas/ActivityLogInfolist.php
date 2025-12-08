@@ -102,6 +102,14 @@ class ActivityLogInfolist
                                                     return $resource::getUrl('view', ['record' => $subject]);
                                                 })
                                                 ->visible(config('filament-activity-log.infolist.entries.subject', true)),
+
+                                            TextEntry::make('properties.ip_address')
+                                                ->label(__('filament-activity-log::activity.infolist.entry.ip_address'))
+                                                ->visible(config('filament-activity-log.infolist.entries.ip_address', true)),
+
+                                            TextEntry::make('properties.user_agent')
+                                                ->label(__('filament-activity-log::activity.infolist.entry.browser'))
+                                                ->visible(config('filament-activity-log.infolist.entries.user_agent', true)),
                                         ]),
                                     ]),
 

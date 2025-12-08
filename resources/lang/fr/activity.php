@@ -45,6 +45,8 @@ return [
             'description' => 'Description',
             'subject' => 'Sujet',
             'causer' => 'Cause',
+            'ip_address' => 'Adresse IP',
+            'browser' => 'Navigateur',
             'attributes' => 'Attributs',
             'old' => 'Ancien',
             'key' => 'Clé',
@@ -70,6 +72,12 @@ return [
             'success' => 'Modifications annulées avec succès',
             'no_old_data' => 'Aucune ancienne donnée disponible pour annuler',
             'subject_not_found' => 'Modèle de sujet introuvable',
+        ],
+        'export' => [
+            'filename' => 'journaux_d_activite',
+            'notification' => [
+                'completed' => 'L\'exportation de votre journal d\'activité est terminée et :successful_rows :rows_label ont été exportées.',
+            ],
         ],
     ],
     'filters' => 'Filtres',

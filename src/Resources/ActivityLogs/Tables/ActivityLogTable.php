@@ -65,10 +65,26 @@ class ActivityLogTable
                         if (! $state) {
                             return '-';
                         }
-
                         return class_basename($state).': '.($record->subject->name ?? $record->subject_id);
                     })
                     ->description(fn ($record) => $record->subject_type)
+                    ->url(function ($record) {
+                        if (! $record->subject || ! function_exists('filament')) {
+                            return null;
+                        }
+                        
+                        $resource = \Filament\Facades\Filament::getModelResource($record->subject_type);
+                        
+                        if ($resource && $resource::hasPage('view')) {
+                            return $resource::getUrl('view', ['record' => $record->subject]);
+                        }
+                        
+                        if ($resource && $resource::hasPage('edit')) {
+                            return $resource::getUrl('edit', ['record' => $record->subject]);
+                        }
+                        
+                        return null;
+                    })
                     ->searchable(config('filament-activity-log.table.columns.subject_type.searchable', true))
                     ->sortable(config('filament-activity-log.table.columns.subject_type.sortable', true))
                     ->visible(config('filament-activity-log.table.columns.subject_type.visible', true))
@@ -77,9 +93,47 @@ class ActivityLogTable
                 TextColumn::make('causer.name')
                     ->label(__('filament-activity-log::activity.table.column.causer'))
                     ->description(fn ($record) => $record->causer?->email)
+                    ->url(function ($record) {
+                        if (! $record->causer || ! function_exists('filament')) {
+                            return null;
+                        }
+                        
+                        $resource = \Filament\Facades\Filament::getModelResource(get_class($record->causer));
+                        
+                        if ($resource && $resource::hasPage('view')) {
+                            return $resource::getUrl('view', ['record' => $record->causer]);
+                        }
+                        
+                        if ($resource && $resource::hasPage('edit')) {
+                            return $resource::getUrl('edit', ['record' => $record->causer]);
+                        }
+                        
+                        return null;
+                    })
                     ->searchable(config('filament-activity-log.table.columns.causer.searchable', true))
                     ->sortable(config('filament-activity-log.table.columns.causer.sortable', true))
                     ->visible(config('filament-activity-log.table.columns.causer.visible', true))
+                    ->toggleable(),
+
+                TextColumn::make('properties.ip_address')
+                    ->label(__('filament-activity-log::activity.table.column.ip_address'))
+                    ->searchable(config('filament-activity-log.table.columns.ip_address.searchable', true))
+                    ->visible(config('filament-activity-log.table.columns.ip_address.visible', true))
+                    ->toggleable(),
+
+                TextColumn::make('properties.user_agent')
+                    ->label(__('filament-activity-log::activity.table.column.browser'))
+                    ->limit(50)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        if (strlen($state) <= 50) {
+                            return null;
+                        }
+
+                        return $state;
+                    })
+                    ->searchable(config('filament-activity-log.table.columns.user_agent.searchable', true))
+                    ->visible(config('filament-activity-log.table.columns.user_agent.visible', true))
                     ->toggleable(),
 
                 TextColumn::make('description')
@@ -183,7 +237,11 @@ class ActivityLogTable
                     ->label(__('filament-activity-log::activity.filters')),
             )
             ->headerActions([
-                //
+                \Filament\Actions\ExportAction::make()
+                    ->exporter(\AlizHarb\ActivityLog\Exporters\ActivityLogExporter::class)
+                    ->icon('heroicon-m-arrow-down-tray')
+                    ->color('gray')
+                    ->visible(config('filament-activity-log.table.actions.export', true)),
             ])
             ->recordActions([
                 \Filament\Actions\ActionGroup::make([

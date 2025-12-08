@@ -45,6 +45,8 @@ return [
             'description' => 'Descrição',
             'subject' => 'Assunto',
             'causer' => 'Causador',
+            'ip_address' => 'Endereço IP',
+            'browser' => 'Navegador',
             'attributes' => 'Atributos',
             'old' => 'Antigo',
             'key' => 'Chave',
@@ -70,6 +72,12 @@ return [
             'success' => 'Alterações revertidas com sucesso',
             'no_old_data' => 'Nenhum dado antigo disponível para reverter',
             'subject_not_found' => 'Modelo de assunto não encontrado',
+        ],
+        'export' => [
+            'filename' => 'registros_de_atividade',
+            'notification' => [
+                'completed' => 'A exportação do seu registro de atividade foi concluída e :successful_rows :rows_label foram exportadas.',
+            ],
         ],
     ],
     'filters' => 'Filtros',

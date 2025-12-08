@@ -45,6 +45,8 @@ return [
             'description' => 'תיאור',
             'subject' => 'נושא',
             'causer' => 'גורם',
+            'ip_address' => 'כתובת IP',
+            'browser' => 'דפדפן',
             'attributes' => 'תכונות',
             'old' => 'ישן',
             'key' => 'מפתח',
@@ -70,6 +72,12 @@ return [
             'success' => 'השינויים בוטלו בהצלחה',
             'no_old_data' => 'אין נתונים ישנים זמינים לביטול',
             'subject_not_found' => 'מודל הנושא לא נמצא',
+        ],
+        'export' => [
+            'filename' => 'יומני_פעילות',
+            'notification' => [
+                'completed' => 'ייצוא יומן הפעילות שלך הושלם ו-:successful_rows :rows_label יוצאו.',
+            ],
         ],
     ],
     'filters' => 'מסננים',

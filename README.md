@@ -128,7 +128,17 @@ class User extends Authenticatable
 }
 ```
 
-### 2. View Activities
+### 2. Configure Tracking (Optional)
+
+To automatically capture IP addresses and user agent information, add the generic tap to your `config/activitylog.php`:
+
+```php
+'activity_logger_taps' => [
+    \AlizHarb\ActivityLog\Taps\SetActivityContextTap::class,
+],
+```
+
+### 3. View Activities
 
 Navigate to the **Logs** resource in your admin panel to see all tracked activities.
 

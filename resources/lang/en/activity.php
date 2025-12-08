@@ -17,6 +17,8 @@ return [
             'description' => 'Description',
             'subject' => 'Subject',
             'causer' => 'Causer',
+            'ip_address' => 'IP Address',
+            'browser' => 'Browser',
         ],
         'filter' => [
             'event' => 'Event',
@@ -45,6 +47,8 @@ return [
             'description' => 'Description',
             'subject' => 'Subject',
             'causer' => 'Causer',
+            'ip_address' => 'IP Address',
+            'browser' => 'Browser',
             'attributes' => 'Attributes',
             'old' => 'Old',
             'key' => 'Key',
@@ -70,6 +74,12 @@ return [
             'success' => 'Changes reverted successfully',
             'no_old_data' => 'No old data available to revert',
             'subject_not_found' => 'Subject model not found',
+        ],
+        'export' => [
+            'filename' => 'activity_logs',
+            'notification' => [
+                'completed' => 'Your activity log export has completed and :successful_rows :rows_label exported.',
+            ],
         ],
     ],
     'filters' => 'Filters',

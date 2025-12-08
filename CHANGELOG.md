@@ -5,6 +5,18 @@ All notable changes to `filament-activity-log` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-12-08
+
+### Added
+
+- **IP Address & Browser Tracking** - Automatically capture and display IP address and User Agent for every activity.
+- **Export to CSV/Excel** - Export activity logs directly from the table using Filament's export action.
+- **Clickable Resource Links** - Subject and Causer names are now clickable links that navigate to their respective Filament resources (if available).
+- **SetActivityContextTap** - New tap class to inject request context into activity logs.
+- **Enhanced UI** - Added columns and infolist entries for IP and Browser details.
+- **Multilingual Support** - Added translations for IP and Browser fields in all supported languages.
+  - Added 5 new locales: German (de), Italian (it), Dutch (nl), Russian (ru), Chinese Simplified (zh_CN).
+
 ## [1.0.0] - 2025-12-02
 
 ### Added

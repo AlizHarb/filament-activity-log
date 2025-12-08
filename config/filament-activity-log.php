@@ -107,6 +107,14 @@ return [
                 'searchable' => true,
                 'sortable' => true,
             ],
+            'ip_address' => [
+                'visible' => true,
+                'searchable' => true,
+            ],
+            'user_agent' => [
+                'visible' => true,
+                'searchable' => true,
+            ],
         ],
         'filters' => [
             'log_name' => true,
@@ -120,6 +128,7 @@ return [
             'view' => true,
             'revert' => true,
             'delete' => true,
+            'export' => true,
         ],
         'bulk_actions' => [
             'delete' => true,
@@ -150,6 +159,8 @@ return [
             'properties_attributes' => true,
             'properties_old' => true,
             'properties_raw' => true,
+            'ip_address' => true,
+            'user_agent' => true,
         ],
     ],
 

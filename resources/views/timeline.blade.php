@@ -2,7 +2,7 @@
     @php
         $activities = $activities ?? $getState() ?? collect();
         // Ensure it's a collection to avoid errors
-        if (! $activities instanceof \Illuminate\Support\Collection) {
+        if (!$activities instanceof \Illuminate\Support\Collection) {
             $activities = collect($activities);
         }
     @endphp
@@ -10,7 +10,7 @@
     @forelse ($activities as $key => $activity)
         <div class="activity-log-item group">
             {{-- Connecting Line --}}
-            @if (! $loop->last)
+            @if (!$loop->last)
                 <div class="activity-log-line"></div>
             @endif
 
@@ -31,9 +31,10 @@
                         default => 'activity-log-text-gray',
                     };
                 @endphp
-                
+
                 @if($activity->causer && method_exists($activity->causer, 'getFilamentAvatarUrl'))
-                    <img src="{{ $activity->causer->getFilamentAvatarUrl() }}" alt="{{ $activity->causer->name }}" class="activity-log-avatar" />
+                    <img src="{{ $activity->causer->getFilamentAvatarUrl() }}" alt="{{ $activity->causer->name }}"
+                        class="activity-log-avatar" />
                     <div class="activity-log-avatar-icon-wrapper">
                         <x-filament::icon :icon="$icon" class="activity-log-icon-xs {{ $color }}" />
                     </div>
@@ -61,7 +62,8 @@
                         </span>
                     </div>
                     <div class="activity-log-meta-wrapper">
-                        <time datetime="{{ $activity->created_at->toIso8601String() }}" class="activity-log-time" title="{{ $activity->created_at->format(config('filament-activity-log.datetime_format', 'M d, Y H:i:s')) }}">
+                        <time datetime="{{ $activity->created_at->toIso8601String() }}" class="activity-log-time"
+                            title="{{ $activity->created_at->format(config('filament-activity-log.datetime_format', 'M d, Y H:i:s')) }}">
                             <x-heroicon-m-calendar class="activity-log-icon-sm activity-log-icon-opacity-70" />
                             {{ $activity->created_at->diffForHumans() }}
                         </time>
@@ -77,16 +79,17 @@
                     @endif
 
                     {{-- Metadata (IP, UA) --}}
-                    @if(isset($activity->properties['ip']) || isset($activity->properties['user_agent']))
+                    @if(isset($activity->properties['ip_address']) || isset($activity->properties['user_agent']))
                         <div class="activity-log-footer">
-                            @if(isset($activity->properties['ip']))
+                            @if(isset($activity->properties['ip_address']))
                                 <div class="activity-log-badge">
                                     <x-heroicon-m-globe-alt class="activity-log-icon-sm" />
-                                    {{ $activity->properties['ip'] }}
+                                    {{ $activity->properties['ip_address'] }}
                                 </div>
                             @endif
                             @if(isset($activity->properties['user_agent']))
-                                <div class="activity-log-badge activity-log-badge-truncate" title="{{ $activity->properties['user_agent'] }}">
+                                <div class="activity-log-badge activity-log-badge-truncate"
+                                    title="{{ $activity->properties['user_agent'] }}">
                                     <x-heroicon-m-device-phone-mobile class="activity-log-icon-sm" />
                                     {{ $activity->properties['user_agent'] }}
                                 </div>
@@ -97,27 +100,16 @@
                     {{-- Changes Toggle --}}
                     @if($activity->properties->has('attributes') || $activity->properties->has('old'))
                         <div x-data="{ open: false }">
-                            <button 
-                                @click="open = !open" 
-                                type="button" 
-                                class="activity-log-changes-btn"
-                            >
+                            <button @click="open = !open" type="button" class="activity-log-changes-btn">
                                 <span class="activity-log-changes-btn-content">
                                     <x-heroicon-m-arrows-right-left class="activity-log-icon-md" />
                                     {{ __('filament-activity-log::activity.infolist.tab.changes') }}
                                 </span>
-                                <x-heroicon-m-chevron-down 
-                                    class="activity-log-icon-md activity-log-toggle-icon" 
-                                    x-bind:class="{ 'activity-log-rotate-180': open }"
-                                />
+                                <x-heroicon-m-chevron-down class="activity-log-icon-md activity-log-toggle-icon"
+                                    x-bind:class="{ 'activity-log-rotate-180': open }" />
                             </button>
 
-                            <div 
-                                x-show="open" 
-                                x-collapse 
-                                class="activity-log-changes-grid"
-                                style="display: none;"
-                            >
+                            <div x-show="open" x-collapse class="activity-log-changes-grid" style="display: none;">
                                 @if($activity->properties->has('old'))
                                     <div class="activity-log-change-card old">
                                         <div class="activity-log-change-header">
