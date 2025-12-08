@@ -3,7 +3,7 @@
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Pages\ListActivityLogs;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Pages\ViewActivityLog;
 use AlizHarb\ActivityLog\Tests\Fixtures\User;
-use Spatie\Activitylog\Models\Activity;
+
 use function Pest\Livewire\livewire;
 
 it('renders ip and browser columns in table', function () {
@@ -26,9 +26,9 @@ it('renders ip and browser in infolist', function () {
         'email' => 'test@example.com',
         'password' => bcrypt('password'),
     ]);
-    
+
     $activity = activity()->log('test');
-    
+
     // Manually add properties for the test
     $activity->properties = $activity->properties->merge([
         'ip_address' => '127.0.0.1',

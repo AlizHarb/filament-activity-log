@@ -65,6 +65,7 @@ class ActivityLogTable
                         if (! $state) {
                             return '-';
                         }
+
                         return class_basename($state).': '.($record->subject->name ?? $record->subject_id);
                     })
                     ->description(fn ($record) => $record->subject_type)
@@ -72,17 +73,17 @@ class ActivityLogTable
                         if (! $record->subject || ! function_exists('filament')) {
                             return null;
                         }
-                        
+
                         $resource = \Filament\Facades\Filament::getModelResource($record->subject_type);
-                        
+
                         if ($resource && $resource::hasPage('view')) {
                             return $resource::getUrl('view', ['record' => $record->subject]);
                         }
-                        
+
                         if ($resource && $resource::hasPage('edit')) {
                             return $resource::getUrl('edit', ['record' => $record->subject]);
                         }
-                        
+
                         return null;
                     })
                     ->searchable(config('filament-activity-log.table.columns.subject_type.searchable', true))
@@ -97,17 +98,17 @@ class ActivityLogTable
                         if (! $record->causer || ! function_exists('filament')) {
                             return null;
                         }
-                        
+
                         $resource = \Filament\Facades\Filament::getModelResource(get_class($record->causer));
-                        
+
                         if ($resource && $resource::hasPage('view')) {
                             return $resource::getUrl('view', ['record' => $record->causer]);
                         }
-                        
+
                         if ($resource && $resource::hasPage('edit')) {
                             return $resource::getUrl('edit', ['record' => $record->causer]);
                         }
-                        
+
                         return null;
                     })
                     ->searchable(config('filament-activity-log.table.columns.causer.searchable', true))

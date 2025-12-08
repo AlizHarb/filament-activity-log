@@ -11,8 +11,8 @@ it('adds ip and user_agent to activity properties', function () {
     request()->server->set('REMOTE_ADDR', $ip);
     request()->headers->set('User-Agent', $userAgent);
 
-    $tap = new SetActivityContextTap();
-    $activity = new Activity();
+    $tap = new SetActivityContextTap;
+    $activity = new Activity;
     $activity->properties = collect();
 
     $tap($activity, 'created');
@@ -22,8 +22,8 @@ it('adds ip and user_agent to activity properties', function () {
 });
 
 it('merges with existing properties', function () {
-    $tap = new SetActivityContextTap();
-    $activity = new Activity();
+    $tap = new SetActivityContextTap;
+    $activity = new Activity;
     $activity->properties = collect(['existing_key' => 'existing_value']);
 
     $tap($activity, 'created');
