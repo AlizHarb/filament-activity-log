@@ -184,9 +184,33 @@ return [
     |
     | Configuration for the permissions.
     |
+    | You can use 'custom_authorization' to define your own authorization logic.
+    | For example, to restrict access to only user ID 1:
+    |
+    | 'custom_authorization' => fn($user) => $user->id === 1,
+    |
+    | Or to allow super admins only:
+    |
+    | 'custom_authorization' => fn($user) => $user->hasRole('super_admin'),
+    |
+    | If 'custom_authorization' is set, it takes precedence over the 'enabled'
+    | and permission checks.
+    |
     */
     'permissions' => [
         'enabled' => false,
+
+        /**
+         * Custom authorization callback.
+         *
+         * This callback receives the authenticated user and should return a boolean.
+         * If set, this takes precedence over the 'enabled' setting and permission checks.
+         *
+         * Example: fn($user) => $user->id === 1
+         * Example: fn($user) => $user->hasRole('super_admin')
+         */
+        'custom_authorization' => null,
+
         'view_any' => 'view_any_activity',
         'view' => 'view_activity',
         'create' => 'create_activity',

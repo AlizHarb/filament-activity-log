@@ -216,6 +216,8 @@ public static function getRelations(): array
 
 You can customize almost every aspect of the package via the `filament-activity-log.php` config file.
 
+📚 **For detailed configuration instructions, including navigation groups and custom authorization, see [CONFIGURATION.md](CONFIGURATION.md)**
+
 ### Customizing Table Columns
 
 ```php
@@ -247,6 +249,19 @@ You can customize almost every aspect of the package via the `filament-activity-
     ],
 ],
 ```
+
+### Custom Authorization
+
+Restrict access to specific users without setting up a full permission system:
+
+```php
+// In config/filament-activity-log.php
+'permissions' => [
+    'custom_authorization' => fn($user) => $user->id === 1,
+],
+```
+
+See [CONFIGURATION.md](CONFIGURATION.md) for more examples.
 
 ---
 

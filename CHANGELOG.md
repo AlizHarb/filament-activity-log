@@ -5,6 +5,51 @@ All notable changes to `filament-activity-log` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-12-12
+
+### Fixed
+
+- **Navigation Group Plugin Integration** - Fixed issue where `navigationGroup()` set on the plugin was not being used by the resource
+  - `ActivityLogResource` now properly checks plugin settings before falling back to config
+  - Plugin settings for navigation group, sort, icon, and badge now take precedence over config file
+  - Maintains full backward compatibility with config-only setups
+
+### Added
+
+- **Custom Authorization Callback** - New `custom_authorization` option in permissions config
+
+  - Allows custom authorization logic without setting up a full permission system
+  - Perfect for restricting access to specific users (e.g., user ID 1) or roles
+  - Takes precedence over standard permission checks
+  - Example: `'custom_authorization' => fn($user) => $user->id === 1`
+
+- **Documentation**
+  - Added `CONFIGURATION.md` - Comprehensive configuration guide with navigation and authorization examples
+  - Added `SOLUTIONS.md` - Direct solutions to common configuration issues
+
+### Changed
+
+- **ActivityLogResource** - Updated navigation methods to prioritize plugin settings
+
+  - `getNavigationGroup()` - Checks plugin first, then config
+  - `getNavigationSort()` - Checks plugin first, then config
+  - `getNavigationIcon()` - Checks plugin first, then config
+  - `getNavigationBadge()` - Checks plugin first, then config
+
+- **ActivityPolicy** - Enhanced `viewAny()` method to support custom authorization callbacks
+
+  - Custom callback checked first before permission system
+  - Provides flexible authorization without Laravel permissions
+
+- **README.md** - Added references to new configuration documentation and custom authorization examples
+
+### Technical Details
+
+- ✅ All 57 tests passing
+- ✅ Code formatted with Laravel Pint
+- ✅ Fully backward compatible
+- ✅ No breaking changes
+
 ## [1.1.0] - 2025-12-08
 
 ### Added
@@ -130,4 +175,6 @@ Future versions will be documented here following the same format.
 
 ---
 
+[1.1.1]: https://github.com/alizharb/filament-activity-log/releases/tag/v1.1.1
+[1.1.0]: https://github.com/alizharb/filament-activity-log/releases/tag/v1.1.0
 [1.0.0]: https://github.com/alizharb/filament-activity-log/releases/tag/v1.0.0

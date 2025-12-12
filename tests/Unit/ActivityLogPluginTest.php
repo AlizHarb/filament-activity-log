@@ -69,7 +69,7 @@ describe('ActivityLogPlugin', function () {
     it('returns default navigation icon when not set', function () {
         $plugin = ActivityLogPlugin::make();
 
-        expect($plugin->getNavigationIcon())->toBe('heroicon-o-clipboard-document-list');
+        expect($plugin->getNavigationIcon())->toBe(config('filament-activity-log.resource.navigation_icon'));
     });
 
     it('can set and get navigation sort', function () {

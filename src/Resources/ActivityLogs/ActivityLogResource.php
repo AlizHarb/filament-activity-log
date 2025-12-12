@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog\Resources\ActivityLogs;
 
+use AlizHarb\ActivityLog\ActivityLogPlugin;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas\ActivityLogForm;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas\ActivityLogInfolist;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Tables\ActivityLogTable;
@@ -26,23 +27,39 @@ class ActivityLogResource extends Resource
      */
     protected static ?string $model = Activity::class;
 
+    public static function getLabel(): ?string
+    {
+        return ActivityLogPlugin::get()->getLabel();
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return ActivityLogPlugin::get()->getPluralLabel();
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return config('filament-activity-log.resource.group');
+        return ActivityLogPlugin::get()->getNavigationGroup();
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('filament-activity-log.resource.sort');
+        return ActivityLogPlugin::get()->getNavigationSort();
     }
 
-    public static function getNavigationIcon(): string|\BackedEnum|null
+    public static function getNavigationIcon(): ?string
     {
-        return config('filament-activity-log.resource.navigation_icon') ?? parent::getNavigationIcon();
+        return ActivityLogPlugin::get()->getNavigationIcon() ?? parent::getNavigationIcon();
     }
 
     public static function getNavigationBadge(): ?string
     {
+        $badge = ActivityLogPlugin::get()->getNavigationCountBadge();
+
+        if ($badge !== null) {
+            return $badge;
+        }
+
         return config('filament-activity-log.resource.navigation_count_badge') ? number_format(static::getModel()::count()) : null;
     }
 

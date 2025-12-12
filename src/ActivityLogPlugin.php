@@ -194,11 +194,11 @@ class ActivityLogPlugin implements Plugin
     /**
      * Get the evaluated navigation group.
      *
-     * @return string|null The evaluated navigation group
+     * @return string|null The evaluated navigation group or config value
      */
     public function getNavigationGroup(): ?string
     {
-        return $this->evaluate($this->navigationGroup);
+        return $this->evaluate($this->navigationGroup) ?? config('filament-activity-log.resource.group');
     }
 
     /**
@@ -216,11 +216,11 @@ class ActivityLogPlugin implements Plugin
     /**
      * Get the evaluated navigation icon.
      *
-     * @return string The evaluated icon name or default icon
+     * @return string|null The evaluated icon name or config value
      */
-    public function getNavigationIcon(): string
+    public function getNavigationIcon(): ?string
     {
-        return $this->evaluate($this->navigationIcon) ?? 'heroicon-o-clipboard-document-list';
+        return $this->evaluate($this->navigationIcon) ?? config('filament-activity-log.resource.navigation_icon');
     }
 
     /**
@@ -238,11 +238,11 @@ class ActivityLogPlugin implements Plugin
     /**
      * Get the evaluated navigation sort order.
      *
-     * @return int|null The evaluated sort order
+     * @return int|null The evaluated sort order or config value
      */
     public function getNavigationSort(): ?int
     {
-        return $this->evaluate($this->navigationSort);
+        return $this->evaluate($this->navigationSort) ?? config('filament-activity-log.resource.sort');
     }
 
     /**

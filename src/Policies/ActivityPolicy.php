@@ -30,6 +30,12 @@ class ActivityPolicy
      */
     public function viewAny(User $user): bool
     {
+        // Check for custom authorization callback first
+        $customCallback = config('filament-activity-log.permissions.custom_authorization');
+        if ($customCallback && is_callable($customCallback)) {
+            return $customCallback($user);
+        }
+
         if (! config('filament-activity-log.permissions.enabled', false)) {
             return true;
         }
