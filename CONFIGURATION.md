@@ -154,6 +154,34 @@ Use the `custom_authorization` callback to define your own logic:
 ],
 ```
 
+#### Example 5: Class-Based Authorization (Recommended for Config Caching)
+
+If you cache your configuration (`php artisan config:cache`), you cannot use Closures. Instead, use an invokable class:
+
+**config/filament-activity-log.php:**
+
+```php
+'permissions' => [
+    'custom_authorization' => \App\Security\ActivityLogAuthorization::class,
+],
+```
+
+**app/Security/ActivityLogAuthorization.php:**
+
+```php
+namespace App\Security;
+
+use App\Models\User;
+
+class ActivityLogAuthorization
+{
+    public function __invoke(User $user): bool
+    {
+        return $user->id === 1;
+    }
+}
+```
+
 **Important Notes:**
 
 - `custom_authorization` takes **precedence** over the `enabled` setting
@@ -303,6 +331,16 @@ And assign them through Filament Shield's UI.
        return $user->id === 1;
    },
    ```
+
+### Issue: Configuration serialization error
+
+**Error:** `Your configuration files could not be serialized because the value at "filament-activity-log.permissions.custom_authorization" is non-serializable`
+
+**Solution:**
+
+You are likely running `php artisan config:cache` while using a Closure in your config file. Closures cannot be serialized.
+
+To fix this, switch to **Class-Based Authorization** (see Example 5 above) or remove the config cache if not needed (`php artisan config:clear`).
 
 ---
 

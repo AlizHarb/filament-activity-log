@@ -20,6 +20,31 @@ class ActivityPolicy
     use HandlesAuthorization;
 
     /**
+     * Check for custom authorization.
+     *
+     * @param  User  $user  The authenticated user
+     * @return bool|null Boolean result if custom auth handles it, null otherwise
+     */
+    protected function checkCustomAuthorization(User $user): ?bool
+    {
+        $customAuthorization = config('filament-activity-log.permissions.custom_authorization');
+
+        if (is_callable($customAuthorization)) {
+            return $customAuthorization($user);
+        }
+
+        if (is_string($customAuthorization) && class_exists($customAuthorization)) {
+            $instance = app($customAuthorization);
+            
+            if (is_callable($instance)) {
+                return $instance($user);
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Determine whether the user can view any activities.
      *
      * Returns true by default when permissions are disabled.
@@ -31,9 +56,9 @@ class ActivityPolicy
     public function viewAny(User $user): bool
     {
         // Check for custom authorization callback first
-        $customCallback = config('filament-activity-log.permissions.custom_authorization');
-        if ($customCallback && is_callable($customCallback)) {
-            return $customCallback($user);
+        $result = $this->checkCustomAuthorization($user);
+        if ($result !== null) {
+            return $result;
         }
 
         if (! config('filament-activity-log.permissions.enabled', false)) {
@@ -57,6 +82,12 @@ class ActivityPolicy
      */
     public function view(User $user, Activity $activity): bool
     {
+        // Check for custom authorization callback first
+        $result = $this->checkCustomAuthorization($user);
+        if ($result !== null) {
+            return $result;
+        }
+
         if (! config('filament-activity-log.permissions.enabled', false)) {
             return true;
         }
@@ -77,6 +108,12 @@ class ActivityPolicy
      */
     public function create(User $user): bool
     {
+        // Check for custom authorization callback first
+        $result = $this->checkCustomAuthorization($user);
+        if ($result !== null) {
+            return $result;
+        }
+
         if (! config('filament-activity-log.permissions.enabled', false)) {
             return false;
         }
@@ -98,6 +135,12 @@ class ActivityPolicy
      */
     public function update(User $user, Activity $activity): bool
     {
+        // Check for custom authorization callback first
+        $result = $this->checkCustomAuthorization($user);
+        if ($result !== null) {
+            return $result;
+        }
+
         if (! config('filament-activity-log.permissions.enabled', false)) {
             return false;
         }
@@ -119,6 +162,12 @@ class ActivityPolicy
      */
     public function delete(User $user, Activity $activity): bool
     {
+        // Check for custom authorization callback first
+        $result = $this->checkCustomAuthorization($user);
+        if ($result !== null) {
+            return $result;
+        }
+
         if (! config('filament-activity-log.permissions.enabled', false)) {
             return false;
         }
@@ -140,6 +189,12 @@ class ActivityPolicy
      */
     public function restore(User $user, Activity $activity): bool
     {
+        // Check for custom authorization callback first
+        $result = $this->checkCustomAuthorization($user);
+        if ($result !== null) {
+            return $result;
+        }
+
         if (! config('filament-activity-log.permissions.enabled', false)) {
             return false;
         }
@@ -161,6 +216,12 @@ class ActivityPolicy
      */
     public function forceDelete(User $user, Activity $activity): bool
     {
+        // Check for custom authorization callback first
+        $result = $this->checkCustomAuthorization($user);
+        if ($result !== null) {
+            return $result;
+        }
+
         if (! config('filament-activity-log.permissions.enabled', false)) {
             return false;
         }
