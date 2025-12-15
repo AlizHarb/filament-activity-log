@@ -35,7 +35,7 @@ class ActivityPolicy
 
         if (is_string($customAuthorization) && class_exists($customAuthorization)) {
             $instance = app($customAuthorization);
-            
+
             if (is_callable($instance)) {
                 return $instance($user);
             }
