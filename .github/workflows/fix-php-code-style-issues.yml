@@ -2,13 +2,15 @@ name: fix-php-code-style-issues
 
 on:
   push:
+    branches:
+      - "**"
     paths:
-      - '**.php'
-      - 'pint.json'
+      - "**.php"
+      - "pint.json"
   pull_request:
     paths:
-      - '**.php'
-      - 'pint.json'
+      - "**.php"
+      - "pint.json"
 
 jobs:
   php-code-styling:
