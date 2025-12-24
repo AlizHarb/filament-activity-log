@@ -111,7 +111,7 @@ class ActivityChartWidget extends ChartWidget
             ->groupBy(DB::raw($dateExpression))
             ->orderBy(DB::raw($dateExpression))
             ->get()
-            ->pluck('count', 'actvity_date');
+            ->pluck('count', 'activity_date');
 
         return [
             'datasets' => [
