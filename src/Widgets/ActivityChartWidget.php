@@ -95,13 +95,23 @@ class ActivityChartWidget extends ChartWidget
         $fillColor = config('filament-activity-log.widgets.activity_chart.fill_color', 'rgba(16, 185, 129, 0.1)');
         $borderColor = config('filament-activity-log.widgets.activity_chart.border_color', '#10b981');
 
+        $driver = DB::getDriverName();
+
+        $dateExpression = match ($driver) {
+            'oracle' => 'TRUNC(created_at)',
+            default  => 'DATE(created_at)',
+        };
+
         $data = Activity::query()
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+            ->select(
+                DB::raw("$dateExpression as activity_date"),
+                DB::raw('COUNT(*) as count')
+            )
             ->where('created_at', '>=', now()->subDays($days))
-            ->groupBy('date')
-            ->orderBy('date')
+            ->groupBy(DB::raw($dateExpression))
+            ->orderBy(DB::raw($dateExpression))
             ->get()
-            ->pluck('count', 'date');
+            ->pluck('count', 'actvity_date');
 
         return [
             'datasets' => [
