@@ -9,6 +9,7 @@ use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use UnitEnum;
 
 /**
  * Activity Log Plugin for FilamentPHP.
@@ -41,7 +42,7 @@ class ActivityLogPlugin implements Plugin
     /**
      * The navigation group for the activity log resource.
      */
-    protected string|Closure|null $navigationGroup = null;
+    protected string|Closure|null|UnitEnum $navigationGroup = null;
 
     /**
      * The navigation icon for the activity log resource.
@@ -184,7 +185,7 @@ class ActivityLogPlugin implements Plugin
      *
      * @param  string|Closure|null  $group  The navigation group name or a closure
      */
-    public function navigationGroup(string|Closure|null $group): static
+    public function navigationGroup(string|Closure|null|UnitEnum $group): static
     {
         $this->navigationGroup = $group;
 
@@ -196,7 +197,7 @@ class ActivityLogPlugin implements Plugin
      *
      * @return string|null The evaluated navigation group or config value
      */
-    public function getNavigationGroup(): ?string
+    public function getNavigationGroup(): UnitEnum|string|null
     {
         return $this->evaluate($this->navigationGroup) ?? config('filament-activity-log.resource.group');
     }
