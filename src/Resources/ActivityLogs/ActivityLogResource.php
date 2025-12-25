@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Spatie\Activitylog\Models\Activity;
+use UnitEnum;
 
 /**
  * Class ActivityLogResource
@@ -37,7 +38,7 @@ class ActivityLogResource extends Resource
         return ActivityLogPlugin::get()->getPluralLabel();
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string | UnitEnum | null
     {
         return ActivityLogPlugin::get()->getNavigationGroup();
     }
