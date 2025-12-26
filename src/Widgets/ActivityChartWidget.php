@@ -99,7 +99,7 @@ class ActivityChartWidget extends ChartWidget
 
         $dateExpression = match ($driver) {
             'oracle' => 'TRUNC(created_at)',
-            default  => 'DATE(created_at)',
+            default => 'DATE(created_at)',
         };
 
         $data = Activity::query()

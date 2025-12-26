@@ -38,7 +38,7 @@ class ActivityLogResource extends Resource
         return ActivityLogPlugin::get()->getPluralLabel();
     }
 
-    public static function getNavigationGroup(): string | UnitEnum | null
+    public static function getNavigationGroup(): string|UnitEnum|null
     {
         return ActivityLogPlugin::get()->getNavigationGroup();
     }
