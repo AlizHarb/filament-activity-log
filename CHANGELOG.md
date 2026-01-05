@@ -148,7 +148,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `filament/filament`: ^4.0
 - `spatie/laravel-activitylog`: ^4.0
 - `illuminate/support`: ^12.0
-- `phiki/phiki`: ^1.0
+- `phiki/phiki`: ^2.0
 
 #### Dev Dependencies
 
