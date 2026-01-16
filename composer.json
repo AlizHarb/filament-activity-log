@@ -47,7 +47,7 @@
     "php": "^8.2",
     "filament/actions": "^4.2",
     "filament/filament": "^4.0",
-    "phiki/phiki": "^1.0",
+    "phiki/phiki": "^2.0",
     "spatie/laravel-activitylog": "^4.0"
   },
   "require-dev": {
