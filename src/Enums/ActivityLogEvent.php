@@ -15,7 +15,7 @@ enum ActivityLogEvent: string implements HasColor, HasIcon, HasLabel
     case Deleted = 'deleted';
     case Restored = 'restored';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::Created => __('filament-activity-log::activity.event.created'),
@@ -35,7 +35,7 @@ enum ActivityLogEvent: string implements HasColor, HasIcon, HasLabel
         };
     }
 
-    public function getIcon(): ?string
+    public function getIcon(): string
     {
         return match ($this) {
             self::Created => config('filament-activity-log.events.created.icon', 'heroicon-m-plus'),
