@@ -3,6 +3,7 @@
 use AlizHarb\ActivityLog\Pages\UserActivitiesPage;
 use AlizHarb\ActivityLog\Tests\Fixtures\User;
 use Spatie\Activitylog\Models\Activity;
+
 use function Pest\Livewire\livewire;
 
 beforeEach(function () {
@@ -39,7 +40,7 @@ it('can filter by causer', function () {
         'causer_id' => 1,
         'causer_type' => User::class,
     ]);
-    
+
     $activity2 = Activity::create([
         'log_name' => 'default',
         'description' => 'Activity 2',

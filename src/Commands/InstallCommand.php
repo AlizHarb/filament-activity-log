@@ -34,7 +34,7 @@ class InstallCommand extends Command
             '--provider' => "Spatie\Activitylog\ActivitylogServiceProvider",
             '--tag' => 'activitylog-config',
         ]);
-        
+
         $this->info('Publishing Spatie Activity Log migration...');
         $this->call('vendor:publish', [
             '--provider' => "Spatie\Activitylog\ActivitylogServiceProvider",

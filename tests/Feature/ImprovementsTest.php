@@ -23,38 +23,48 @@ it('can resolve activity log event icons', function () {
 });
 
 it('can set and get cluster in plugin', function () {
-    $plugin = new ActivityLogPlugin();
+    $plugin = new ActivityLogPlugin;
     $plugin->cluster('System');
 
     expect($plugin->getCluster())->toBe('System');
 });
 
 it('resolves subject title using helper', function () {
-    $user = new class extends Model {
+    $user = new class extends Model
+    {
         protected $guarded = [];
     };
     $user->setAttribute('name', 'Test User');
     $user->setAttribute('id', 1);
-    
+
     // mimic accessors? No, just attributes.
     // getAttribute checks attributes array.
-    
+
     expect(ActivityLogTitle::get($user))->toBe('Test User');
 
-    $post = new class extends Model {
+    $post = new class extends Model
+    {
         protected $guarded = [];
     };
     $post->setAttribute('title', 'Test Post');
     $post->setAttribute('id', 2);
-    
-    expect(ActivityLogTitle::get($post))->toBe('Test Post');
 
     expect(ActivityLogTitle::get($post))->toBe('Test Post');
 
-    $unknown = new class extends Model {
+    expect(ActivityLogTitle::get($post))->toBe('Test Post');
+
+    $unknown = new class extends Model
+    {
         // Mocking getKey explicitly as anonymous class table might issue
-        public function getKey() { return 3; }
-        public function getTable() { return 'unknowns'; }
+        public function getKey()
+        {
+            return 3;
+        }
+
+        public function getTable()
+        {
+            return 'unknowns';
+        }
     };
     $unknown->setAttribute('id', 3);
 
@@ -67,17 +77,17 @@ it('renders batch action url correctly', function () {
     // but we can verify the action exists on the table if we render it.
     // However, recreating table in test is complex.
     // We trust standard Filament testing for actions.
-    
+
     // We can test if the Filter query works
     $query = Activity::query();
     $filter = function ($data, $query) {
-         $query->when(
+        $query->when(
             $data['value'] ?? null,
             fn ($q, $uuid) => $q->where('batch_uuid', $uuid)
         );
     };
-    
+
     $filter(['value' => 'test-uuid'], $query);
-    
+
     expect($query->toSql())->toContain('batch_uuid');
 });

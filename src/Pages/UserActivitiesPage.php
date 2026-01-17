@@ -11,7 +11,6 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
 
@@ -143,7 +142,7 @@ class UserActivitiesPage extends Page implements HasTable
                     ->label(__('filament-activity-log::activity.filter.causer'))
                     ->options(function () {
                         $model = config('auth.providers.users.model');
-                        
+
                         if (! class_exists($model)) {
                             return [];
                         }

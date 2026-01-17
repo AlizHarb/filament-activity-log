@@ -30,11 +30,11 @@ class ActivityLogTitle
         if ($title = $model->getAttribute('email')) {
             return (string) $title;
         }
-        
+
         if ($title = $model->getAttribute('username')) {
             return (string) $title;
         }
 
-        return class_basename($model) . ' #' . $model->getKey();
+        return class_basename($model).' #'.$model->getKey();
     }
 }

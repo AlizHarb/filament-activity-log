@@ -8,7 +8,7 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum ActivityLogEvent: string implements HasLabel, HasColor, HasIcon
+enum ActivityLogEvent: string implements HasColor, HasIcon, HasLabel
 {
     case Created = 'created';
     case Updated = 'updated';

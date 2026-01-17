@@ -217,7 +217,7 @@ class ActivityLogTable
                             );
                     })
                     ->visible(config('filament-activity-log.table.filters.created_at', true)),
-                
+
                 Filter::make('batch_uuid')
                     ->label('Batch UUID')
                     ->hidden()
@@ -244,13 +244,13 @@ class ActivityLogTable
                         ->visible(config('filament-activity-log.table.actions.timeline', true)),
                     ViewAction::make()
                         ->visible(config('filament-activity-log.table.actions.view', true)),
-                    
+
                     Action::make('view_batch')
                         ->label('Batch')
                         ->icon('heroicon-m-rectangle-stack')
                         ->color('gray')
                         ->visible(fn ($record) => $record->batch_uuid)
-                        ->url(fn ($record) => request()->url() . '?tableFilters[batch_uuid][value]=' . $record->batch_uuid),
+                        ->url(fn ($record) => request()->url().'?tableFilters[batch_uuid][value]='.$record->batch_uuid),
 
                     Action::make('revert')
                         ->icon('heroicon-m-arrow-uturn-left')
