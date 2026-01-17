@@ -14,7 +14,7 @@
 </div>
 
 <p align="center">
-    <strong>A powerful, feature-rich activity logging solution for FilamentPHP v4</strong><br>
+    <strong>A powerful, feature-rich activity logging solution for FilamentPHP v4 & v5</strong><br>
     Seamlessly track, view, and manage user activities with beautiful timelines and insightful dashboards.<br>
     Built on <a href="https://spatie.be/docs/laravel-activitylog">spatie/laravel-activitylog</a>
 </p>
@@ -51,11 +51,11 @@
 
 ## 📋 Requirements
 
-| Requirement                                                                                         | Version | Status |
-| --------------------------------------------------------------------------------------------------- | ------- | ------ |
-| ![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat&logo=php&logoColor=white)            | 8.2+    | ✅     |
-| ![Laravel](https://img.shields.io/badge/Laravel-10+-FF2D20?style=flat&logo=laravel&logoColor=white) | 10+     | ✅     |
-| ![Filament](https://img.shields.io/badge/Filament-v4+-F59E0B?style=flat&logo=php&logoColor=white)   | v4+     | ✅     |
+| Requirement                                                                                           | Version   | Status |
+| ----------------------------------------------------------------------------------------------------- | --------- | ------ |
+| ![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?style=flat&logo=php&logoColor=white)              | 8.3+      | ✅     |
+| ![Laravel](https://img.shields.io/badge/Laravel-11+-FF2D20?style=flat&logo=laravel&logoColor=white)   | 11+       | ✅     |
+| ![Filament](https://img.shields.io/badge/Filament-v4+/v5+-F59E0B?style=flat&logo=php&logoColor=white) | v4+ / v5+ | ✅     |
 
 **Dependencies:**
 
@@ -85,23 +85,18 @@ public function panel(Panel $panel): Panel
             ActivityLogPlugin::make()
                 ->label('Log')
                 ->pluralLabel('Logs')
-                ->navigationGroup('System'),
+                ->navigationGroup('System')
+                ->cluster('System'), // Optional: Group inside a cluster
         ]);
 }
 ```
 
-### Step 3: Publish Configuration (Optional)
+### Step 3: Install Assets & Config
+
+Run the installation command to publish the configuration, assets, and migrations:
 
 ```bash
-php artisan vendor:publish --tag="filament-activity-log-config"
-```
-
-### Step 4: Publish Assets (Optional)
-
-If you need to customize the CSS or other assets:
-
-```bash
-php artisan vendor:publish --tag="filament-activity-log-styles"
+php artisan filament-activity-log:install
 ```
 
 ---
@@ -209,6 +204,27 @@ public static function getRelations(): array
     ];
 }
 ```
+
+### 🏷️ Customizable Subject Titles
+
+The package automatically checks for `name`, `title`, or `label` attributes on your models.
+For more control, implement the `HasActivityLogTitle` interface on your model:
+
+```php
+use AlizHarb\ActivityLog\Contracts\HasActivityLogTitle;
+
+class User extends Model implements HasActivityLogTitle
+{
+    public function getActivityLogTitle(): string
+    {
+        return "User: {$this->email}";
+    }
+}
+```
+
+### 📚 Batch Support
+
+Automatically group activities from a single job or request. Use the **View Batch** action in the Activity Log table to inspect all activities related to a specific batch UUID.
 
 ---
 

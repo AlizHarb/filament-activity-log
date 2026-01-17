@@ -223,6 +223,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Pages Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for pages provided by the plugin.
+    |
+    */
+    'pages' => [
+        'user_activities' => [
+            'enabled' => true,
+            'class' => \AlizHarb\ActivityLog\Pages\UserActivitiesPage::class,
+            'navigation_label' => null, // null uses translation key
+            'navigation_group' => null, // null uses resource group
+            'navigation_sort' => 2,
+            'polling_interval' => null,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Widgets Settings
     |--------------------------------------------------------------------------
     |

@@ -83,6 +83,25 @@ return [
         ],
     ],
     'filters' => 'Filter',
+    'pages' => [
+        'user_activities' => [
+            'title' => 'Benutzeraktivitäten',
+            'heading' => 'Benutzeraktivitäten',
+            'description_title' => 'Benutzeraktionen verfolgen',
+            'description' => 'Sehen Sie alle Aktivitäten an, die von Benutzern in Ihrer Anwendung durchgeführt wurden. Filtern Sie nach Benutzer, Ereignistyp oder Subjekt, um eine vollständige Zeitleiste der Aktionen zu sehen.',
+        ],
+    ],
+    'event' => [
+        'created' => 'Erstellt',
+        'updated' => 'Aktualisiert',
+        'deleted' => 'Gelöscht',
+        'restored' => 'Wiederhergestellt',
+    ],
+    'filter' => [
+        'causer' => 'Benutzer',
+        'event' => 'Ereignistyp',
+        'subject_type' => 'Subjekttyp',
+    ],
     'widgets' => [
         'latest_activity' => 'Neueste Aktivität',
     ],

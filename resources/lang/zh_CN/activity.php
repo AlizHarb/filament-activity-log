@@ -83,6 +83,25 @@ return [
         ],
     ],
     'filters' => '筛选',
+    'pages' => [
+        'user_activities' => [
+            'title' => '用户活动',
+            'heading' => '用户活动',
+            'description_title' => '追踪用户行为',
+            'description' => '查看用户在应用程序中执行的所有活动。按用户、事件类型或主体筛选，以查看完整的操作时间轴。',
+        ],
+    ],
+    'event' => [
+        'created' => '已创建',
+        'updated' => '已更新',
+        'deleted' => '已删除',
+        'restored' => '已恢复',
+    ],
+    'filter' => [
+        'causer' => '用户',
+        'event' => '事件类型',
+        'subject_type' => '主体类型',
+    ],
     'widgets' => [
         'latest_activity' => '最新活动',
     ],

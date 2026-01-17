@@ -84,7 +84,7 @@ class ActivityLogInfolist
 
                                             TextEntry::make('subject')
                                                 ->label(__('filament-activity-log::activity.infolist.entry.subject'))
-                                                ->getStateUsing(fn ($record) => $record->subject->name ?? $record->subject->title ?? class_basename($record->subject_type))
+                                                ->getStateUsing(fn ($record) => \AlizHarb\ActivityLog\Support\ActivityLogTitle::get($record->subject))
                                                 ->url(function ($record) {
                                                     $subject = $record->subject;
                                                     if (! $subject) {

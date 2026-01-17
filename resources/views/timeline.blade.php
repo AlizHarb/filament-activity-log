@@ -64,7 +64,7 @@
                     <div class="activity-log-meta-wrapper">
                         <time datetime="{{ $activity->created_at->toIso8601String() }}" class="activity-log-time"
                             title="{{ $activity->created_at->format(config('filament-activity-log.datetime_format', 'M d, Y H:i:s')) }}">
-                            <x-heroicon-m-calendar class="activity-log-icon-sm activity-log-icon-opacity-70" />
+                            <x-filament::icon icon="heroicon-m-calendar" class="activity-log-icon-sm activity-log-icon-opacity-70" />
                             {{ $activity->created_at->diffForHumans() }}
                         </time>
                     </div>
@@ -83,14 +83,14 @@
                         <div class="activity-log-footer">
                             @if(isset($activity->properties['ip_address']))
                                 <div class="activity-log-badge">
-                                    <x-heroicon-m-globe-alt class="activity-log-icon-sm" />
+                                    <x-filament::icon icon="heroicon-m-globe-alt" class="activity-log-icon-sm" />
                                     {{ $activity->properties['ip_address'] }}
                                 </div>
                             @endif
                             @if(isset($activity->properties['user_agent']))
                                 <div class="activity-log-badge activity-log-badge-truncate"
                                     title="{{ $activity->properties['user_agent'] }}">
-                                    <x-heroicon-m-device-phone-mobile class="activity-log-icon-sm" />
+                                    <x-filament::icon icon="heroicon-m-device-phone-mobile" class="activity-log-icon-sm" />
                                     {{ $activity->properties['user_agent'] }}
                                 </div>
                             @endif
@@ -102,10 +102,10 @@
                         <div x-data="{ open: false }">
                             <button @click="open = !open" type="button" class="activity-log-changes-btn">
                                 <span class="activity-log-changes-btn-content">
-                                    <x-heroicon-m-arrows-right-left class="activity-log-icon-md" />
+                                    <x-filament::icon icon="heroicon-m-arrows-right-left" class="activity-log-icon-md" />
                                     {{ __('filament-activity-log::activity.infolist.tab.changes') }}
                                 </span>
-                                <x-heroicon-m-chevron-down class="activity-log-icon-md activity-log-toggle-icon"
+                                <x-filament::icon icon="heroicon-m-chevron-down" class="activity-log-icon-md activity-log-toggle-icon"
                                     x-bind:class="{ 'activity-log-rotate-180': open }" />
                             </button>
 
@@ -166,7 +166,7 @@
     @empty
         <div class="activity-log-empty-state">
             <div class="activity-log-empty-icon">
-                <x-heroicon-o-clipboard-document-list class="activity-log-icon-lg" style="width: 1.5rem; height: 1.5rem;" />
+                <x-filament::icon icon="heroicon-o-clipboard-document-list" class="activity-log-icon-lg" style="width: 1.5rem; height: 1.5rem;" />
             </div>
             <h3 class="activity-log-empty-title">
                 {{ __('filament-activity-log::activity.action.timeline.empty_state_title') }}

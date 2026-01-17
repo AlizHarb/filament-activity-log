@@ -21,6 +21,71 @@ When upgrading to a new version:
 
 ## Version-Specific Upgrade Guides
 
+### Upgrading to Filament v5
+
+> **Note**: This package supports both Filament v4 and v5. You can use the same package version with either Filament version.
+
+**What Changed:**
+
+- Added support for Filament v5 (which requires Livewire v4)
+- Minimum PHP version increased to 8.3+
+- Minimum Laravel version increased to 11+
+- All existing features remain fully compatible
+
+**Breaking Changes:**
+
+- **PHP 8.3+ Required**: Livewire v4 (required by Filament v5) needs PHP 8.3 or higher
+- **Laravel 11+ Required**: Filament v5 requires Laravel 11 or higher
+
+**Migration Steps:**
+
+1. **Ensure your environment meets the requirements:**
+
+   ```bash
+   php -v  # Should show 8.3 or higher
+   ```
+
+2. **Upgrade Laravel to v11+ (if needed):**
+
+   ```bash
+   # Follow Laravel's upgrade guide
+   # https://laravel.com/docs/11.x/upgrade
+   ```
+
+3. **Upgrade Filament to v5:**
+
+   ```bash
+   composer require filament/filament:"^5.0" -W
+   ```
+
+4. **Update this package (if needed):**
+
+   ```bash
+   composer update alizharb/filament-activity-log
+   ```
+
+5. **Clear caches:**
+
+   ```bash
+   php artisan optimize:clear
+   ```
+
+6. **Test your application:**
+   - Verify activity logging works correctly
+   - Check timeline views render properly
+   - Test dashboard widgets
+   - Verify relation managers function correctly
+
+**Compatibility:**
+
+- ✅ Works with Filament v4 (PHP 8.3+, Laravel 11+)
+- ✅ Works with Filament v5 (PHP 8.3+, Laravel 11+)
+- ❌ No longer supports PHP 8.2 or Laravel 10
+
+**No Code Changes Required:**
+
+The package API remains unchanged. Your existing code will continue to work without modifications.
+
 ### Upgrading to 2.0.0 (Future)
 
 > This section will be populated when version 2.0.0 is released.

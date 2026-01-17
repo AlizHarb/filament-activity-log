@@ -49,25 +49,16 @@ class ActivityLogTable
                 TextColumn::make('event')
                     ->label(__('filament-activity-log::activity.table.column.event'))
                     ->badge()
-                    ->colors([
-                        'success' => 'created',
-                        'warning' => 'updated',
-                        'danger' => 'deleted',
-                        'gray' => 'restored',
-                    ])
+                    ->formatStateUsing(fn ($state) => \AlizHarb\ActivityLog\Enums\ActivityLogEvent::tryFrom($state)?->getLabel() ?? ucfirst((string) $state))
+                    ->color(fn ($state) => \AlizHarb\ActivityLog\Enums\ActivityLogEvent::tryFrom($state)?->getColor() ?? 'gray')
+                    ->icon(fn ($state) => \AlizHarb\ActivityLog\Enums\ActivityLogEvent::tryFrom($state)?->getIcon())
                     ->searchable(config('filament-activity-log.table.columns.event.searchable', true))
                     ->sortable(config('filament-activity-log.table.columns.event.sortable', true))
                     ->visible(config('filament-activity-log.table.columns.event.visible', true)),
 
                 TextColumn::make('subject_type')
                     ->label(__('filament-activity-log::activity.table.column.subject'))
-                    ->formatStateUsing(function ($state, $record) {
-                        if (! $state) {
-                            return '-';
-                        }
-
-                        return class_basename($state).': '.($record->subject->name ?? $record->subject_id);
-                    })
+                    ->formatStateUsing(fn ($state, $record) => \AlizHarb\ActivityLog\Support\ActivityLogTitle::get($record->subject))
                     ->description(fn ($record) => $record->subject_type)
                     ->url(function ($record) {
                         if (! $record->subject || ! function_exists('filament')) {
@@ -172,12 +163,7 @@ class ActivityLogTable
 
                 SelectFilter::make('event')
                     ->label(__('filament-activity-log::activity.table.filter.event'))
-                    ->options([
-                        'created' => 'Created',
-                        'updated' => 'Updated',
-                        'deleted' => 'Deleted',
-                        'restored' => 'Restored',
-                    ])
+                    ->options(\AlizHarb\ActivityLog\Enums\ActivityLogEvent::class)
                     ->visible(config('filament-activity-log.table.filters.event', true)),
 
                 SelectFilter::make('causer_id')
@@ -231,6 +217,14 @@ class ActivityLogTable
                             );
                     })
                     ->visible(config('filament-activity-log.table.filters.created_at', true)),
+                
+                Filter::make('batch_uuid')
+                    ->label('Batch UUID')
+                    ->hidden()
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, $uuid): Builder => $query->where('batch_uuid', $uuid)
+                    )),
             ])
             ->filtersTriggerAction(
                 fn (Action $action) => $action
@@ -250,6 +244,14 @@ class ActivityLogTable
                         ->visible(config('filament-activity-log.table.actions.timeline', true)),
                     ViewAction::make()
                         ->visible(config('filament-activity-log.table.actions.view', true)),
+                    
+                    Action::make('view_batch')
+                        ->label('Batch')
+                        ->icon('heroicon-m-rectangle-stack')
+                        ->color('gray')
+                        ->visible(fn ($record) => $record->batch_uuid)
+                        ->url(fn ($record) => request()->url() . '?tableFilters[batch_uuid][value]=' . $record->batch_uuid),
+
                     Action::make('revert')
                         ->icon('heroicon-m-arrow-uturn-left')
                         ->color('warning')

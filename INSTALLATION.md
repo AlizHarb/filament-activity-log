@@ -6,9 +6,9 @@ This guide will walk you through installing and setting up the Filament Activity
 
 Before installing, ensure your system meets these requirements:
 
-- **PHP**: 8.4 or higher
-- **Laravel**: 12.x
-- **FilamentPHP**: 4.x
+- **PHP**: 8.3 or higher
+- **Laravel**: 11.x or 12.x
+- **FilamentPHP**: 4.x or 5.x
 - **Spatie Laravel Activity Log**: 4.x
 
 ## Installation Steps
@@ -147,6 +147,28 @@ class UserResource extends Resource
     }
 }
 ```
+
+### Capture IP Address and User Agent (Optional)
+
+To automatically capture IP addresses and user agent information for all activities:
+
+1. **Publish the Spatie Activity Log configuration** (if you haven't already):
+
+```bash
+php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-config"
+```
+
+2. **Add the tap to your `config/activitylog.php`**:
+
+```php
+'activity_logger_taps' => [
+    \AlizHarb\ActivityLog\Taps\SetActivityContextTap::class,
+],
+```
+
+This will automatically add `ip_address` and `user_agent` to the activity properties, which will be displayed in the timeline view and activity details.
+
+**Note:** The tap captures this information from the current HTTP request, so it works automatically for web requests. For console commands or queued jobs, these fields will be null.
 
 ## Verification
 

@@ -1,6 +1,6 @@
 {
   "name": "alizharb/filament-activity-log",
-  "description": "A powerful, feature-rich activity logging solution for FilamentPHP v4 with timeline views, dashboard widgets, and revert actions.",
+  "description": "A powerful, feature-rich activity logging solution for FilamentPHP v4 & v5 with timeline views, dashboard widgets, and revert actions.",
   "type": "filament-plugin",
   "keywords": [
     "filament",
@@ -14,6 +14,7 @@
     "timeline",
     "dashboard-widget",
     "filament-v4",
+    "filament-v5",
     "php",
     "laravel-12"
   ],
@@ -44,19 +45,19 @@
     "format": "vendor/bin/pint"
   },
   "require": {
-    "php": "^8.2",
-    "filament/actions": "^4.2",
-    "filament/filament": "^4.0",
-    "phiki/phiki": "^2.0",
+    "php": "^8.3",
+    "filament/actions": "^4.2|^5.0",
+    "filament/filament": "^4.0|^5.0",
+    "phiki/phiki": "^1.1|^2.0",
     "spatie/laravel-activitylog": "^4.0"
   },
   "require-dev": {
     "larastan/larastan": "^3.0",
     "laravel/pint": "^1.0",
-    "orchestra/testbench": "^10.0",
-    "pestphp/pest": "^3.0",
-    "pestphp/pest-plugin-laravel": "^3.0",
-    "pestphp/pest-plugin-livewire": "^3.0",
+    "orchestra/testbench": "^10.0|^11.0",
+    "pestphp/pest": "^3.0|^4.0",
+    "pestphp/pest-plugin-laravel": "^3.0|^4.0",
+    "pestphp/pest-plugin-livewire": "^3.0|^4.0",
     "phpstan/phpstan": "^2.0"
   },
   "autoload": {

@@ -81,6 +81,25 @@ return [
         ],
     ],
     'filters' => 'Filtres',
+    'pages' => [
+        'user_activities' => [
+            'title' => 'Activités de l\'Utilisateur',
+            'heading' => 'Activités de l\'Utilisateur',
+            'description_title' => 'Suivre les Actions de l\'Utilisateur',
+            'description' => 'Consultez toutes les activités effectuées par les utilisateurs dans votre application. Filtrez par utilisateur, type d\'événement ou sujet pour voir une chronologie complète des actions.',
+        ],
+    ],
+    'event' => [
+        'created' => 'Créé',
+        'updated' => 'Mis à jour',
+        'deleted' => 'Supprimé',
+        'restored' => 'Restauré',
+    ],
+    'filter' => [
+        'causer' => 'Utilisateur',
+        'event' => 'Type d\'Événement',
+        'subject_type' => 'Type de Sujet',
+    ],
     'widgets' => [
         'latest_activity' => 'Activité récente',
     ],

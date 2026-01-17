@@ -81,6 +81,25 @@ return [
         ],
     ],
     'filters' => 'Filtros',
+    'pages' => [
+        'user_activities' => [
+            'title' => 'Actividades de Usuario',
+            'heading' => 'Actividades de Usuario',
+            'description_title' => 'Rastrear Acciones de Usuario',
+            'description' => 'Ver todas las actividades realizadas por los usuarios en su aplicación. Filtrar por usuario, tipo de evento o sujeto para ver una línea de tiempo completa de las acciones.',
+        ],
+    ],
+    'event' => [
+        'created' => 'Creado',
+        'updated' => 'Actualizado',
+        'deleted' => 'Eliminado',
+        'restored' => 'Restaurado',
+    ],
+    'filter' => [
+        'causer' => 'Usuario',
+        'event' => 'Tipo de Evento',
+        'subject_type' => 'Tipo de Sujeto',
+    ],
     'widgets' => [
         'latest_activity' => 'Actividad reciente',
     ],

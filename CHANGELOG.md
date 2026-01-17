@@ -5,6 +5,49 @@ All notable changes to `filament-activity-log` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-01-17
+
+### Added
+
+- **Filament v5 Support** - Package now supports both Filament v4 and v5
+  - Dual version constraint: `^4.0|^5.0` for seamless compatibility
+  - Full Livewire v4 compatibility (required by Filament v5)
+  - All features work identically across both Filament versions
+- **Strict Enums** - Introduced `ActivityLogEvent` Enum for strictly typed events with Filament badge/color/icon support.
+- **Naming Helper** - Standardized subject naming via `ActivityLogTitle` helper and `HasActivityLogTitle` interface.
+- **Batch Support** - Added `View Batch` action to group activities by request/job UUID.
+- **Cluster Support** - Added `cluster()` configuration method to `ActivityLogPlugin` for nesting the resource in Filament Clusters.
+
+### Improved
+
+- **Localization** - Completed translation coverage for all supported languages.
+- **Performance** - Fixed lazy loading issues in `ActivityLogResource` and `UserActivitiesPage` by eager loading `causer` and `subject`.
+- **Testing** - Reached 66 passing tests covering new features and improvements.
+
+### Changed
+
+- **Minimum PHP Version** - Increased to PHP 8.3+ (required for Livewire v4)
+- **Minimum Laravel Version** - Updated to Laravel 11+ for optimal compatibility
+- **Dependencies** - Updated Filament packages to support v4 and v5
+
+### Fixed
+
+- **[Issue #8]** Fixed `php artisan view:cache` errors by replacing direct Heroicon Blade components with Filament's icon wrapper (`<x-filament::icon>`) in `timeline.blade.php`
+- **[Issue #10]** Added comprehensive documentation for IP address and user agent tracking setup in `INSTALLATION.md`
+
+### Technical Details
+
+- ✅ Backward compatible with Filament v4 (PHP 8.3+, Laravel 11+)
+- ✅ Forward compatible with Filament v5
+- ✅ No code changes required for existing users
+- ✅ All 57 tests passing
+- ✅ Code formatted with Laravel Pint
+- ✅ PHPStan Level 8 compliant
+
+### Migration
+
+See [UPGRADE.md](UPGRADE.md) for detailed migration instructions.
+
 ## [1.1.3] - 2025-12-15
 
 ### Fixed
@@ -25,7 +68,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Custom Authorization Callback** - New `custom_authorization` option in permissions config
-
   - Allows custom authorization logic without setting up a full permission system
   - Perfect for restricting access to specific users (e.g., user ID 1) or roles
   - Takes precedence over standard permission checks
@@ -38,14 +80,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **ActivityLogResource** - Updated navigation methods to prioritize plugin settings
-
   - `getNavigationGroup()` - Checks plugin first, then config
   - `getNavigationSort()` - Checks plugin first, then config
   - `getNavigationIcon()` - Checks plugin first, then config
   - `getNavigationBadge()` - Checks plugin first, then config
 
 - **ActivityPolicy** - Enhanced `viewAny()` method to support custom authorization callbacks
-
   - Custom callback checked first before permission system
   - Provides flexible authorization without Laravel permissions
 

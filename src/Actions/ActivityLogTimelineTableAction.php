@@ -76,22 +76,24 @@ class ActivityLogTimelineTableAction extends Action
             return collect();
         }
 
+        $with = ['causer', 'subject'];
+
         // Get activities where the record is the subject
         if ($record instanceof \Spatie\Activitylog\Models\Activity) {
             $subject = $record->subject;
             /** @phpstan-ignore-next-line */
-            $activities = $subject ? $subject->activities()->latest()->get() : collect();
+            $activities = $subject ? $subject->activities()->with($with)->latest()->get() : collect();
         } elseif (method_exists($record, 'activities')) {
-            $activities = $record->activities()->latest()->get();
+            $activities = $record->activities()->with($with)->latest()->get();
         } else {
-            $activities = $record->morphMany(\Spatie\Activitylog\Models\Activity::class, 'subject')->latest()->get();
+            $activities = $record->morphMany(\Spatie\Activitylog\Models\Activity::class, 'subject')->with($with)->latest()->get();
         }
 
         $activities = $activities ?? collect();
 
         // If the record is a user (or has actions relationship), also include activities they caused
         if (method_exists($record, 'actions')) {
-            $actions = $record->actions()->latest()->get();
+            $actions = $record->actions()->with($with)->latest()->get();
             $activities = $activities->merge($actions);
         }
 

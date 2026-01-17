@@ -25,6 +25,12 @@ class TestCase extends Orchestra
             });
         }
 
+        if (! \Illuminate\Support\Facades\Schema::hasColumn('activity_log', 'event')) {
+            \Illuminate\Support\Facades\Schema::table('activity_log', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->string('event')->nullable();
+            });
+        }
+
         \Illuminate\Database\Eloquent\Model::unguard();
     }
 
@@ -38,6 +44,7 @@ class TestCase extends Orchestra
         $app['config']->set('database.default', 'testing');
         $app['config']->set('session.driver', 'array');
         $app['config']->set('app.key', 'base64:Hupx3yAySikrM2/edkZQNQHslgDWYfiBfCuSThJ5SK8=');
+        $app['config']->set('auth.providers.users.model', \AlizHarb\ActivityLog\Tests\Fixtures\User::class);
     }
 
     protected function getPackageProviders($app)

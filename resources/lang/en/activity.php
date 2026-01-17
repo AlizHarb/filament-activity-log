@@ -86,4 +86,23 @@ return [
     'widgets' => [
         'latest_activity' => 'Latest Activity',
     ],
+    'pages' => [
+        'user_activities' => [
+            'title' => 'User Activities',
+            'heading' => 'User Activities',
+            'description_title' => 'Track User Actions',
+            'description' => 'View all activities performed by users in your application. Filter by user, event type, or subject to see a complete timeline of actions.',
+        ],
+    ],
+    'event' => [
+        'created' => 'Created',
+        'updated' => 'Updated',
+        'deleted' => 'Deleted',
+        'restored' => 'Restored',
+    ],
+    'filter' => [
+        'causer' => 'User',
+        'event' => 'Event Type',
+        'subject_type' => 'Subject Type',
+    ],
 ];

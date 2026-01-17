@@ -83,6 +83,25 @@ return [
         ],
     ],
     'filters' => 'Filters',
+    'pages' => [
+        'user_activities' => [
+            'title' => 'Gebruikersactiviteiten',
+            'heading' => 'Gebruikersactiviteiten',
+            'description_title' => 'Volg Gebruikersacties',
+            'description' => 'Bekijk alle activiteiten die door gebruikers in uw applicatie zijn uitgevoerd. Filter op gebruiker, gebeurtenistype of onderwerp om een volledige tijdlijn van acties te zien.',
+        ],
+    ],
+    'event' => [
+        'created' => 'Aangemaakt',
+        'updated' => 'Bijgewerkt',
+        'deleted' => 'Verwijderd',
+        'restored' => 'Hersteld',
+    ],
+    'filter' => [
+        'causer' => 'Gebruiker',
+        'event' => 'Gebeurtenis Type',
+        'subject_type' => 'Onderwerp Type',
+    ],
     'widgets' => [
         'latest_activity' => 'Laatste Activiteit',
     ],

@@ -60,6 +60,11 @@ class ActivityLogPlugin implements Plugin
     protected string|Closure|null $navigationCountBadge = null;
 
     /**
+     * The cluster for the activity log resource.
+     */
+    protected string|Closure|null $cluster = null;
+
+    /**
      * Whether resource actions should be hidden.
      */
     protected bool|Closure|null $isResourceActionHidden = null;
@@ -87,6 +92,12 @@ class ActivityLogPlugin implements Plugin
                 config('filament-activity-log.resource.class', ActivityLogResource::class),
             ])
             ->widgets($this->getWidgets());
+
+        if (config('filament-activity-log.pages.user_activities.enabled', true)) {
+            $panel->pages([
+                config('filament-activity-log.pages.user_activities.class', \AlizHarb\ActivityLog\Pages\UserActivitiesPage::class),
+            ]);
+        }
     }
 
     /**
@@ -266,5 +277,23 @@ class ActivityLogPlugin implements Plugin
     public function getNavigationCountBadge(): ?string
     {
         return $this->evaluate($this->navigationCountBadge);
+    }
+
+    /**
+     * Set the cluster for the activity log resource.
+     */
+    public function cluster(string|Closure|null $cluster): static
+    {
+        $this->cluster = $cluster;
+
+        return $this;
+    }
+
+    /**
+     * Get the evaluated cluster.
+     */
+    public function getCluster(): ?string
+    {
+        return $this->evaluate($this->cluster);
     }
 }

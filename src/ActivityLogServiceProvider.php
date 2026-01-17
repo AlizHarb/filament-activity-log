@@ -36,7 +36,8 @@ class ActivityLogServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasViews(static::$viewNamespace);
+            ->hasViews(static::$viewNamespace)
+            ->hasCommand(Commands\InstallCommand::class);
     }
 
     /**

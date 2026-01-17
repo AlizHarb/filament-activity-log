@@ -30,32 +30,65 @@ class ActivityLogResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return ActivityLogPlugin::get()->getLabel();
+        try {
+            return ActivityLogPlugin::get()->getLabel();
+        } catch (\Throwable $e) {
+            return config('filament-activity-log.resource.label');
+        }
     }
 
     public static function getPluralLabel(): ?string
     {
-        return ActivityLogPlugin::get()->getPluralLabel();
+        try {
+            return ActivityLogPlugin::get()->getPluralLabel();
+        } catch (\Throwable $e) {
+            return config('filament-activity-log.resource.plural_label');
+        }
     }
 
     public static function getNavigationGroup(): string|UnitEnum|null
     {
-        return ActivityLogPlugin::get()->getNavigationGroup();
+        try {
+            return ActivityLogPlugin::get()->getNavigationGroup();
+        } catch (\Throwable $e) {
+            return config('filament-activity-log.resource.group');
+        }
+    }
+
+    public static function getCluster(): ?string
+    {
+        try {
+            return ActivityLogPlugin::get()->getCluster();
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     public static function getNavigationSort(): ?int
     {
-        return ActivityLogPlugin::get()->getNavigationSort();
+        try {
+            return ActivityLogPlugin::get()->getNavigationSort();
+        } catch (\Throwable $e) {
+            return config('filament-activity-log.resource.sort');
+        }
     }
 
     public static function getNavigationIcon(): ?string
     {
-        return ActivityLogPlugin::get()->getNavigationIcon() ?? parent::getNavigationIcon();
+        try {
+            return ActivityLogPlugin::get()->getNavigationIcon() ?? parent::getNavigationIcon();
+        } catch (\Throwable $e) {
+            return config('filament-activity-log.resource.navigation_icon') ?? parent::getNavigationIcon();
+        }
     }
 
     public static function getNavigationBadge(): ?string
     {
-        $badge = ActivityLogPlugin::get()->getNavigationCountBadge();
+        try {
+            $badge = ActivityLogPlugin::get()->getNavigationCountBadge();
+        } catch (\Throwable $e) {
+            $badge = null;
+        }
 
         if ($badge !== null) {
             return $badge;
@@ -69,6 +102,11 @@ class ActivityLogResource extends Resource
         return parent::getGlobalSearchEloquentQuery()->with(['causer', 'subject']);
     }
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->with(['causer', 'subject']);
+    }
+
     public static function getGlobalSearchResultDetails(\Illuminate\Database\Eloquent\Model $record): array
     {
         /** @var \Spatie\Activitylog\Models\Activity $record */
@@ -79,7 +117,7 @@ class ActivityLogResource extends Resource
         }
 
         if ($record->subject) {
-            $details['Subject'] = $record->subject->name ?? $record->subject->title ?? class_basename($record->subject_type);
+            $details['Subject'] = \AlizHarb\ActivityLog\Support\ActivityLogTitle::get($record->subject);
         }
 
         return $details;
