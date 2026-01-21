@@ -19,20 +19,20 @@ class ActivityLogTitle
             return $model->getActivityLogTitle();
         }
 
-        if ($title = $model->getAttribute('name')) {
-            return (string) $title;
+        if ($model->hasAttribute('name')) {
+            return (string) $model->getAttribute('name');
         }
 
-        if ($title = $model->getAttribute('title')) {
-            return (string) $title;
+        if ($model->hasAttribute('title')) {
+            return (string) $model->getAttribute('title');
         }
 
-        if ($title = $model->getAttribute('email')) {
-            return (string) $title;
+        if ($model->hasAttribute('email')) {
+            return (string) $model->getAttribute('email');
         }
 
-        if ($title = $model->getAttribute('username')) {
-            return (string) $title;
+        if ($model->hasAttribute('username')) {
+            return (string) $model->getAttribute('username');
         }
 
         return class_basename($model).' #'.$model->getKey();
