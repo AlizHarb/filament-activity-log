@@ -13,6 +13,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
+use UnitEnum;
 
 /**
  * User Activities Page.
@@ -61,10 +62,14 @@ class UserActivitiesPage extends Page implements HasTable
     /**
      * Get the navigation icon.
      */
-    public static function getNavigationIcon(): ?string
+    public static function getNavigationGroup(): null|string|UnitEnum
     {
-        return config('filament-activity-log.pages.user_activities.navigation_icon')
-            ?? 'heroicon-o-users';
+        try {
+            return ActivityLogPlugin::get()->getNavigationGroup();
+        } catch (\Throwable $e) {
+            return config('filament-activity-log.pages.user_activities.navigation_group')
+                ?? config('filament-activity-log.resource.group');
+        }
     }
 
     /**
