@@ -29,6 +29,7 @@ composer.lock
 .phpunit.result.cache
 .php-cs-fixer.cache
 .phpstan.cache
+/.phpstan-cache
 
 # Testing
 /build/

@@ -64,10 +64,10 @@ describe('ActivityPolicy', function () {
     });
 
     describe('update', function () {
-        it('returns false when permissions are disabled', function () {
+        it('returns true when permissions are disabled', function () {
             config()->set('filament-activity-log.permissions.enabled', false);
 
-            expect($this->policy->update($this->user, $this->activity))->toBeFalse();
+            expect($this->policy->update($this->user, $this->activity))->toBeTrue();
         });
 
         it('returns false when permissions enabled but no permission configured', function () {
@@ -79,10 +79,10 @@ describe('ActivityPolicy', function () {
     });
 
     describe('delete', function () {
-        it('returns false when permissions are disabled', function () {
+        it('returns true when permissions are disabled', function () {
             config()->set('filament-activity-log.permissions.enabled', false);
 
-            expect($this->policy->delete($this->user, $this->activity))->toBeFalse();
+            expect($this->policy->delete($this->user, $this->activity))->toBeTrue();
         });
 
         it('returns false when permissions enabled but no permission configured', function () {
@@ -94,10 +94,10 @@ describe('ActivityPolicy', function () {
     });
 
     describe('restore', function () {
-        it('returns false when permissions are disabled', function () {
+        it('returns true when permissions are disabled', function () {
             config()->set('filament-activity-log.permissions.enabled', false);
 
-            expect($this->policy->restore($this->user, $this->activity))->toBeFalse();
+            expect($this->policy->restore($this->user, $this->activity))->toBeTrue();
         });
 
         it('returns false when permissions enabled but no permission configured', function () {
@@ -109,10 +109,10 @@ describe('ActivityPolicy', function () {
     });
 
     describe('forceDelete', function () {
-        it('returns false when permissions are disabled', function () {
+        it('returns true when permissions are disabled', function () {
             config()->set('filament-activity-log.permissions.enabled', false);
 
-            expect($this->policy->forceDelete($this->user, $this->activity))->toBeFalse();
+            expect($this->policy->forceDelete($this->user, $this->activity))->toBeTrue();
         });
 
         it('returns false when permissions enabled but no permission configured', function () {

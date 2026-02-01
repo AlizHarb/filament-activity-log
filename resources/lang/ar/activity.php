@@ -17,6 +17,9 @@ return [
             'description' => 'الوصف',
             'subject' => 'الموضوع',
             'causer' => 'المتسبب',
+            'id' => 'المعرف',
+            'ip_address' => 'عنوان IP',
+            'browser' => 'المتصفح',
         ],
         'filter' => [
             'event' => 'الحدث',
@@ -25,6 +28,7 @@ return [
             'created_until' => 'إلى تاريخ',
             'causer' => 'المتسبب',
             'subject_type' => 'نوع الموضوع',
+            'batch' => 'معرف الدفعة',
         ],
     ],
     'infolist' => [
@@ -72,11 +76,46 @@ return [
             'success' => 'تم التراجع عن التغييرات بنجاح',
             'no_old_data' => 'لا توجد بيانات قديمة متاحة للتراجع',
             'subject_not_found' => 'لم يتم العثور على نموذج الموضوع',
+            'label' => 'تراجع',
+            'nothing_selected' => 'لم يتم تحديد أي سمات للتراجع عنها.',
+            'helper_text' => 'تغيير من \':old\' إلى \':new\'',
         ],
         'export' => [
             'filename' => 'سجلات_النشاط',
             'notification' => [
                 'completed' => 'اكتمل تصدير سجل النشاط وتم تصدير :successful_rows :rows_label.',
+                'failed_rows' => 'فشل تصدير :count :rows.',
+            ],
+        ],
+        'restore' => [
+            'label' => 'استعادة',
+            'heading' => 'استعادة السجل',
+            'confirmation' => 'هل أنت متأكد أنك تريد استعادة هذا السجل المحذوف؟',
+            'success' => 'تم استعادة السجل بنجاح.',
+        ],
+        'prune' => [
+            'label' => 'تنظيف السجلات',
+            'heading' => 'تنظيف سجلات النشاط',
+            'confirmation' => 'هل أنت متأكد أنك تريد حذف السجلات الأقدم من التاريخ المحدد؟ لا يمكن التراجع عن هذا الإجراء.',
+            'success' => 'تم تنظيف :count من سجلات النشاط بنجاح.',
+            'date' => 'تنظيف السجلات الأقدم من',
+        ],
+        'batch' => [
+            'label' => 'دفعة',
+        ],
+        'bulk' => [
+            'delete' => [
+                'confirmation' => 'هل أنت متأكد أنك تريد حذف سجلات النشاط المحددة؟',
+            ],
+            'restore' => [
+                'label' => 'استعادة المحدد',
+                'confirmation' => 'هل أنت متأكد أنك تريد استعادة السجلات المحذوفة المحددة؟',
+                'success' => 'تم استعادة :count من السجلات بنجاح.',
+            ],
+            'revert' => [
+                'label' => 'تراجع عن المحدد',
+                'confirmation' => 'هل أنت متأكد أنك تريد التراجع عن التغييرات لجميع السجلات المحددة؟ سيتم معالجة السجلات التي تحتوي على بيانات قديمة فقط.',
+                'success' => 'تم التراجع عن :count من السجلات بنجاح.',
             ],
         ],
     ],
@@ -87,6 +126,9 @@ return [
             'heading' => 'أنشطة المستخدم',
             'description_title' => 'تتبع إجراءات المستخدم',
             'description' => 'عرض جميع الأنشطة التي قام بها المستخدمون في تطبيقك. تصفية حسب المستخدم، نوع الحدث، أو الموضوع لرؤية جدول زمني كامل للإجراءات.',
+        ],
+        'audit_dashboard' => [
+            'title' => 'لوحة مراقبة التدقيق',
         ],
     ],
     'event' => [
@@ -102,5 +144,29 @@ return [
     ],
     'widgets' => [
         'latest_activity' => 'النشاط الأخير',
+        'activity_chart' => [
+            'heading' => 'النشاط بمرور الوقت',
+            'label' => 'الأنشطة',
+        ],
+        'heatmap' => [
+            'heading' => 'خريطة حرارية للنشاط',
+            'less' => 'أقل',
+            'more' => 'أكثر',
+            'tooltip' => ':count أنشطة في :date',
+        ],
+        'stats' => [
+            'total_description' => 'Total logs in system',
+            'top_causer' => 'Top Causer',
+            'top_causer_description' => ':count activities',
+            'top_subject' => 'Top Subject',
+            'top_subject_description' => ':count modifications',
+            'no_data' => 'No data',
+        ],
     ],
+    'dashboard' => [
+        'title' => 'Audit Dashboard',
+    ],
+    'system' => 'System',
+    'row' => 'row',
+    'rows' => 'rows',
 ];

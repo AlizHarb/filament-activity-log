@@ -30,7 +30,8 @@ class TestPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->plugins([
-                ActivityLogPlugin::make(),
+                ActivityLogPlugin::make()
+                    ->dashboard(),
             ])
             ->middleware([
                 EncryptCookies::class,

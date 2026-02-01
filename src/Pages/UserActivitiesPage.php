@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog\Pages;
 
+use AlizHarb\ActivityLog\ActivityLogPlugin;
+use AlizHarb\ActivityLog\Models\Activity;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\ActivityLogResource;
 use Filament\Pages\Page;
 use Filament\Tables\Columns\TextColumn;
@@ -12,7 +14,6 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Activitylog\Models\Activity;
 use UnitEnum;
 
 /**
@@ -25,9 +26,6 @@ class UserActivitiesPage extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    /**
-     * The view for the page.
-     */
     /**
      * The view for the page.
      */
@@ -45,23 +43,6 @@ class UserActivitiesPage extends Page implements HasTable
     /**
      * Get the navigation group.
      */
-    public static function getNavigationGroup(): ?string
-    {
-        return config('filament-activity-log.pages.user_activities.navigation_group')
-            ?? config('filament-activity-log.resource.group');
-    }
-
-    /**
-     * Get the navigation sort order.
-     */
-    public static function getNavigationSort(): ?int
-    {
-        return config('filament-activity-log.pages.user_activities.navigation_sort') ?? 2;
-    }
-
-    /**
-     * Get the navigation icon.
-     */
     public static function getNavigationGroup(): null|string|UnitEnum
     {
         try {
@@ -70,6 +51,28 @@ class UserActivitiesPage extends Page implements HasTable
             return config('filament-activity-log.pages.user_activities.navigation_group')
                 ?? config('filament-activity-log.resource.group');
         }
+    }
+
+    /**
+     * Get the navigation sort order.
+     */
+    public static function getNavigationSort(): ?int
+    {
+        try {
+            return config('filament-activity-log.pages.user_activities.navigation_sort')
+                ?? (ActivityLogPlugin::get()->getNavigationSort() + 1);
+        } catch (\Throwable $e) {
+            return config('filament-activity-log.pages.user_activities.navigation_sort') ?? 2;
+        }
+    }
+
+    /**
+     * Get the navigation icon.
+     */
+    public static function getNavigationIcon(): ?string
+    {
+        return config('filament-activity-log.pages.user_activities.navigation_icon')
+            ?? 'heroicon-o-user-circle';
     }
 
     /**

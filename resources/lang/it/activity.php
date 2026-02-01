@@ -19,6 +19,7 @@ return [
             'causer' => 'Autore',
             'ip_address' => 'Indirizzo IP',
             'browser' => 'Browser',
+            'id' => 'ID',
         ],
         'filter' => [
             'event' => 'Evento',
@@ -27,6 +28,7 @@ return [
             'created_until' => 'Creato Fino Al',
             'causer' => 'Autore',
             'subject_type' => 'Tipo Soggetto',
+            'batch' => 'UUID Batch',
         ],
     ],
     'infolist' => [
@@ -74,11 +76,46 @@ return [
             'success' => 'Modifiche ripristinate con successo',
             'no_old_data' => 'Nessun dato vecchio disponibile per il ripristino',
             'subject_not_found' => 'Modello del soggetto non trovato',
+            'label' => 'Ripristina',
+            'nothing_selected' => 'Nessun attributo selezionato per il ripristino.',
+            'helper_text' => 'Passa da \':old\' a \':new\'',
         ],
         'export' => [
             'filename' => 'registri_attivita',
             'notification' => [
                 'completed' => 'L\'esportazione del registro attività è stata completata e :successful_rows :rows_label sono state esportate.',
+                'failed_rows' => ':count :rows non sono state esportate.',
+            ],
+        ],
+        'restore' => [
+            'label' => 'Ripristina',
+            'heading' => 'Ripristina Record',
+            'confirmation' => 'Sei sicuro di voler ripristinare questo record eliminato?',
+            'success' => 'Record ripristinato con successo.',
+        ],
+        'prune' => [
+            'label' => 'Pulisci Registri',
+            'heading' => 'Pulisci Registri Attività',
+            'confirmation' => 'Sei sicuro di voler eliminare i registri più vecchi della data selezionata? Questa azione non può essere annullata.',
+            'success' => ':count registri attività puliti con successo.',
+            'date' => 'Pulisci registri più vecchi di',
+        ],
+        'batch' => [
+            'label' => 'Batch',
+        ],
+        'bulk' => [
+            'delete' => [
+                'confirmation' => 'Sei sicuro di voler eliminare i registri attività selezionati?',
+            ],
+            'restore' => [
+                'label' => 'Ripristina Selezionati',
+                'confirmation' => 'Sei sicuro di voler ripristinare i record eliminati selezionati?',
+                'success' => ':count record ripristinati con successo.',
+            ],
+            'revert' => [
+                'label' => 'Ripristina Selezionati',
+                'confirmation' => 'Sei sicuro di voler annullare le modifiche per tutti i registri selezionati? Verranno elaborati solo i registri con dati vecchi.',
+                'success' => ':count registri ripristinati con successo.',
             ],
         ],
     ],
@@ -89,6 +126,9 @@ return [
             'heading' => 'Attività Utente',
             'description_title' => 'Traccia Azioni Utente',
             'description' => 'Visualizza tutte le attività svolte dagli utenti nella tua applicazione. Filtra per utente, tipo di evento o soggetto per vedere una cronologia completa delle azioni.',
+        ],
+        'audit_dashboard' => [
+            'title' => 'Dashboard di Audit',
         ],
     ],
     'event' => [
@@ -104,5 +144,30 @@ return [
     ],
     'widgets' => [
         'latest_activity' => 'Attività Recente',
+        'activity_chart' => [
+            'heading' => 'Attività nel tempo',
+            'label' => 'Attività',
+        ],
+        'heatmap' => [
+            'heading' => 'Activity Heatmap',
+            'less' => 'Meno',
+            'more' => 'Più',
+            'tooltip' => ':count attività il :date',
+        ],
+        'stats' => [
+            'total_activities' => 'Attività totali',
+            'total_description' => 'Registri totali nel sistema',
+            'top_causer' => 'Autore principale',
+            'top_causer_description' => ':count attività',
+            'top_subject' => 'Soggetto principale',
+            'top_subject_description' => ':count modifiche',
+            'no_data' => 'Nessun dato',
+        ],
     ],
+    'dashboard' => [
+        'title' => 'Audit Dashboard',
+    ],
+    'system' => 'Sistema',
+    'row' => 'riga',
+    'rows' => 'righe',
 ];

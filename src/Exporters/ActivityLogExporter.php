@@ -18,7 +18,7 @@ class ActivityLogExporter extends Exporter
     {
         return [
             ExportColumn::make('id')
-                ->label('ID'),
+                ->label(__('filament-activity-log::activity.table.column.id')),
 
             ExportColumn::make('log_name')
                 ->label(__('filament-activity-log::activity.table.column.log_name')),
@@ -60,7 +60,10 @@ class ActivityLogExporter extends Exporter
         ]);
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' '.number_format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
+            $body .= ' '.__('filament-activity-log::activity.action.export.notification.failed_rows', [
+                'count' => number_format($failedRowsCount),
+                'rows' => str(__('filament-activity-log::activity.row'))->plural($failedRowsCount),
+            ]);
         }
 
         return $body;

@@ -4,7 +4,14 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog;
 
+use AlizHarb\ActivityLog\Http\Middleware\ActivityLogContextMiddleware;
+use AlizHarb\ActivityLog\Pages\AuditDashboard;
+use AlizHarb\ActivityLog\Pages\UserActivitiesPage;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\ActivityLogResource;
+use AlizHarb\ActivityLog\Widgets\ActivityChartWidget;
+use AlizHarb\ActivityLog\Widgets\ActivityHeatmapWidget;
+use AlizHarb\ActivityLog\Widgets\ActivityStatsWidget;
+use AlizHarb\ActivityLog\Widgets\LatestActivityWidget;
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
@@ -75,6 +82,21 @@ class ActivityLogPlugin implements Plugin
     protected bool|Closure|null $isRestoreActionHidden = null;
 
     /**
+     * Whether the audit dashboard is enabled.
+     */
+    protected bool|Closure|null $isDashboardEnabled = null;
+
+    /**
+     * The title for the audit dashboard.
+     */
+    protected string|Closure|null $dashboardTitle = null;
+
+    /**
+     * Whether automatic context tracking is enabled.
+     */
+    protected bool|Closure $isAutoContextTrackingEnabled = true;
+
+    /**
      * Get the ID of the plugin.
      */
     public function getId(): string
@@ -91,11 +113,20 @@ class ActivityLogPlugin implements Plugin
             ->resources([
                 config('filament-activity-log.resource.class', ActivityLogResource::class),
             ])
-            ->widgets($this->getWidgets());
+            ->widgets($this->getWidgets())
+            ->middleware([
+                ActivityLogContextMiddleware::class,
+            ]);
 
         if (config('filament-activity-log.pages.user_activities.enabled', true)) {
             $panel->pages([
-                config('filament-activity-log.pages.user_activities.class', \AlizHarb\ActivityLog\Pages\UserActivitiesPage::class),
+                config('filament-activity-log.pages.user_activities.class', UserActivitiesPage::class),
+            ]);
+        }
+
+        if ($this->isDashboardEnabled()) {
+            $panel->pages([
+                AuditDashboard::class,
             ]);
         }
     }
@@ -114,7 +145,12 @@ class ActivityLogPlugin implements Plugin
             return [];
         }
 
-        return config('filament-activity-log.widgets.widgets', []);
+        return [
+            ActivityChartWidget::class,
+            LatestActivityWidget::class,
+            ActivityHeatmapWidget::class,
+            ActivityStatsWidget::class,
+        ];
     }
 
     /**
@@ -295,5 +331,65 @@ class ActivityLogPlugin implements Plugin
     public function getCluster(): ?string
     {
         return $this->evaluate($this->cluster);
+    }
+
+    /**
+     * Enable/disable the audit dashboard.
+     */
+    public function dashboard(bool|Closure $condition = true): static
+    {
+        $this->isDashboardEnabled = $condition;
+
+        return $this;
+    }
+
+    /**
+     * Check if the audit dashboard is enabled.
+     */
+    public function isDashboardEnabled(): bool
+    {
+        $enabled = $this->evaluate($this->isDashboardEnabled);
+
+        if ($enabled === null) {
+            return config('filament-activity-log.dashboard.enabled', false);
+        }
+
+        return (bool) $enabled;
+    }
+
+    /**
+     * Set the audit dashboard title.
+     */
+    public function dashboardTitle(string|Closure|null $title): static
+    {
+        $this->dashboardTitle = $title;
+
+        return $this;
+    }
+
+    /**
+     * Get the evaluated dashboard title.
+     */
+    public function getDashboardTitle(): string
+    {
+        return $this->evaluate($this->dashboardTitle) ?? __('filament-activity-log::activity.dashboard.title');
+    }
+
+    /**
+     * Enable/disable automatic context tracking (IP, Browser, Batch).
+     */
+    public function autoContextTracking(bool|Closure $condition = true): static
+    {
+        $this->isAutoContextTrackingEnabled = $condition;
+
+        return $this;
+    }
+
+    /**
+     * Check if automatic context tracking is enabled.
+     */
+    public function isAutoContextTrackingEnabled(): bool
+    {
+        return (bool) $this->evaluate($this->isAutoContextTrackingEnabled);
     }
 }

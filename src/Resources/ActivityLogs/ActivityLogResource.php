@@ -8,9 +8,12 @@ use AlizHarb\ActivityLog\ActivityLogPlugin;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas\ActivityLogForm;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas\ActivityLogInfolist;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Tables\ActivityLogTable;
+use AlizHarb\ActivityLog\Support\ActivityLogTitle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Activity;
 use UnitEnum;
 
@@ -97,19 +100,19 @@ class ActivityLogResource extends Resource
         return config('filament-activity-log.resource.navigation_count_badge') ? number_format(static::getModel()::count()) : null;
     }
 
-    public static function getGlobalSearchEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    public static function getGlobalSearchEloquentQuery(): Builder
     {
         return parent::getGlobalSearchEloquentQuery()->with(['causer', 'subject']);
     }
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['causer', 'subject']);
     }
 
-    public static function getGlobalSearchResultDetails(\Illuminate\Database\Eloquent\Model $record): array
+    public static function getGlobalSearchResultDetails(Model $record): array
     {
-        /** @var \Spatie\Activitylog\Models\Activity $record */
+        /** @var Activity $record */
         $details = [];
 
         if ($record->causer) {
@@ -117,7 +120,7 @@ class ActivityLogResource extends Resource
         }
 
         if ($record->subject) {
-            $details['Subject'] = \AlizHarb\ActivityLog\Support\ActivityLogTitle::get($record->subject);
+            $details['Subject'] = ActivityLogTitle::get($record->subject);
         }
 
         return $details;

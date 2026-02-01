@@ -66,6 +66,12 @@ class InstallCommand extends Command
             $this->comment('Please run "php artisan migrate" to create the activity logs table.');
         }
 
+        $this->newLine();
+        $this->line('  ⭐️ <bg=blue;options=bold> SHOW SOME LOVE </>');
+        $this->line('  If you find this package useful, please consider starring it on GitHub:');
+        $this->line('  <options=underscore>https://github.com/alizharb/filament-activity-log</>');
+        $this->newLine();
+
         return self::SUCCESS;
     }
 }

@@ -5,6 +5,38 @@ All notable changes to `filament-activity-log` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-01-31
+
+### Added
+
+- **Audit Dashboard** - A comprehensive new dashboard page for high-level activity monitoring.
+  - **Activity Stats** - View total activities, top causer, and top subject at a glance.
+  - **Activity Heatmap** - Visualize activity frequency over the past year.
+  - **Activity Chart** - Integrated trend analysis widget.
+- **Integrated Middleware Context** - Automatically capture IP Address, User Agent, and Batch UUID without manual tap configuration.
+- **Selective Revert** - Enhanced revert action allows selecting specific fields to roll back via a checkbox-based form.
+- **Restore Action** - Recreate deleted models directly from activity log data with a single click.
+- **Log Pruning UI** - New "Prune" action in the `ActivityLogResource` to clean up old logs based on date.
+- **Slim Timeline** - Introduced a compact "slim" mode for the timeline view, optimized for dashboards and sidebars.
+- **Activity Heatmap** - Completely redesigned GitHub-style contribution graph with dark mode support.
+- **Improved Timeline** - Added auto-pagination (limit 50) for significantly better performance on large datasets.
+
+### Improved
+
+- **Localization** - Expanded dictionary with support for all new v1.3.0 actions and dashboard components.
+- **Authorization** - Improved Gate-based authorization checks for all resource actions.
+
+### Fixed
+
+- **Resource Links** - Corrected URL generation for subject and causer resources in `ActivityLogTable`.
+- **UI Consistency** - Standardized button colors, icons, and labels across all actions.
+
+### Technical Details
+
+- ✅ All tests passed (Feature and Unit)
+- ✅ Code simplified and linted (Laravel Pint)
+- ✅ 100% strict typing consistency
+
 ## [1.2.0] - 2026-01-17
 
 ### Added

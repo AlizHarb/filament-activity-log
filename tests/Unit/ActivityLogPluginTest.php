@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use AlizHarb\ActivityLog\Widgets\ActivityChartWidget;
+use AlizHarb\ActivityLog\Widgets\ActivityHeatmapWidget;
+use AlizHarb\ActivityLog\Widgets\ActivityStatsWidget;
 use AlizHarb\ActivityLog\Widgets\LatestActivityWidget;
 
 describe('ActivityLogPlugin', function () {
@@ -88,18 +90,16 @@ describe('ActivityLogPlugin', function () {
 
     it('returns widgets when enabled in config', function () {
         config()->set('filament-activity-log.widgets.enabled', true);
-        config()->set('filament-activity-log.widgets.widgets', [
-            ActivityChartWidget::class,
-            LatestActivityWidget::class,
-        ]);
 
         $plugin = ActivityLogPlugin::make();
         $widgets = $plugin->getWidgets();
 
         expect($widgets)->toBeArray()
-            ->and($widgets)->toHaveCount(2)
+            ->and($widgets)->toHaveCount(4)
             ->and($widgets)->toContain(ActivityChartWidget::class)
-            ->and($widgets)->toContain(LatestActivityWidget::class);
+            ->and($widgets)->toContain(LatestActivityWidget::class)
+            ->and($widgets)->toContain(ActivityHeatmapWidget::class)
+            ->and($widgets)->toContain(ActivityStatsWidget::class);
     });
 
     it('returns empty array when widgets disabled in config', function () {

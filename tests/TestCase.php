@@ -7,6 +7,8 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    public \AlizHarb\ActivityLog\Tests\Fixtures\User $user;
+
     protected function setUp(): void
     {
         parent::setUp();

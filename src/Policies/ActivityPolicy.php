@@ -142,7 +142,7 @@ class ActivityPolicy
         }
 
         if (! config('filament-activity-log.permissions.enabled', false)) {
-            return false;
+            return true;
         }
 
         $permission = config('filament-activity-log.permissions.update');
@@ -169,7 +169,7 @@ class ActivityPolicy
         }
 
         if (! config('filament-activity-log.permissions.enabled', false)) {
-            return false;
+            return true;
         }
 
         $permission = config('filament-activity-log.permissions.delete');
@@ -196,7 +196,7 @@ class ActivityPolicy
         }
 
         if (! config('filament-activity-log.permissions.enabled', false)) {
-            return false;
+            return true;
         }
 
         $permission = config('filament-activity-log.permissions.restore');
@@ -223,7 +223,7 @@ class ActivityPolicy
         }
 
         if (! config('filament-activity-log.permissions.enabled', false)) {
-            return false;
+            return true;
         }
 
         $permission = config('filament-activity-log.permissions.force_delete');

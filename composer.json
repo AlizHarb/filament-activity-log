@@ -48,6 +48,7 @@
     "php": "^8.3",
     "filament/actions": "^4.2|^5.0",
     "filament/filament": "^4.0|^5.0",
+    "filament/tables": "^4.0|^5.0",
     "phiki/phiki": "^1.1|^2.0",
     "spatie/laravel-activitylog": "^4.0"
   },

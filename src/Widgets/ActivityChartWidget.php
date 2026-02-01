@@ -28,7 +28,8 @@ class ActivityChartWidget extends ChartWidget
      */
     public function getHeading(): ?string
     {
-        return config('filament-activity-log.widgets.activity_chart.heading', 'Activity Over Time');
+        return config('filament-activity-log.widgets.activity_chart.heading')
+            ?? __('filament-activity-log::activity.widgets.activity_chart.heading');
     }
 
     /**
@@ -116,7 +117,7 @@ class ActivityChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => config('filament-activity-log.widgets.activity_chart.label', 'Activities'),
+                    'label' => config('filament-activity-log.widgets.activity_chart.label', __('filament-activity-log::activity.widgets.activity_chart.label')),
                     'data' => $data->values()->toArray(),
                     'borderColor' => $borderColor,
                     'backgroundColor' => $fillColor,

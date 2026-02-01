@@ -17,6 +17,9 @@ return [
             'description' => 'Descrição',
             'subject' => 'Assunto',
             'causer' => 'Causador',
+            'ip_address' => 'Endereço IP',
+            'browser' => 'Navegador',
+            'id' => 'ID',
         ],
         'filter' => [
             'event' => 'Evento',
@@ -25,6 +28,7 @@ return [
             'created_until' => 'Criado até',
             'causer' => 'Causador',
             'subject_type' => 'Tipo de Assunto',
+            'batch' => 'UUID do Lote',
         ],
     ],
     'infolist' => [
@@ -72,11 +76,46 @@ return [
             'success' => 'Alterações revertidas com sucesso',
             'no_old_data' => 'Nenhum dado antigo disponível para reverter',
             'subject_not_found' => 'Modelo de assunto não encontrado',
+            'label' => 'Reverter',
+            'nothing_selected' => 'Nenhum atributo selecionado para reverter.',
+            'helper_text' => 'Alterar de \':old\' de volta para \':new\'',
         ],
         'export' => [
             'filename' => 'registros_de_atividade',
             'notification' => [
                 'completed' => 'A exportação do seu registro de atividade foi concluída e :successful_rows :rows_label foram exportadas.',
+                'failed_rows' => 'Falha ao exportar :count :rows.',
+            ],
+        ],
+        'restore' => [
+            'label' => 'Restaurar',
+            'heading' => 'Restaurar Registro',
+            'confirmation' => 'Tem certeza de que deseja restaurar este registro excluído?',
+            'success' => 'Registro restaurado com sucesso.',
+        ],
+        'prune' => [
+            'label' => 'Limpar Registros',
+            'heading' => 'Limpar Registros de Atividade',
+            'confirmation' => 'Tem certeza de que deseja excluir registros anteriores à data selecionada? Esta ação não pode ser desfeita.',
+            'success' => ':count registros de atividade limpos com sucesso.',
+            'date' => 'Limpar registros anteriores a',
+        ],
+        'batch' => [
+            'label' => 'Lote',
+        ],
+        'bulk' => [
+            'delete' => [
+                'confirmation' => 'Tem certeza de que deseja excluir os registros de atividade selecionados?',
+            ],
+            'restore' => [
+                'label' => 'Restaurar Selecionados',
+                'confirmation' => 'Tem certeza de que deseja restaurar os registros excluídos selecionados?',
+                'success' => ':count registros restaurados com sucesso.',
+            ],
+            'revert' => [
+                'label' => 'Reverter Selecionados',
+                'confirmation' => 'Tem certeza de que deseja reverter as alterações para todos os registros selecionados? Apenas registros com dados antigos serão processados.',
+                'success' => ':count registros revertidos com sucesso.',
             ],
         ],
     ],
@@ -87,6 +126,9 @@ return [
             'heading' => 'Atividades do Usuário',
             'description_title' => 'Rastrear Ações do Usuário',
             'description' => 'Visualize todas as atividades realizadas pelos usuários na sua aplicação. Filtre por usuário, tipo de evento ou assunto para ver uma linha do tempo completa das ações.',
+        ],
+        'audit_dashboard' => [
+            'title' => 'Painel de Auditoria',
         ],
     ],
     'event' => [
@@ -102,5 +144,30 @@ return [
     ],
     'widgets' => [
         'latest_activity' => 'Atividade Recente',
+        'activity_chart' => [
+            'heading' => 'Atividade ao Longo do Tempo',
+            'label' => 'Atividades',
+        ],
+        'heatmap' => [
+            'heading' => 'Mapa de Calor da Atividade',
+            'less' => 'Menos',
+            'more' => 'Mais',
+            'tooltip' => ':count atividades em :date',
+        ],
+        'stats' => [
+            'total_activities' => 'Total de Atividades',
+            'total_description' => 'Total de registros no sistema',
+            'top_causer' => 'Principal Autor',
+            'top_causer_description' => ':count atividades',
+            'top_subject' => 'Principal Assunto',
+            'top_subject_description' => ':count modificações',
+            'no_data' => 'Sem dados',
+        ],
     ],
+    'dashboard' => [
+        'title' => 'Audit Dashboard',
+    ],
+    'system' => 'Sistema',
+    'row' => 'linha',
+    'rows' => 'linhas',
 ];

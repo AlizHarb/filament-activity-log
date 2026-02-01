@@ -127,6 +127,7 @@ return [
             'timeline' => true,
             'view' => true,
             'revert' => true,
+            'restore' => true,
             'delete' => true,
             'export' => true,
         ],
@@ -254,6 +255,8 @@ return [
         'widgets' => [
             \AlizHarb\ActivityLog\Widgets\ActivityChartWidget::class,
             \AlizHarb\ActivityLog\Widgets\LatestActivityWidget::class,
+            \AlizHarb\ActivityLog\Widgets\ActivityHeatmapWidget::class,
+            \AlizHarb\ActivityLog\Widgets\ActivityStatsWidget::class,
         ],
 
         /**
@@ -311,5 +314,27 @@ return [
                 'created_at' => true,
             ],
         ],
+    ],
+    /*
+    |--------------------------------------------------------------------------
+    | Advanced Settings (v1.3.0)
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for new features in v1.3.0.
+    |
+    */
+    'dashboard' => [
+        'enabled' => false,
+        'title' => null, // null uses translation key
+        'navigation_group' => null, // null uses resource group
+        'navigation_sort' => 0,
+        'navigation_icon' => 'heroicon-o-presentation-chart-bar',
+    ],
+
+    'auto_context' => [
+        'enabled' => true,
+        'capture_ip' => true,
+        'capture_browser' => true,
+        'capture_batch' => true,
     ],
 ];
