@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace AlizHarb\ActivityLog\Support;
 
 use Filament\Facades\Filament;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Support\Facades\Auth;
 
 class ActivityLogCauser
 {
