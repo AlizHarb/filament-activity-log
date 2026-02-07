@@ -5,6 +5,14 @@ All notable changes to `filament-activity-log` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-02-06
+
+### Fixed
+
+- **Multi-Panel Support** - Fixed an issue where Select filters and causer resolution failed in multi-panel applications using different auth guards.
+  - Introduced `ActivityLogCauser` support class for dynamic model resolution based on current panel guard.
+  - Refactored `UserActivitiesPage` and `ActivityLogTable` to use panel-aware causer resolution.
+
 ## [1.3.0] - 2026-01-31
 
 ### Added

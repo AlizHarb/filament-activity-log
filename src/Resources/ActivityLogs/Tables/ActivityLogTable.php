@@ -14,6 +14,8 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ExportAction as FilamentExportAction;
 use Filament\Actions\ViewAction;
+use AlizHarb\ActivityLog\Models\Activity;
+use AlizHarb\ActivityLog\Support\ActivityLogCauser;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -24,7 +26,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
-use Spatie\Activitylog\Models\Activity;
 
 /**
  * Class ActivityLogTable
@@ -191,12 +192,15 @@ class ActivityLogTable
                 SelectFilter::make('causer_id')
                     ->label(__('filament-activity-log::activity.table.filter.causer'))
                     ->options(function () {
-                        $causerClass = config('auth.providers.users.model');
+                        $causerClass = ActivityLogCauser::resolveModelClass();
                         if (! $causerClass || ! class_exists($causerClass)) {
                             return [];
                         }
 
-                        return $causerClass::query()
+                        /** @var \Illuminate\Database\Eloquent\Builder $query */
+                        $query = $causerClass::query();
+
+                        return $query
                             ->whereIn('id', Activity::query()
                                 ->distinct()
                                 ->whereNotNull('causer_id')

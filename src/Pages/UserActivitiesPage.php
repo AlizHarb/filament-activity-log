@@ -7,6 +7,8 @@ namespace AlizHarb\ActivityLog\Pages;
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use AlizHarb\ActivityLog\Models\Activity;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\ActivityLogResource;
+use AlizHarb\ActivityLog\Support\ActivityLogCauser;
+use AlizHarb\ActivityLog\Support\ActivityLogTitle;
 use Filament\Pages\Page;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -149,13 +151,16 @@ class UserActivitiesPage extends Page implements HasTable
                 SelectFilter::make('causer_id')
                     ->label(__('filament-activity-log::activity.filter.causer'))
                     ->options(function () {
-                        $model = config('auth.providers.users.model');
+                        $model = ActivityLogCauser::resolveModelClass();
 
-                        if (! class_exists($model)) {
+                        if (! $model || ! class_exists($model)) {
                             return [];
                         }
 
-                        return $model::query()->pluck('name', 'id')->toArray();
+                        /** @var \Illuminate\Database\Eloquent\Builder $query */
+                        $query = $model::query();
+
+                        return $query->pluck('name', 'id')->toArray();
                     })
                     ->searchable()
                     ->preload()
@@ -174,7 +179,10 @@ class UserActivitiesPage extends Page implements HasTable
                 SelectFilter::make('subject_type')
                     ->label(__('filament-activity-log::activity.filter.subject_type'))
                     ->options(function () {
-                        return Activity::query()
+                        /** @var \Illuminate\Database\Eloquent\Builder $query */
+                        $query = Activity::query();
+
+                        return $query
                             ->whereNotNull('subject_type')
                             ->distinct()
                             ->pluck('subject_type')
