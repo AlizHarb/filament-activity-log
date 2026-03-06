@@ -202,14 +202,12 @@ return [
         'enabled' => false,
 
         /**
-         * Custom authorization callback.
+         * Custom invokable authorizer class for accessing the activity log.
          *
-         * This callback receives the authenticated user and should return a boolean.
          * If set, this takes precedence over the 'enabled' setting and permission checks.
+         * This invokable receives the authenticated user and should return a boolean.
          *
-         * Example: fn($user) => $user->id === 1
-         * Example: fn($user) => $user->hasRole('super_admin')
-         * Example: 'App\Support\ActivityLogAuthorization' (class with __invoke method)
+         * Example: 'App\Support\ActivityLogAuthorization' (class with __invoke(User $user): bool)
          */
         'custom_authorization' => null,
 

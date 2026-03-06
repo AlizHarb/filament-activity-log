@@ -268,12 +268,28 @@ You can customize almost every aspect of the package via the `filament-activity-
 
 ### Custom Authorization
 
-Restrict access to specific users without setting up a full permission system:
+Restrict access to specific users by implementing a custom authorizer invokable class:
 
 ```php
-// In config/filament-activity-log.php
+// app/Authorizer/ActivityLogAuthorizer.php
+namespace App\Authorizors;
+
+class ActivityLogAuthorizer
+{
+    public function __invoke(User $user): bool
+    {
+        // Define your custom logic to determine if the user can access the activity log.
+         return $user->id === 1;
+    }
+}
+```
+
+Then register it in the config:
+
+```php
+// config/filament-activity-log.php
 'permissions' => [
-    'custom_authorization' => fn($user) => $user->id === 1,
+    'custom_authorization' => \App\Authorizer\ActivityLogAuthorizer::class,
 ],
 ```
 
