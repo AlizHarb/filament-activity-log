@@ -10,8 +10,8 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 
 /**
  * Class ActivityLogInfolist
@@ -125,7 +125,8 @@ class ActivityLogInfolist
                             ->icon('heroicon-m-arrows-right-left')
                             ->visible(function (Get $get) {
                                 $hasJsonField = is_array(data_get($get('properties'), 'attributes')) || is_array(data_get($get('properties'), 'old'));
-                                return !$hasJsonField && config('filament-activity-log.infolist.tabs.changes', true);
+
+                                return ! $hasJsonField && config('filament-activity-log.infolist.tabs.changes', true);
                             })
                             ->schema([
                                 KeyValueEntry::make('properties.attributes')
