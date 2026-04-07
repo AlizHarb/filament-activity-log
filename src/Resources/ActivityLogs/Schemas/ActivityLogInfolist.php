@@ -2,6 +2,7 @@
 
 namespace AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas;
 
+use AlizHarb\ActivityLog\Support\ActivityLogTitle;
 use Filament\Facades\Filament;
 use Filament\Infolists\Components\CodeEntry;
 use Filament\Infolists\Components\KeyValueEntry;
@@ -85,7 +86,7 @@ class ActivityLogInfolist
 
                                             TextEntry::make('subject')
                                                 ->label(__('filament-activity-log::activity.infolist.entry.subject'))
-                                                ->getStateUsing(fn ($record) => \AlizHarb\ActivityLog\Support\ActivityLogTitle::get($record->subject))
+                                                ->getStateUsing(fn ($record) => ActivityLogTitle::get($record->subject))
                                                 ->url(function ($record) {
                                                     $subject = $record->subject;
                                                     if (! $subject) {

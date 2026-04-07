@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog;
 
+use AlizHarb\ActivityLog\Policies\ActivityPolicy;
 use Filament\Support\Assets\Asset;
+use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
+use Illuminate\Support\Facades\Gate;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -63,9 +67,9 @@ class ActivityLogServiceProvider extends PackageServiceProvider
      */
     public function packageBooted(): void
     {
-        \Illuminate\Support\Facades\Gate::policy(
-            \Spatie\Activitylog\Models\Activity::class,
-            \AlizHarb\ActivityLog\Policies\ActivityPolicy::class
+        Gate::policy(
+            Activity::class,
+            ActivityPolicy::class
         );
 
         FilamentAsset::register(
@@ -99,7 +103,7 @@ class ActivityLogServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
-            \Filament\Support\Assets\Css::make('filament-activity-log', __DIR__.'/../resources/css/filament-activity-log.css'),
+            Css::make('filament-activity-log', __DIR__.'/../resources/css/filament-activity-log.css'),
         ];
     }
 

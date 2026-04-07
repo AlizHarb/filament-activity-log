@@ -12,6 +12,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Activities Relation Manager.
@@ -64,7 +65,7 @@ class ActivitiesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('description')
             ->modifyQueryUsing(function (Builder $query) {
-                /** @var \Illuminate\Database\Eloquent\Model $record */
+                /** @var Model $record */
                 $record = $this->getOwnerRecord();
 
                 // If the record is a user (or has actions relationship), also include activities they caused

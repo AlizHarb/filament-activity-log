@@ -14,6 +14,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
@@ -156,7 +157,7 @@ class UserActivitiesPage extends Page implements HasTable
                             return [];
                         }
 
-                        /** @var \Illuminate\Database\Eloquent\Builder $query */
+                        /** @var Builder $query */
                         $query = $model::query();
 
                         return $query->pluck('name', 'id')->toArray();
@@ -178,7 +179,7 @@ class UserActivitiesPage extends Page implements HasTable
                 SelectFilter::make('subject_type')
                     ->label(__('filament-activity-log::activity.filter.subject_type'))
                     ->options(function () {
-                        /** @var \Illuminate\Database\Eloquent\Builder $query */
+                        /** @var Builder $query */
                         $query = Activity::query();
 
                         return $query

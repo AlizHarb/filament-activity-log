@@ -197,7 +197,7 @@ class ActivityLogTable
                             return [];
                         }
 
-                        /** @var \Illuminate\Database\Eloquent\Builder $query */
+                        /** @var Builder $query */
                         $query = $causerClass::query();
 
                         return $query

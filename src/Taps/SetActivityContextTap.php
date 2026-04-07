@@ -3,6 +3,7 @@
 namespace AlizHarb\ActivityLog\Taps;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Spatie\Activitylog\Contracts\Activity;
 
 class SetActivityContextTap
@@ -37,7 +38,7 @@ class SetActivityContextTap
     {
         if (static::$batchUuid === null) {
             static::$batchUuid = request()->header('X-Request-ID')
-                ?? (string) \Illuminate\Support\Str::uuid();
+                ?? (string) Str::uuid();
         }
 
         return static::$batchUuid;

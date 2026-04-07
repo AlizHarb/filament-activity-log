@@ -10,6 +10,7 @@ it('can register activity log resource', function () {
 });
 
 use AlizHarb\ActivityLog\Tests\Fixtures\User;
+use Spatie\Activitylog\Models\Activity;
 
 it('can render activity log resource page', function () {
     $user = User::create([
@@ -20,7 +21,7 @@ it('can render activity log resource page', function () {
 
     $this->actingAs($user);
 
-    expect($user->can('viewAny', \Spatie\Activitylog\Models\Activity::class))->toBeTrue();
+    expect($user->can('viewAny', Activity::class))->toBeTrue();
 
     $this->get(ActivityLogResource::getUrl('index'))
         ->assertSuccessful();

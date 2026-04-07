@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog\Widgets;
 
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
@@ -125,7 +126,7 @@ class ActivityChartWidget extends ChartWidget
                     'tension' => config('filament-activity-log.widgets.activity_chart.tension', 0.3),
                 ],
             ],
-            'labels' => $data->keys()->map(fn ($date) => \Carbon\Carbon::parse($date)->format(
+            'labels' => $data->keys()->map(fn ($date) => Carbon::parse($date)->format(
                 config('filament-activity-log.widgets.activity_chart.date_format', 'M d')
             ))->toArray(),
         ];

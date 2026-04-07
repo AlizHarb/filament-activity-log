@@ -27,7 +27,7 @@ class ActivityLogResource extends Resource
     /**
      * The model class associated with this resource.
      *
-     * @var class-string<\Illuminate\Database\Eloquent\Model>|null
+     * @var class-string<Model>|null
      */
     protected static ?string $model = Activity::class;
 

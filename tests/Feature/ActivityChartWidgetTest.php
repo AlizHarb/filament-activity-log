@@ -22,7 +22,7 @@ describe('ActivityChartWidget', function () {
     it('returns correct max height from config', function () {
         config()->set('filament-activity-log.widgets.activity_chart.max_height', '400px');
 
-        $reflection = new \ReflectionClass($this->widget);
+        $reflection = new ReflectionClass($this->widget);
         $method = $reflection->getMethod('getMaxHeight');
         $method->setAccessible(true);
 
@@ -58,7 +58,7 @@ describe('ActivityChartWidget', function () {
     it('returns line chart type by default', function () {
         config()->set('filament-activity-log.widgets.activity_chart.type', 'line');
 
-        $reflection = new \ReflectionClass($this->widget);
+        $reflection = new ReflectionClass($this->widget);
         $method = $reflection->getMethod('getType');
         $method->setAccessible(true);
 
@@ -66,7 +66,7 @@ describe('ActivityChartWidget', function () {
     });
 
     it('returns chart data with correct structure', function () {
-        $reflection = new \ReflectionClass($this->widget);
+        $reflection = new ReflectionClass($this->widget);
         $method = $reflection->getMethod('getData');
         $method->setAccessible(true);
 
@@ -89,7 +89,7 @@ describe('ActivityChartWidget', function () {
 
         config()->set('filament-activity-log.widgets.activity_chart.options', $expectedOptions);
 
-        $reflection = new \ReflectionClass($this->widget);
+        $reflection = new ReflectionClass($this->widget);
         $method = $reflection->getMethod('getOptions');
         $method->setAccessible(true);
 
