@@ -2,8 +2,9 @@
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use AlizHarb\ActivityLog\Enums\ActivityLogEvent;
+use AlizHarb\ActivityLog\Support\ActivityGrouping;
 use AlizHarb\ActivityLog\Support\ActivityLogTitle;
-use Filament\Facades\Filament;
+use AlizHarb\ActivityLog\Tests\TestCase;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Activity;
 
@@ -37,9 +38,6 @@ it('resolves subject title using helper', function () {
     $user->setAttribute('name', 'Test User');
     $user->setAttribute('id', 1);
 
-    // mimic accessors? No, just attributes.
-    // getAttribute checks attributes array.
-
     expect(ActivityLogTitle::get($user))->toBe('Test User');
 
     $post = new class extends Model
@@ -55,7 +53,6 @@ it('resolves subject title using helper', function () {
 
     $unknown = new class extends Model
     {
-        // Mocking getKey explicitly as anonymous class table might issue
         public function getKey()
         {
             return 3;
@@ -68,26 +65,39 @@ it('resolves subject title using helper', function () {
     };
     $unknown->setAttribute('id', 3);
 
-    // class_basename of anonymous class is complex, but checking it contains ID
     expect(ActivityLogTitle::get($unknown))->toContain('#3');
 });
 
-it('renders batch action url correctly', function () {
-    // We can't strictly test the table action URL generation without full table setup,
-    // but we can verify the action exists on the table if we render it.
-    // However, recreating table in test is complex.
-    // We trust standard Filament testing for actions.
+it('applies v4 native batch_uuid filter', function () {
+    if (! TestCase::isSpatieV4()) {
+        $this->markTestSkipped('Only runs on Spatie v4 (native batch_uuid).');
+    }
 
-    // We can test if the Filter query works
     $query = Activity::query();
-    $filter = function ($data, $query) {
-        $query->when(
-            $data['value'] ?? null,
-            fn ($q, $uuid) => $q->where('batch_uuid', $uuid)
-        );
-    };
-
-    $filter(['value' => 'test-uuid'], $query);
+    ActivityGrouping::applyGroupFilter($query, 'test-uuid');
 
     expect($query->toSql())->toContain('batch_uuid');
+});
+
+it('applies v5 custom-property group filter', function () {
+    if (! TestCase::isSpatieV5()) {
+        $this->markTestSkipped('Only runs on Spatie v5 (custom-property grouping).');
+    }
+
+    $query = Activity::query();
+    ActivityGrouping::applyGroupFilter($query, 'test-group');
+
+    $sql = $query->toSql();
+    expect($sql)->toContain('properties');
+});
+
+it('renders batch action url correctly', function () {
+    // Verify the Filter/Grouping query logic works
+    $query = Activity::query();
+    ActivityGrouping::applyGroupFilter($query, 'test-uuid');
+
+    $sql = $query->toSql();
+
+    // Should contain some filtering clause
+    expect($sql)->toContain('?');
 });

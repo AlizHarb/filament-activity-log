@@ -1,5 +1,6 @@
 <?php
 
+use AlizHarb\ActivityLog\Support\ActivityChanges;
 use AlizHarb\ActivityLog\Tests\Fixtures\User;
 use Spatie\Activitylog\Models\Activity;
 
@@ -25,9 +26,9 @@ it('can revert changes', function () {
 
     actingAs($this->user);
 
-    // Test the logic directly
+    // Test the logic using the compatibility helper
     $subject = $activity->subject;
-    $oldAttributes = $activity->properties['old'];
+    $oldAttributes = ActivityChanges::getOldValues($activity);
 
     foreach ($oldAttributes as $key => $value) {
         $subject->{$key} = $value;
@@ -53,7 +54,8 @@ it('can restore a deleted record', function () {
 
     $modelClass = $activity->subject_type;
     $model = new $modelClass;
-    $model->fill($activity->properties['old'] ?? []);
+    $oldValues = ActivityChanges::getOldValues($activity);
+    $model->fill($oldValues);
     $model->save();
 
     expect($modelClass::where('email', 'delete@example.com')->exists())->toBeTrue();

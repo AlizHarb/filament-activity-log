@@ -6,6 +6,8 @@ use AlizHarb\ActivityLog\Actions\ActivityLogTimelineTableAction;
 use AlizHarb\ActivityLog\Enums\ActivityLogEvent;
 use AlizHarb\ActivityLog\Exporters\ActivityLogExporter;
 use AlizHarb\ActivityLog\Models\Activity;
+use AlizHarb\ActivityLog\Support\ActivityChanges;
+use AlizHarb\ActivityLog\Support\ActivityGrouping;
 use AlizHarb\ActivityLog\Support\ActivityLogCauser;
 use AlizHarb\ActivityLog\Support\ActivityLogTitle;
 use Filament\Actions\Action;
@@ -249,7 +251,7 @@ class ActivityLogTable
                     ->hidden()
                     ->query(fn (Builder $query, array $data): Builder => $query->when(
                         $data['value'] ?? null,
-                        fn (Builder $query, $uuid): Builder => $query->where('batch_uuid', $uuid)
+                        fn (Builder $query, $groupId): Builder => ActivityGrouping::applyGroupFilter($query, $groupId)
                     )),
             ])
             ->filtersTriggerAction(
@@ -302,22 +304,22 @@ class ActivityLogTable
                         ->label(__('filament-activity-log::activity.action.batch.label'))
                         ->icon('heroicon-m-rectangle-stack')
                         ->color('gray')
-                        ->visible(fn ($record) => $record->batch_uuid &&
+                        ->visible(fn ($record) => ActivityGrouping::hasGroup($record) &&
                             (config('filament-activity-log.permissions.enabled') === false || Gate::allows('view', $record))
                         )
-                        ->url(fn ($record) => request()->url().'?tableFilters[batch_uuid][value]='.$record->batch_uuid),
+                        ->url(fn ($record) => request()->url().'?tableFilters[batch_uuid][value]='.ActivityGrouping::getGroupId($record)),
 
                     Action::make('revert')
                         ->label(__('filament-activity-log::activity.action.revert.label'))
                         ->icon('heroicon-m-arrow-uturn-left')
                         ->color('warning')
                         ->schema(function ($record) {
-                            $old = $record->properties['old'] ?? [];
-                            $attributes = $record->properties['attributes'] ?? [];
+                            $old = ActivityChanges::getOldValues($record);
+                            $newValues = ActivityChanges::getNewValues($record);
 
                             $fields = [];
                             foreach ($old as $key => $value) {
-                                $currentValue = data_get($attributes, $key);
+                                $currentValue = data_get($newValues, $key);
                                 $fields[] = Checkbox::make("revert_attributes.{$key}")
                                     ->label($key)
                                     ->helperText(__('filament-activity-log::activity.action.revert.helper_text', [
@@ -337,7 +339,7 @@ class ActivityLogTable
                             }
 
                             $revertData = [];
-                            $old = $record->properties['old'] ?? [];
+                            $old = ActivityChanges::getOldValues($record);
                             foreach ($data['revert_attributes'] ?? [] as $key => $shouldRevert) {
                                 if ($shouldRevert && isset($old[$key])) {
                                     $revertData[$key] = $old[$key];
@@ -355,7 +357,7 @@ class ActivityLogTable
                         })
                         ->visible(fn ($record) => config('filament-activity-log.table.actions.revert', true) &&
                             $record->event === 'updated' &&
-                            $record->properties->has('old') &&
+                            ActivityChanges::hasOldValues($record) &&
                             $record->subject !== null &&
                             (config('filament-activity-log.permissions.enabled') === false || Gate::allows('update', $record))
                         ),
@@ -372,7 +374,8 @@ class ActivityLogTable
                                 return;
                             }
 
-                            $attributes = $record->properties['old'] ?? $record->properties['attributes'] ?? [];
+                            $oldValues = ActivityChanges::getOldValues($record);
+                            $attributes = ! empty($oldValues) ? $oldValues : ActivityChanges::getNewValues($record);
                             if (empty($attributes)) {
                                 return;
                             }
@@ -421,7 +424,8 @@ class ActivityLogTable
                                     continue;
                                 }
 
-                                $attributes = $record->properties['old'] ?? $record->properties['attributes'] ?? [];
+                                $oldValues = ActivityChanges::getOldValues($record);
+                                $attributes = ! empty($oldValues) ? $oldValues : ActivityChanges::getNewValues($record);
                                 if (empty($attributes)) {
                                     continue;
                                 }
@@ -450,11 +454,11 @@ class ActivityLogTable
                             $revertedCount = 0;
 
                             foreach ($records as $record) {
-                                if ($record->event !== 'updated' || ! $record->properties->has('old') || ! $record->subject) {
+                                if ($record->event !== 'updated' || ! ActivityChanges::hasOldValues($record) || ! $record->subject) {
                                     continue;
                                 }
 
-                                $record->subject->update($record->properties['old']);
+                                $record->subject->update(ActivityChanges::getOldValues($record));
                                 $revertedCount++;
                             }
 
