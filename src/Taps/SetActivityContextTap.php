@@ -3,6 +3,7 @@
 namespace AlizHarb\ActivityLog\Taps;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Contracts\Activity;
 
@@ -22,8 +23,15 @@ class SetActivityContextTap
         }
 
         if (config('filament-activity-log.auto_context.capture_batch', true)) {
-            // Check for existing request ID or use a static one for the request lifecycle
-            $context['batch_uuid'] = static::getBatchUuid();
+            $groupId = static::getBatchUuid();
+
+            if (static::hasBatchUuidColumn()) {
+                // v4: use the native batch_uuid column
+                $activity->batch_uuid = $groupId;
+            } else {
+                // v5: use custom-property grouping per the official docs
+                $context['group'] = $groupId;
+            }
         }
 
         $activity->properties = $activity->properties->merge($context);
@@ -42,5 +50,23 @@ class SetActivityContextTap
         }
 
         return static::$batchUuid;
+    }
+
+    /**
+     * Check if the activity_log table has a native batch_uuid column (v4).
+     */
+    protected static ?bool $hasBatchUuidColumn = null;
+
+    protected static function hasBatchUuidColumn(): bool
+    {
+        if (static::$hasBatchUuidColumn === null) {
+            try {
+                static::$hasBatchUuidColumn = Schema::hasColumn('activity_log', 'batch_uuid');
+            } catch (\Throwable) {
+                static::$hasBatchUuidColumn = false;
+            }
+        }
+
+        return static::$hasBatchUuidColumn;
     }
 }

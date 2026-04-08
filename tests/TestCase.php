@@ -38,11 +38,21 @@ class TestCase extends Orchestra
         }
         (new \CreateActivityLogTable)->up();
 
-        // Ensure database schema satisfies Spatie v4 model expectations for tests
-        if (! Schema::hasColumn('activity_log', 'batch_uuid')) {
-            Schema::table('activity_log', function (Blueprint $table) {
-                $table->uuid('batch_uuid')->nullable();
-            });
+        // Ensure database schema satisfies the installed Spatie major version
+        if (static::isSpatieV4()) {
+            // v4 lane: ensure batch_uuid and event columns exist
+            if (! Schema::hasColumn('activity_log', 'batch_uuid')) {
+                Schema::table('activity_log', function (Blueprint $table) {
+                    $table->uuid('batch_uuid')->nullable();
+                });
+            }
+        } else {
+            // v5 lane: ensure attribute_changes column exists
+            if (! Schema::hasColumn('activity_log', 'attribute_changes')) {
+                Schema::table('activity_log', function (Blueprint $table) {
+                    $table->json('attribute_changes')->nullable();
+                });
+            }
         }
 
         if (! Schema::hasColumn('activity_log', 'event')) {
@@ -87,5 +97,22 @@ class TestCase extends Orchestra
             ActivityLogServiceProvider::class,
             TestPanelProvider::class,
         ];
+    }
+
+    /**
+     * Detect whether we are running against spatie/laravel-activitylog v4.
+     */
+    public static function isSpatieV4(): bool
+    {
+        // v4 has the LogBatch class; v5 removed it
+        return class_exists(\Spatie\Activitylog\LogBatch::class);
+    }
+
+    /**
+     * Detect whether we are running against spatie/laravel-activitylog v5.
+     */
+    public static function isSpatieV5(): bool
+    {
+        return ! static::isSpatieV4();
     }
 }

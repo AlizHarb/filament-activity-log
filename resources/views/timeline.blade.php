@@ -7,7 +7,16 @@
         }
     @endphp
 
+    @php
+        use AlizHarb\ActivityLog\Support\ActivityChanges;
+    @endphp
+
     @forelse ($activities as $key => $activity)
+        @php
+            $oldValues = ActivityChanges::getOldValues($activity);
+            $newValues = ActivityChanges::getNewValues($activity);
+            $hasChanges = ActivityChanges::hasChanges($activity);
+        @endphp
         <div class="activity-log-item group {{ ($slim ?? false) ? 'activity-log-item-slim' : '' }}">
             {{-- Connecting Line --}}
             @if (!$loop->last)
@@ -102,7 +111,7 @@
                     @endif
 
                     {{-- Changes Toggle --}}
-                    @if($activity->properties->has('attributes') || $activity->properties->has('old'))
+                    @if($hasChanges)
                         <div x-data="{ open: false }">
                             <button @click="open = !open" type="button" class="activity-log-changes-btn {{ ($slim ?? false) ? 'activity-log-changes-btn-slim' : '' }}">
                                 <span class="activity-log-changes-btn-content">
@@ -115,50 +124,38 @@
 
                             <div x-show="open" x-collapse class="activity-log-changes-grid" style="display: none;">
 
-                                @if($activity->properties->has('old'))
+                                @if(!empty($oldValues))
                                     <div class="activity-log-change-card old">
                                         <div class="activity-log-change-header">
                                             {{ __('filament-activity-log::activity.infolist.tab.old') }}
                                         </div>
                                         <div class="activity-log-change-body">
-                                            @if(is_array($activity->properties['old']))
-                                                @foreach($activity->properties['old'] as $key => $value)
-                                                    <div class="activity-log-change-item">
-                                                        <dt class="activity-log-change-key">{{ str($key)->title() }}</dt>
-                                                        <dd class="activity-log-change-value">
-                                                            {{ is_array($value) ? json_encode($value) : $value }}
-                                                        </dd>
-                                                    </div>
-                                                @endforeach
-                                            @else
-                                                <div class="activity-log-simple-value">
-                                                    {{ $activity->properties['old'] }}
+                                            @foreach($oldValues as $key => $value)
+                                                <div class="activity-log-change-item">
+                                                    <dt class="activity-log-change-key">{{ str($key)->title() }}</dt>
+                                                    <dd class="activity-log-change-value">
+                                                        {{ is_array($value) ? json_encode($value) : $value }}
+                                                    </dd>
                                                 </div>
-                                            @endif
+                                            @endforeach
                                         </div>
                                     </div>
                                 @endif
 
-                                @if($activity->properties->has('attributes'))
+                                @if(!empty($newValues))
                                     <div class="activity-log-change-card new">
                                         <div class="activity-log-change-header">
                                             {{ __('filament-activity-log::activity.infolist.tab.new') }}
                                         </div>
                                         <div class="activity-log-change-body">
-                                            @if(is_array($activity->properties['attributes']))
-                                                @foreach($activity->properties['attributes'] as $key => $value)
-                                                    <div class="activity-log-change-item">
-                                                        <dt class="activity-log-change-key">{{ str($key)->title() }}</dt>
-                                                        <dd class="activity-log-change-value">
-                                                            {{ is_array($value) ? json_encode($value) : $value }}
-                                                        </dd>
-                                                    </div>
-                                                @endforeach
-                                            @else
-                                                <div class="activity-log-simple-value">
-                                                    {{ $activity->properties['attributes'] }}
+                                            @foreach($newValues as $key => $value)
+                                                <div class="activity-log-change-item">
+                                                    <dt class="activity-log-change-key">{{ str($key)->title() }}</dt>
+                                                    <dd class="activity-log-change-value">
+                                                        {{ is_array($value) ? json_encode($value) : $value }}
+                                                    </dd>
                                                 </div>
-                                            @endif
+                                            @endforeach
                                         </div>
                                     </div>
                                 @endif

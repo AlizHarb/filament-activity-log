@@ -13,12 +13,30 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        php: [8.3, 8.4]
-        laravel: [12.*]
-        testbench: [10.*]
-        dependency-version: [prefer-stable]
+        include:
+          # v4 lane: PHP 8.3 + Spatie v4
+          - php: '8.3'
+            laravel: '12.*'
+            testbench: '10.*'
+            spatie: '^4.0'
+            dependency-version: prefer-stable
+            os: ubuntu-latest
+          # v4 lane: PHP 8.4 + Spatie v4
+          - php: '8.4'
+            laravel: '12.*'
+            testbench: '10.*'
+            spatie: '^4.0'
+            dependency-version: prefer-stable
+            os: ubuntu-latest
+          # v5 lane: PHP 8.4 + Spatie v5
+          - php: '8.4'
+            laravel: '12.*'
+            testbench: '10.*'
+            spatie: '^5.0'
+            dependency-version: prefer-stable
+            os: ubuntu-latest
 
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - Spatie ${{ matrix.spatie }} - ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -37,8 +55,12 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Install dependencies
+        env:
+          SPATIE_VERSION: ${{ matrix.spatie }}
+          DEP_VERSION: ${{ matrix.dependency-version }}
         run: |
-          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+          composer require "spatie/laravel-activitylog:${SPATIE_VERSION}" --no-interaction --no-update
+          composer update --${DEP_VERSION} --prefer-dist --no-interaction
 
       - name: Execute tests
         run: vendor/bin/pest

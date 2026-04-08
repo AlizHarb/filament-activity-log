@@ -59,7 +59,27 @@
 
 **Dependencies:**
 
-- [Spatie Laravel Activitylog](https://spatie.be/docs/laravel-activitylog) - The robust foundation
+- [Spatie Laravel Activitylog](https://spatie.be/docs/laravel-activitylog) (^4.0 or ^5.0) - The robust foundation
+
+### Spatie Activitylog Compatibility
+
+| Spatie Version | Support | Notes |
+| --- | --- | --- |
+| ^4.0 | Full | Legacy support with native `batch_uuid` and `properties`-based tracking |
+| ^5.0 | Full | Requires the official v5 upgrade migration (see below) |
+
+> **Important for v5 users:** You must follow [Spatie's official v5 upgrade guide](https://spatie.be/docs/laravel-activitylog) before using this plugin on v5. This includes:
+> 1. Adding the `attribute_changes` column
+> 2. Dropping the `batch_uuid` column
+> 3. Migrating tracked change data from `properties` into `attribute_changes`
+>
+> The plugin does not support an unmigrated v5 database.
+
+**Key differences between v4 and v5:**
+
+- **Tracked changes:** v4 stores changes in `properties['attributes']` / `properties['old']`. v5 uses the dedicated `attribute_changes` column. The plugin reads from both automatically.
+- **Batch grouping:** v4 uses the native `batch_uuid` column. v5 uses custom-property grouping (`properties['group']`) per the official docs. The plugin handles both transparently.
+- **Relationships:** v5 renames `activities()` to `activitiesAsSubject()` and `actions()` to `activitiesAsCauser()`. The plugin detects and uses whichever is available.
 
 ---
 
@@ -222,9 +242,12 @@ class User extends Model implements HasActivityLogTitle
 }
 ```
 
-### 📚 Batch Support
+### 📚 Activity Grouping / Batch Support
 
-Automatically group activities from a single job or request. Use the **View Batch** action in the Activity Log table to inspect all activities related to a specific batch UUID.
+Automatically group activities from a single job or request. Use the **View Batch** action in the Activity Log table to inspect all related activities.
+
+- **Spatie v4:** Uses the native `batch_uuid` column for grouping.
+- **Spatie v5:** Uses custom-property grouping (`properties['group']`), since upstream batch support was removed in v5. The plugin handles this automatically via the `SetActivityContextTap`.
 
 ---
 
