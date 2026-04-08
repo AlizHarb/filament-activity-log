@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace AlizHarb\ActivityLog\Support;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Schema\Builder as SchemaBuilder;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Activitylog\Models\Activity;
 

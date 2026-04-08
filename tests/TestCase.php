@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Schema;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
+use Spatie\Activitylog\LogBatch;
 
 class TestCase extends Orchestra
 {
@@ -105,7 +106,7 @@ class TestCase extends Orchestra
     public static function isSpatieV4(): bool
     {
         // v4 has the LogBatch class; v5 removed it
-        return class_exists(\Spatie\Activitylog\LogBatch::class);
+        return class_exists(LogBatch::class);
     }
 
     /**

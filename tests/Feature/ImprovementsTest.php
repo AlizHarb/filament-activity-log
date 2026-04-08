@@ -5,7 +5,6 @@ use AlizHarb\ActivityLog\Enums\ActivityLogEvent;
 use AlizHarb\ActivityLog\Support\ActivityGrouping;
 use AlizHarb\ActivityLog\Support\ActivityLogTitle;
 use AlizHarb\ActivityLog\Tests\TestCase;
-use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Activity;
 

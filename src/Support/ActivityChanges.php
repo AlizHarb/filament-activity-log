@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog\Support;
 
+use Illuminate\Support\Collection;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivityChanges
@@ -77,7 +78,7 @@ class ActivityChanges
 
         $changes = $activity->attribute_changes;
 
-        if ($changes instanceof \Illuminate\Support\Collection) {
+        if ($changes instanceof Collection) {
             return $changes->toArray();
         }
 
