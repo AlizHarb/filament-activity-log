@@ -34,10 +34,19 @@ class TestCase extends Orchestra
 
         $this->loadLaravelMigrations();
 
-        if (! class_exists(\CreateActivityLogTable::class)) {
-            include __DIR__.'/../vendor/spatie/laravel-activitylog/database/migrations/create_activity_log_table.php.stub';
+        $migrationStub = __DIR__.'/../vendor/spatie/laravel-activitylog/database/migrations/create_activity_log_table.php.stub';
+
+        if (! class_exists(\CreateActivityLogTable::class) && file_exists($migrationStub)) {
+            $migration = include $migrationStub;
+
+            if (is_object($migration) && method_exists($migration, 'up')) {
+                $migration->up();
+            }
         }
-        (new \CreateActivityLogTable)->up();
+
+        if (class_exists(\CreateActivityLogTable::class)) {
+            (new \CreateActivityLogTable)->up();
+        }
 
         // Ensure database schema satisfies the installed Spatie major version
         if (static::isSpatieV4()) {

@@ -94,13 +94,10 @@ class ActivityLogTimelineTableAction extends Action
         // Get activities where the record is the subject
         if ($record instanceof Activity) {
             $subject = $record->subject;
-            /** @phpstan-ignore-next-line */
             $activities = $subject ? static::getSubjectActivities($subject, $with) : collect();
         } else {
             $activities = static::getSubjectActivities($record, $with);
         }
-
-        $activities = $activities ?? collect();
 
         // Also include activities the record caused
         $causalActivities = static::getCausalActivities($record, $with);
