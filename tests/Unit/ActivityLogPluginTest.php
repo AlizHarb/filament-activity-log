@@ -102,6 +102,20 @@ describe('ActivityLogPlugin', function () {
             ->and($widgets)->toContain(ActivityStatsWidget::class);
     });
 
+    it('returns configured widgets when custom widget list is provided', function () {
+        config()->set('filament-activity-log.widgets.enabled', true);
+        config()->set('filament-activity-log.widgets.widgets', [
+            LatestActivityWidget::class,
+        ]);
+
+        $plugin = ActivityLogPlugin::make();
+        $widgets = $plugin->getWidgets();
+
+        expect($widgets)->toBe([
+            LatestActivityWidget::class,
+        ]);
+    });
+
     it('returns empty array when widgets disabled in config', function () {
         config()->set('filament-activity-log.widgets.enabled', false);
 

@@ -21,6 +21,7 @@ use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -101,6 +102,13 @@ class ActivityLogTable
                     ->sortable(config('filament-activity-log.table.columns.subject_type.sortable', true))
                     ->visible(config('filament-activity-log.table.columns.subject_type.visible', true))
                     ->toggleable(),
+
+                TextColumn::make('subject_id')
+                    ->label(__('filament-activity-log::activity.table.column.subject_id'))
+                    ->searchable(config('filament-activity-log.table.columns.subject_id.searchable', true))
+                    ->sortable(config('filament-activity-log.table.columns.subject_id.sortable', true))
+                    ->visible(config('filament-activity-log.table.columns.subject_id.visible', true))
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('causer.name')
                     ->label(__('filament-activity-log::activity.table.column.causer'))
@@ -224,6 +232,19 @@ class ActivityLogTable
                         ->toArray()
                     )
                     ->visible(config('filament-activity-log.table.filters.subject_type', true)),
+
+                Filter::make('subject_id')
+                    ->label(__('filament-activity-log::activity.table.column.subject_id'))
+                    ->form([
+                        TextInput::make('value')
+                            ->label(__('filament-activity-log::activity.table.column.subject_id'))
+                            ->numeric(),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        filled($data['value'] ?? null),
+                        fn (Builder $query): Builder => $query->where('subject_id', $data['value'])
+                    ))
+                    ->visible(config('filament-activity-log.table.filters.subject_id', true)),
 
                 Filter::make('created_at')
                     ->label(__('filament-activity-log::activity.table.filter.created_at'))

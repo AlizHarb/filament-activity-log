@@ -255,8 +255,6 @@ Automatically group activities from a single job or request. Use the **View Batc
 
 You can customize almost every aspect of the package via the `filament-activity-log.php` config file.
 
-📚 **For detailed configuration instructions, including navigation groups and custom authorization, see [CONFIGURATION.md](CONFIGURATION.md)**
-
 ### Customizing Table Columns
 
 ```php
@@ -276,6 +274,10 @@ You can customize almost every aspect of the package via the `filament-activity-
 
 ```php
 'widgets' => [
+    'widgets' => [
+        \AlizHarb\ActivityLog\Widgets\ActivityChartWidget::class,
+        \AlizHarb\ActivityLog\Widgets\LatestActivityWidget::class,
+    ],
     'activity_chart' => [
         'enabled' => true,
         'days' => 30,
@@ -295,14 +297,14 @@ Restrict access to specific users by implementing a custom authorizer invokable 
 
 ```php
 // app/Authorizer/ActivityLogAuthorizer.php
-namespace App\Authorizors;
+namespace App\Authorizer;
 
 class ActivityLogAuthorizer
 {
     public function __invoke(User $user): bool
     {
         // Define your custom logic to determine if the user can access the activity log.
-         return $user->id === 1;
+        return $user->id === 1;
     }
 }
 ```
@@ -315,8 +317,6 @@ Then register it in the config:
     'custom_authorization' => \App\Authorizer\ActivityLogAuthorizer::class,
 ],
 ```
-
-See [CONFIGURATION.md](CONFIGURATION.md) for more examples.
 
 ---
 

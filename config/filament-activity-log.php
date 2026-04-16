@@ -98,6 +98,11 @@ return [
                 'searchable' => true,
                 'sortable' => true,
             ],
+            'subject_id' => [
+                'visible' => true,
+                'searchable' => true,
+                'sortable' => true,
+            ],
             'causer' => [
                 'visible' => true,
                 'searchable' => true,
@@ -128,6 +133,7 @@ return [
             'created_at' => true,
             'causer' => true,
             'subject_type' => true,
+            'subject_id' => true,
         ],
         'actions' => [
             'timeline' => true,

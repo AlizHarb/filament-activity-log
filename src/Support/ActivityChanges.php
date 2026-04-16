@@ -79,7 +79,7 @@ class ActivityChanges
         $changes = $activity->attribute_changes;
 
         if ($changes instanceof Collection) {
-            return $changes->toArray();
+            $changes = $changes->toArray();
         }
 
         if (is_string($changes)) {
@@ -89,6 +89,16 @@ class ActivityChanges
         }
 
         if (is_array($changes)) {
+            if (array_is_list($changes)) {
+                if ((count($changes) === 1) && is_string($changes[0])) {
+                    $decoded = json_decode($changes[0], true);
+
+                    return is_array($decoded) ? $decoded : [];
+                }
+
+                return [];
+            }
+
             return $changes;
         }
 

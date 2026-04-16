@@ -145,12 +145,12 @@ class ActivityLogPlugin implements Plugin
             return [];
         }
 
-        return [
+        return config('filament-activity-log.widgets.widgets', [
             ActivityChartWidget::class,
             LatestActivityWidget::class,
             ActivityHeatmapWidget::class,
             ActivityStatsWidget::class,
-        ];
+        ]);
     }
 
     /**

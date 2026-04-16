@@ -64,6 +64,10 @@ class ActivitiesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('description')
+            ->defaultSort(
+                config('filament-activity-log.resource.default_sort_column', 'created_at'),
+                config('filament-activity-log.resource.default_sort_direction', 'desc')
+            )
             ->modifyQueryUsing(function (Builder $query) {
                 /** @var Model $record */
                 $record = $this->getOwnerRecord();

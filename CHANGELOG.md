@@ -5,6 +5,22 @@ All notable changes to `filament-activity-log` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2026-04-16
+
+### Fixed
+
+- **Widget Registration Config** - `ActivityLogPlugin::getWidgets()` now respects the configured `filament-activity-log.widgets.widgets` list instead of always registering a hardcoded widget set.
+- **Documentation Cleanup** - Removed stale references to `CONFIGURATION.md` and corrected the custom authorizer example namespace in the README.
+- **Relation Manager Sorting** - `ActivitiesRelationManager` now uses the configured default sort column and direction, matching the main activity resource.
+- **Subject ID Discovery** - Added a configurable `subject_id` table column and exact-match filter to make locating activity records by related model ID much easier.
+- **Spatie v5 Compatibility** - Hardened test bootstrap and change normalization logic for the v5 `attribute_changes` schema and migration flow.
+
+### Technical Details
+
+- ✅ Full Pest suite passing
+- ✅ Verified on the Spatie v5 lane
+- ✅ Backward compatible configuration defaults preserved
+
 ## [1.3.1] - 2026-02-06
 
 ### Fixed
@@ -114,7 +130,6 @@ See [UPGRADE.md](UPGRADE.md) for detailed migration instructions.
   - Example: `'custom_authorization' => fn($user) => $user->id === 1`
 
 - **Documentation**
-  - Added `CONFIGURATION.md` - Comprehensive configuration guide with navigation and authorization examples
   - Added `SOLUTIONS.md` - Direct solutions to common configuration issues
 
 ### Changed
@@ -129,7 +144,7 @@ See [UPGRADE.md](UPGRADE.md) for detailed migration instructions.
   - Custom callback checked first before permission system
   - Provides flexible authorization without Laravel permissions
 
-- **README.md** - Added references to new configuration documentation and custom authorization examples
+- **README.md** - Added configuration and custom authorization examples
 
 ### Technical Details
 
