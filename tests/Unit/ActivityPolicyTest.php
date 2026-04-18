@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AlizHarb\ActivityLog\Policies\ActivityPolicy;
+use AlizHarb\ActivityLog\Tests\Fixtures\ContractOnlyUser;
 use AlizHarb\ActivityLog\Tests\Fixtures\User;
 use Spatie\Activitylog\Models\Activity;
 
@@ -121,5 +122,55 @@ describe('ActivityPolicy', function () {
 
             expect($this->policy->forceDelete($this->user, $this->activity))->toBeFalse();
         });
+    });
+});
+
+describe('ActivityPolicy with contract-only user (no concrete base class)', function () {
+    beforeEach(function () {
+        $this->user = new ContractOnlyUser;
+        $this->policy = new ActivityPolicy;
+        $this->activity = new Activity;
+    });
+
+    it('viewAny accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
+        config()->set('filament-activity-log.permissions.enabled', false);
+
+        expect($this->policy->viewAny($this->user))->toBeTrue();
+    });
+
+    it('view accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
+        config()->set('filament-activity-log.permissions.enabled', false);
+
+        expect($this->policy->view($this->user, $this->activity))->toBeTrue();
+    });
+
+    it('create accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
+        config()->set('filament-activity-log.permissions.enabled', false);
+
+        expect($this->policy->create($this->user))->toBeFalse();
+    });
+
+    it('update accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
+        config()->set('filament-activity-log.permissions.enabled', false);
+
+        expect($this->policy->update($this->user, $this->activity))->toBeTrue();
+    });
+
+    it('delete accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
+        config()->set('filament-activity-log.permissions.enabled', false);
+
+        expect($this->policy->delete($this->user, $this->activity))->toBeTrue();
+    });
+
+    it('restore accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
+        config()->set('filament-activity-log.permissions.enabled', false);
+
+        expect($this->policy->restore($this->user, $this->activity))->toBeTrue();
+    });
+
+    it('forceDelete accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
+        config()->set('filament-activity-log.permissions.enabled', false);
+
+        expect($this->policy->forceDelete($this->user, $this->activity))->toBeTrue();
     });
 });

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace AlizHarb\ActivityLog\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Foundation\Auth\User;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Activitylog\Models\Activity;
 
 /**
@@ -22,10 +23,10 @@ class ActivityPolicy
     /**
      * Check for custom authorization.
      *
-     * @param  User  $user  The authenticated user
+     * @param  Authenticatable  $user  The authenticated user
      * @return bool|null Boolean result if custom auth handles it, null otherwise
      */
-    protected function checkCustomAuthorization(User $user): ?bool
+    protected function checkCustomAuthorization(Authenticatable $user): ?bool
     {
         $customAuthorization = config('filament-activity-log.permissions.custom_authorization');
 
@@ -50,10 +51,10 @@ class ActivityPolicy
      * Returns true by default when permissions are disabled.
      * When enabled, checks the configured 'view_any' permission.
      *
-     * @param  User  $user  The authenticated user
+     * @param  Authenticatable  $user  The authenticated user
      * @return bool True if the user can view any activities
      */
-    public function viewAny(User $user): bool
+    public function viewAny(Authenticatable $user): bool
     {
         // Check for custom authorization callback first
         $result = $this->checkCustomAuthorization($user);
@@ -67,7 +68,7 @@ class ActivityPolicy
 
         $permission = config('filament-activity-log.permissions.view_any');
 
-        return $permission ? $user->can($permission) : true;
+        return $permission ? Gate::forUser($user)->allows($permission) : true;
     }
 
     /**
@@ -76,11 +77,11 @@ class ActivityPolicy
      * Returns true by default when permissions are disabled.
      * When enabled, checks the configured 'view' permission.
      *
-     * @param  User  $user  The authenticated user
+     * @param  Authenticatable  $user  The authenticated user
      * @param  Activity  $activity  The activity model instance
      * @return bool True if the user can view the activity
      */
-    public function view(User $user, Activity $activity): bool
+    public function view(Authenticatable $user, Activity $activity): bool
     {
         // Check for custom authorization callback first
         $result = $this->checkCustomAuthorization($user);
@@ -94,7 +95,7 @@ class ActivityPolicy
 
         $permission = config('filament-activity-log.permissions.view');
 
-        return $permission ? $user->can($permission) : true;
+        return $permission ? Gate::forUser($user)->allows($permission) : true;
     }
 
     /**
@@ -103,10 +104,10 @@ class ActivityPolicy
      * Returns false by default as activities are typically auto-generated.
      * When permissions are enabled, checks the configured 'create' permission.
      *
-     * @param  User  $user  The authenticated user
+     * @param  Authenticatable  $user  The authenticated user
      * @return bool True if the user can create activities
      */
-    public function create(User $user): bool
+    public function create(Authenticatable $user): bool
     {
         // Check for custom authorization callback first
         $result = $this->checkCustomAuthorization($user);
@@ -120,7 +121,7 @@ class ActivityPolicy
 
         $permission = config('filament-activity-log.permissions.create');
 
-        return $permission ? $user->can($permission) : false;
+        return $permission ? Gate::forUser($user)->allows($permission) : false;
     }
 
     /**
@@ -129,11 +130,11 @@ class ActivityPolicy
      * Returns false by default as activities should not be modified.
      * When permissions are enabled, checks the configured 'update' permission.
      *
-     * @param  User  $user  The authenticated user
+     * @param  Authenticatable  $user  The authenticated user
      * @param  Activity  $activity  The activity model instance
      * @return bool True if the user can update the activity
      */
-    public function update(User $user, Activity $activity): bool
+    public function update(Authenticatable $user, Activity $activity): bool
     {
         // Check for custom authorization callback first
         $result = $this->checkCustomAuthorization($user);
@@ -147,7 +148,7 @@ class ActivityPolicy
 
         $permission = config('filament-activity-log.permissions.update');
 
-        return $permission ? $user->can($permission) : false;
+        return $permission ? Gate::forUser($user)->allows($permission) : false;
     }
 
     /**
@@ -156,11 +157,11 @@ class ActivityPolicy
      * Returns false by default when permissions are disabled.
      * When enabled, checks the configured 'delete' permission.
      *
-     * @param  User  $user  The authenticated user
+     * @param  Authenticatable  $user  The authenticated user
      * @param  Activity  $activity  The activity model instance
      * @return bool True if the user can delete the activity
      */
-    public function delete(User $user, Activity $activity): bool
+    public function delete(Authenticatable $user, Activity $activity): bool
     {
         // Check for custom authorization callback first
         $result = $this->checkCustomAuthorization($user);
@@ -174,7 +175,7 @@ class ActivityPolicy
 
         $permission = config('filament-activity-log.permissions.delete');
 
-        return $permission ? $user->can($permission) : false;
+        return $permission ? Gate::forUser($user)->allows($permission) : false;
     }
 
     /**
@@ -183,11 +184,11 @@ class ActivityPolicy
      * Returns false by default when permissions are disabled.
      * When enabled, checks the configured 'restore' permission.
      *
-     * @param  User  $user  The authenticated user
+     * @param  Authenticatable  $user  The authenticated user
      * @param  Activity  $activity  The activity model instance
      * @return bool True if the user can restore the activity
      */
-    public function restore(User $user, Activity $activity): bool
+    public function restore(Authenticatable $user, Activity $activity): bool
     {
         // Check for custom authorization callback first
         $result = $this->checkCustomAuthorization($user);
@@ -201,7 +202,7 @@ class ActivityPolicy
 
         $permission = config('filament-activity-log.permissions.restore');
 
-        return $permission ? $user->can($permission) : false;
+        return $permission ? Gate::forUser($user)->allows($permission) : false;
     }
 
     /**
@@ -210,11 +211,11 @@ class ActivityPolicy
      * Returns false by default when permissions are disabled.
      * When enabled, checks the configured 'force_delete' permission.
      *
-     * @param  User  $user  The authenticated user
+     * @param  Authenticatable  $user  The authenticated user
      * @param  Activity  $activity  The activity model instance
      * @return bool True if the user can force delete the activity
      */
-    public function forceDelete(User $user, Activity $activity): bool
+    public function forceDelete(Authenticatable $user, Activity $activity): bool
     {
         // Check for custom authorization callback first
         $result = $this->checkCustomAuthorization($user);
@@ -228,6 +229,6 @@ class ActivityPolicy
 
         $permission = config('filament-activity-log.permissions.force_delete');
 
-        return $permission ? $user->can($permission) : false;
+        return $permission ? Gate::forUser($user)->allows($permission) : false;
     }
 }

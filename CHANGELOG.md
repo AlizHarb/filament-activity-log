@@ -5,6 +5,12 @@ All notable changes to `filament-activity-log` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **ActivityPolicy Type Hint** ([#27](https://github.com/alizharb/filament-activity-log/issues/27)) - Changed all `$user` parameter type hints in `ActivityPolicy` from the concrete `Illuminate\Foundation\Auth\User` class to the `Illuminate\Contracts\Auth\Authenticatable` contract. This resolves a fatal `TypeError` thrown when an application's `User` model does not extend `Illuminate\Foundation\Auth\User` but instead implements the auth contracts manually via traits. Permission checks now use `Gate::forUser($user)->allows()` so they remain fully functional for any `Authenticatable` implementation.
+
 ## [1.3.2] - 2026-04-16
 
 ### Fixed
