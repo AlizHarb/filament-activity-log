@@ -127,7 +127,6 @@ describe('ActivityPolicy', function () {
 
 describe('ActivityPolicy with contract-only user (no concrete base class)', function () {
     beforeEach(function () {
-        $this->user = new ContractOnlyUser;
         $this->policy = new ActivityPolicy;
         $this->activity = new Activity;
     });
@@ -135,42 +134,42 @@ describe('ActivityPolicy with contract-only user (no concrete base class)', func
     it('viewAny accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->viewAny($this->user))->toBeTrue();
+        expect($this->policy->viewAny(new ContractOnlyUser))->toBeTrue();
     });
 
     it('view accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->view($this->user, $this->activity))->toBeTrue();
+        expect($this->policy->view(new ContractOnlyUser, $this->activity))->toBeTrue();
     });
 
     it('create accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->create($this->user))->toBeFalse();
+        expect($this->policy->create(new ContractOnlyUser))->toBeFalse();
     });
 
     it('update accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->update($this->user, $this->activity))->toBeTrue();
+        expect($this->policy->update(new ContractOnlyUser, $this->activity))->toBeTrue();
     });
 
     it('delete accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->delete($this->user, $this->activity))->toBeTrue();
+        expect($this->policy->delete(new ContractOnlyUser, $this->activity))->toBeTrue();
     });
 
     it('restore accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->restore($this->user, $this->activity))->toBeTrue();
+        expect($this->policy->restore(new ContractOnlyUser, $this->activity))->toBeTrue();
     });
 
     it('forceDelete accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->forceDelete($this->user, $this->activity))->toBeTrue();
+        expect($this->policy->forceDelete(new ContractOnlyUser, $this->activity))->toBeTrue();
     });
 });
