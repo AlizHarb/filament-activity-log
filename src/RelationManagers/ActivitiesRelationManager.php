@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Activities Relation Manager.
@@ -28,9 +29,31 @@ class ActivitiesRelationManager extends RelationManager
     protected static string $relationship = 'activities';
 
     /**
+     * The title of the relationship.
+     */
+    protected static ?string $relationshipTitle = 'Activities';
+
+    /**
      * The attribute to use for the record title.
      */
     protected static ?string $recordTitleAttribute = 'description';
+
+    /**
+     * Resolve the relationship dynamically based on the owner record's methods.
+     */
+    public function getRelationship(): Relation|Builder
+    {
+        $record = $this->getOwnerRecord();
+
+        if (method_exists($record, 'activitiesAsSubject')) {
+            return $record->activitiesAsSubject();
+        }
+
+        /** @var Relation|Builder $relation */
+        $relation = call_user_func([$record, 'activities']);
+
+        return $relation;
+    }
 
     /**
      * Configure the infolist schema.

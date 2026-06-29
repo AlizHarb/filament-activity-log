@@ -133,12 +133,14 @@ class LatestActivityWidget extends BaseWidget
         }
 
         return $table
-            ->query(
-                Activity::query()
+            ->query(function () {
+                $activityModel = config('activitylog.activity_model') ?? Activity::class;
+
+                return $activityModel::query()
                     ->with(['causer', 'subject'])
                     ->latest()
-                    ->limit(config('filament-activity-log.widgets.latest_activity.limit', 10))
-            )
+                    ->limit(config('filament-activity-log.widgets.latest_activity.limit', 10));
+            })
             ->heading($this->getHeading())
             ->columns($columns)
             ->paginated(config('filament-activity-log.widgets.latest_activity.paginated', false));

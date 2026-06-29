@@ -27,7 +27,7 @@ class SetActivityContextTap
 
             if (static::hasBatchUuidColumn()) {
                 // v4: use the native batch_uuid column
-                $activity->batch_uuid = $groupId;
+                $activity->setAttribute('batch_uuid', $groupId);
             } else {
                 // v5: use custom-property grouping per the official docs
                 $context['group'] = $groupId;

@@ -104,7 +104,9 @@ class ActivityChartWidget extends ChartWidget
             default => 'DATE(created_at)',
         };
 
-        $data = Activity::query()
+        $activityModel = config('activitylog.activity_model') ?? Activity::class;
+
+        $data = $activityModel::query()
             ->select(
                 DB::raw("$dateExpression as activity_date"),
                 DB::raw('COUNT(*) as count')

@@ -7,7 +7,7 @@ namespace AlizHarb\ActivityLog\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Gate;
-use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Contracts\Activity;
 
 /**
  * Activity Policy.

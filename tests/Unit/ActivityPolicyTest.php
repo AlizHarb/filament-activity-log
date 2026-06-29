@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use AlizHarb\ActivityLog\Policies\ActivityPolicy;
 use AlizHarb\ActivityLog\Tests\Fixtures\ContractOnlyUser;
+use AlizHarb\ActivityLog\Tests\Fixtures\CustomActivityModel;
 use AlizHarb\ActivityLog\Tests\Fixtures\User;
 use Spatie\Activitylog\Models\Activity;
 
@@ -171,5 +172,13 @@ describe('ActivityPolicy with contract-only user (no concrete base class)', func
         config()->set('filament-activity-log.permissions.enabled', false);
 
         expect($this->policy->forceDelete(new ContractOnlyUser, $this->activity))->toBeTrue();
+    });
+
+    it('policy view handles custom activity models implementing Spatie contract', function () {
+        $customActivity = new CustomActivityModel;
+
+        config()->set('filament-activity-log.permissions.enabled', false);
+
+        expect($this->policy->view(new ContractOnlyUser, $customActivity))->toBeTrue();
     });
 });

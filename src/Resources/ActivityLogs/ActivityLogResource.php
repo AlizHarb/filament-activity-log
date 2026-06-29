@@ -31,6 +31,11 @@ class ActivityLogResource extends Resource
      */
     protected static ?string $model = Activity::class;
 
+    public static function getModel(): string
+    {
+        return config('activitylog.activity_model') ?? Activity::class;
+    }
+
     public static function getLabel(): ?string
     {
         try {

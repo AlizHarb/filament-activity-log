@@ -28,6 +28,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -86,7 +87,8 @@ class ActivityLogTable
                             return $customUrl;
                         }
 
-                        $resource = Filament::getModelResource($record->subject_type);
+                        $modelClass = Relation::getMorphedModel($record->subject_type) ?? $record->subject_type;
+                        $resource = Filament::getModelResource($modelClass);
 
                         if ($resource && $resource::hasPage('view')) {
                             return $resource::getUrl('view', ['record' => $record->subject]);
@@ -228,7 +230,7 @@ class ActivityLogTable
                         ->distinct()
                         ->whereNotNull('subject_type')
                         ->pluck('subject_type', 'subject_type')
-                        ->mapWithKeys(fn ($type) => [$type => class_basename($type)])
+                        ->mapWithKeys(fn ($type) => [$type => class_basename(Relation::getMorphedModel($type) ?? $type)])
                         ->toArray()
                     )
                     ->visible(config('filament-activity-log.table.filters.subject_type', true)),
@@ -390,7 +392,7 @@ class ActivityLogTable
                         ->requiresConfirmation()
                         ->modalHeading(__('filament-activity-log::activity.action.restore.heading'))
                         ->action(function ($record) {
-                            $modelClass = $record->subject_type;
+                            $modelClass = Relation::getMorphedModel($record->subject_type) ?? $record->subject_type;
                             if (! $modelClass || ! class_exists($modelClass)) {
                                 return;
                             }
@@ -440,7 +442,7 @@ class ActivityLogTable
                                     continue;
                                 }
 
-                                $modelClass = $record->subject_type;
+                                $modelClass = Relation::getMorphedModel($record->subject_type) ?? $record->subject_type;
                                 if (! $modelClass || ! class_exists($modelClass)) {
                                     continue;
                                 }

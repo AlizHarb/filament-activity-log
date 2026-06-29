@@ -12,8 +12,10 @@ class ActivityStatsWidget extends BaseWidget
 {
     protected function getStats(): array
     {
+        $activityModel = config('activitylog.activity_model') ?? Activity::class;
+
         /** @var (Activity&object{total: int})|null $topCauser */
-        $topCauser = Activity::query()
+        $topCauser = $activityModel::query()
             ->select('causer_id', 'causer_type', DB::raw('count(*) as total'))
             ->whereNotNull('causer_id')
             ->groupBy('causer_id', 'causer_type')
@@ -21,7 +23,7 @@ class ActivityStatsWidget extends BaseWidget
             ->first();
 
         /** @var (Activity&object{total: int})|null $topSubject */
-        $topSubject = Activity::query()
+        $topSubject = $activityModel::query()
             ->select('subject_id', 'subject_type', DB::raw('count(*) as total'))
             ->whereNotNull('subject_id')
             ->groupBy('subject_id', 'subject_type')
@@ -39,7 +41,7 @@ class ActivityStatsWidget extends BaseWidget
         }
 
         return [
-            Stat::make(__('filament-activity-log::activity.widgets.stats.total_activities'), Activity::count())
+            Stat::make(__('filament-activity-log::activity.widgets.stats.total_activities'), $activityModel::count())
                 ->description(__('filament-activity-log::activity.widgets.stats.total_description'))
                 ->descriptionIcon('heroicon-m-clipboard-document-list')
                 ->color('info'),

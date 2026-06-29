@@ -76,7 +76,7 @@ class ActivityChanges
             return [];
         }
 
-        $changes = $activity->attribute_changes;
+        $changes = $activity->getAttribute('attribute_changes');
 
         if ($changes instanceof Collection) {
             $changes = $changes->toArray();

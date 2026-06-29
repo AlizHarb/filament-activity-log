@@ -15,8 +15,38 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
+use Spatie\Activitylog\Models\Activity;
+
+class ModelWithActivitiesAsSubject extends Model
+{
+    protected $table = 'users';
+
+    public bool $called = false;
+
+    public function activitiesAsSubject()
+    {
+        $this->called = true;
+
+        return $this->hasMany(Activity::class, 'subject_id');
+    }
+}
+
+class ModelWithActivities extends Model
+{
+    protected $table = 'users';
+
+    public bool $called = false;
+
+    public function activities()
+    {
+        $this->called = true;
+
+        return $this->hasMany(Activity::class, 'subject_id');
+    }
+}
 
 it('uses the configured default sorting for the relation manager table', function () {
     config()->set('filament-activity-log.resource.default_sort_column', 'created_at');
@@ -27,6 +57,24 @@ it('uses the configured default sorting for the relation manager table', functio
 
     expect($table->getDefaultSortColumn())->toBe('created_at')
         ->and($table->getDefaultSortDirection())->toBe('desc');
+});
+
+it('resolves relation dynamically in ActivitiesRelationManager', function () {
+    $manager1 = new class extends ActivitiesRelationManager {};
+    $owner1 = new ModelWithActivitiesAsSubject;
+    $manager1->ownerRecord = $owner1;
+
+    $relation1 = $manager1->getRelationship();
+    expect($relation1)->toBeInstanceOf(HasMany::class)
+        ->and($owner1->called)->toBeTrue();
+
+    $manager2 = new class extends ActivitiesRelationManager {};
+    $owner2 = new ModelWithActivities;
+    $manager2->ownerRecord = $owner2;
+
+    $relation2 = $manager2->getRelationship();
+    expect($relation2)->toBeInstanceOf(HasMany::class)
+        ->and($owner2->called)->toBeTrue();
 });
 
 class ActivitiesRelationManagerTableStub implements HasTable

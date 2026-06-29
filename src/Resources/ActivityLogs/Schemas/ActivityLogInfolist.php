@@ -12,7 +12,6 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 /**
@@ -125,10 +124,23 @@ class ActivityLogInfolist
                         Tab::make('Changes')
                             ->label(__('filament-activity-log::activity.infolist.tab.changes'))
                             ->icon('heroicon-m-arrows-right-left')
-                            ->visible(function (Get $get) {
-                                $hasJsonField = is_array(data_get($get('properties'), 'attributes')) || is_array(data_get($get('properties'), 'old'));
+                            ->visible(function ($record) {
+                                if (! $record) {
+                                    return false;
+                                }
 
-                                return ! $hasJsonField && config('filament-activity-log.infolist.tabs.changes', true);
+                                $newValues = ActivityChanges::getNewValues($record);
+                                $oldValues = ActivityChanges::getOldValues($record);
+
+                                if (empty($newValues) && empty($oldValues)) {
+                                    return false;
+                                }
+
+                                $hasArrayValue = collect($newValues)
+                                    ->merge($oldValues)
+                                    ->contains(fn ($v) => is_array($v) || is_object($v));
+
+                                return ! $hasArrayValue && config('filament-activity-log.infolist.tabs.changes', true);
                             })
                             ->schema([
                                 KeyValueEntry::make('new_values')

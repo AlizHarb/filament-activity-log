@@ -60,7 +60,7 @@
                             $currentDate = $startDate->copy()->addWeeks($week)->addDays($day);
                             $dateString = $currentDate->toDateString();
                             $count = $data[$dateString] ?? 0;
-                            $intensity = $count > 0 ? ceil(($count / $max) * 4) : 0;
+                            $intensity = $count > 0 ? (int) ceil(($count / $max) * 4) : 0;
                             
                             // Universal colors (subtler empty state)
                             $bg = match ($intensity) {

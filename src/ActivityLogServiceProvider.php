@@ -68,7 +68,7 @@ class ActivityLogServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         Gate::policy(
-            Activity::class,
+            config('activitylog.activity_model') ?? Activity::class,
             ActivityPolicy::class
         );
 
