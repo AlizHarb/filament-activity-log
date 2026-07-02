@@ -104,7 +104,7 @@ class LatestActivityWidget extends BaseWidget
         }
 
         if (config('filament-activity-log.widgets.latest_activity.columns.causer', true)) {
-            $columns[] = TextColumn::make('causer.name')
+            $columns[] = TextColumn::make('causer.'.config('filament-activity-log.causer.display_attribute', 'name'))
                 ->label(__('filament-activity-log::activity.table.column.causer'))
                 ->default('-')
                 ->limit(config('filament-activity-log.widgets.latest_activity.columns.causer_limit', 30));

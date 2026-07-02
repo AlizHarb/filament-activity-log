@@ -112,7 +112,7 @@ class ActivityLogTable
                     ->visible(config('filament-activity-log.table.columns.subject_id.visible', true))
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('causer.name')
+                TextColumn::make('causer.'.config('filament-activity-log.causer.display_attribute', 'name'))
                     ->label(__('filament-activity-log::activity.table.column.causer'))
                     ->description(fn ($record) => $record->causer?->email)
                     ->url(function ($record) {
@@ -209,17 +209,13 @@ class ActivityLogTable
                             return [];
                         }
 
-                        /** @var Builder $query */
-                        $query = $causerClass::query();
+                        $query = $causerClass::query()->whereIn('id', Activity::query()
+                            ->distinct()
+                            ->whereNotNull('causer_id')
+                            ->pluck('causer_id')
+                        );
 
-                        return $query
-                            ->whereIn('id', Activity::query()
-                                ->distinct()
-                                ->whereNotNull('causer_id')
-                                ->pluck('causer_id')
-                            )
-                            ->pluck('name', 'id')
-                            ->toArray();
+                        return ActivityLogCauser::pluckOptions($query);
                     })
                     ->searchable()
                     ->visible(config('filament-activity-log.table.filters.causer', true)),

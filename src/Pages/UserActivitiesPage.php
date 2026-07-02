@@ -104,7 +104,7 @@ class UserActivitiesPage extends Page implements HasTable
                 ->whereNotNull('causer_id')
                 ->latest())
             ->columns([
-                TextColumn::make('causer.name')
+                TextColumn::make('causer.'.config('filament-activity-log.causer.display_attribute', 'name'))
                     ->label(__('filament-activity-log::activity.table.column.causer'))
                     ->searchable()
                     ->sortable()
@@ -157,10 +157,7 @@ class UserActivitiesPage extends Page implements HasTable
                             return [];
                         }
 
-                        /** @var Builder $query */
-                        $query = $model::query();
-
-                        return $query->pluck('name', 'id')->toArray();
+                        return ActivityLogCauser::pluckOptions($model::query());
                     })
                     ->searchable()
                     ->preload()

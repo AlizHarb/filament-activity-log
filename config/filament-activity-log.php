@@ -347,4 +347,17 @@ return [
         'capture_browser' => true,
         'capture_batch' => true,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Causer Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the causer (the user who performed the activity).
+    | You can define which attribute on the user model should be used as their display name.
+    |
+    */
+    'causer' => [
+        'display_attribute' => 'name',
+    ],
 ];
