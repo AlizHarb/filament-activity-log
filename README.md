@@ -42,6 +42,9 @@
 - **📦 Full Resource Integration** - Dedicated resource to browse, filter, and search logs
 - **⏱️ Timeline View** - Stunning slide-over timeline to visualize record history
 - **📊 Insightful Widgets** - Activity charts and latest activity tables
+- **🛡️ Audit Risk Scoring** - Surface high-risk and critical activity before it gets buried
+- **🔒 Privacy-Safe Redaction** - Mask secrets in diffs, raw data, exports, and UI views
+- **🏛️ Compliance Mode** - Optional immutable mode for audit trails that should not be changed from the panel
 - **🔗 Relation Manager** - Add activity history to any resource
 - **🎨 Highly Customizable** - Configure labels, colors, icons, and visibility
 - **🔐 Role-Based Access** - Fully compatible with Filament's authorization
@@ -54,7 +57,7 @@
 | Requirement                                                                                           | Version   | Status |
 | ----------------------------------------------------------------------------------------------------- | --------- | ------ |
 | ![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?style=flat&logo=php&logoColor=white)              | 8.3+      | ✅     |
-| ![Laravel](https://img.shields.io/badge/Laravel-11+-FF2D20?style=flat&logo=laravel&logoColor=white)   | 11+       | ✅     |
+| ![Laravel](https://img.shields.io/badge/Laravel-12%2F13-FF2D20?style=flat&logo=laravel&logoColor=white) | 12 / 13   | ✅     |
 | ![Filament](https://img.shields.io/badge/Filament-v4+/v5+-F59E0B?style=flat&logo=php&logoColor=white) | v4+ / v5+ | ✅     |
 
 **Dependencies:**
@@ -170,6 +173,8 @@ A dedicated resource allows you to manage all activity logs.
 - ✅ **Advanced Filtering** - Filter by causer, subject, event type, and date
 - ✅ **Global Search** - Search through log descriptions and properties
 - ✅ **Detailed View** - Inspect every detail of an activity log
+- ✅ **Risk Badges** - Quickly spot sensitive, destructive, or security-related changes
+- ✅ **Privacy Redaction** - Sensitive fields are masked before display by default
 
 ### ⏱️ Timeline View
 
@@ -249,6 +254,52 @@ Automatically group activities from a single job or request. Use the **View Batc
 - **Spatie v4:** Uses the native `batch_uuid` column for grouping.
 - **Spatie v5:** Uses custom-property grouping (`properties['group']`), since upstream batch support was removed in v5. The plugin handles this automatically via the `SetActivityContextTap`.
 
+### 🛡️ Audit Risk Scoring
+
+Every activity can receive a configurable risk score based on event type, log name, changed fields, and captured context. The resource displays a risk badge so administrators can quickly notice destructive, security-sensitive, or privacy-sensitive actions.
+
+```php
+'risk' => [
+    'enabled' => true,
+    'events' => [
+        'deleted' => 45,
+        'force_deleted' => 70,
+    ],
+    'log_names' => [
+        'security' => 35,
+        'permissions' => 40,
+    ],
+],
+```
+
+For advanced applications, provide a custom resolver class in `risk.resolver` and implement your own `score($activity): int` logic.
+
+### 🔒 Privacy-Safe Redaction
+
+Sensitive values are redacted by default before they appear in changes, raw properties, action helper text, and future export workflows.
+
+```php
+'privacy' => [
+    'redacted_value' => '[redacted]',
+    'redaction' => [
+        'enabled' => true,
+        'fields' => ['password', 'token', 'api_key', 'secret'],
+    ],
+],
+```
+
+This keeps audit screens useful while reducing the chance that administrators accidentally expose credentials or secrets.
+
+### 🏛️ Immutable Audit Mode
+
+For stricter environments, enable immutable mode to hide destructive panel actions like delete, prune, restore, and revert:
+
+```php
+'privacy' => [
+    'immutable_mode' => true,
+],
+```
+
 ---
 
 ## ⚙️ Configuration
@@ -317,6 +368,11 @@ Then register it in the config:
     'custom_authorization' => \App\Authorizer\ActivityLogAuthorizer::class,
 ],
 ```
+
+### Advanced Documentation
+
+- [Audit, Privacy, and Compliance](docs/audit-compliance.md)
+- [Laravel Boost Guidelines](resources/boost/guidelines/core.blade.php)
 
 ---
 

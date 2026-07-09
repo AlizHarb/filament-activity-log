@@ -93,6 +93,10 @@ return [
                 'searchable' => true,
                 'sortable' => true,
             ],
+            'risk' => [
+                'visible' => true,
+                'sortable' => false,
+            ],
             'subject_type' => [
                 'visible' => true,
                 'searchable' => true,
@@ -142,6 +146,7 @@ return [
             'restore' => true,
             'delete' => true,
             'export' => true,
+            'prune' => true,
         ],
         'bulk_actions' => [
             'delete' => true,
@@ -165,6 +170,7 @@ return [
         'entries' => [
             'log_name' => true,
             'event' => true,
+            'risk' => true,
             'created_at' => true,
             'causer' => true,
             'subject' => true,
@@ -324,6 +330,10 @@ return [
                 'created_at' => true,
             ],
         ],
+
+        'stats' => [
+            'risk_sample_size' => 500,
+        ],
     ],
     /*
     |--------------------------------------------------------------------------
@@ -346,6 +356,75 @@ return [
         'capture_ip' => true,
         'capture_browser' => true,
         'capture_batch' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Privacy & Compliance Settings
+    |--------------------------------------------------------------------------
+    |
+    | Redaction is enabled by default so sensitive values do not leak through
+    | tables, infolists, exports, timeline views, or diff previews.
+    |
+    */
+    'privacy' => [
+        'redacted_value' => '[redacted]',
+        'redaction' => [
+            'enabled' => true,
+            'fields' => [
+                'password',
+                'password_confirmation',
+                'current_password',
+                'new_password',
+                'token',
+                'api_token',
+                'access_token',
+                'refresh_token',
+                'secret',
+                'api_key',
+                'private_key',
+                'remember_token',
+            ],
+            'patterns' => [
+                '/(^|_)(password|token|secret|key)$/',
+            ],
+        ],
+        'immutable_mode' => false,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit Risk Settings
+    |--------------------------------------------------------------------------
+    |
+    | Risk scoring helps teams notice destructive, security-sensitive, or
+    | privacy-sensitive activity without replacing Spatie's logging layer.
+    |
+    */
+    'risk' => [
+        'enabled' => true,
+        'resolver' => null,
+        'events' => [
+            'deleted' => 45,
+            'force_deleted' => 70,
+            'restored' => 20,
+            'updated' => 10,
+        ],
+        'log_names' => [
+            'security' => 35,
+            'auth' => 25,
+            'permissions' => 40,
+            'roles' => 40,
+        ],
+        'fields' => [
+            '/password/i' => 45,
+            '/token|secret|api_key|private_key/i' => 50,
+            '/role|permission/i' => 35,
+            '/email|phone|address/i' => 15,
+        ],
+        'signals' => [
+            'context' => ['ip_address'],
+        ],
     ],
 
     /*

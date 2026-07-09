@@ -34,6 +34,19 @@ it('renders subject id column in table', function () {
         ->assertTableColumnVisible('subject_id');
 });
 
+it('renders risk column in table', function () {
+    $user = User::create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $this->actingAs($user);
+
+    livewire(ListActivityLogs::class)
+        ->assertTableColumnVisible('risk');
+});
+
 it('can filter activity logs by subject id', function () {
     $user = User::create([
         'name' => 'Test User',
@@ -92,4 +105,33 @@ it('renders ip and browser in infolist', function () {
     livewire(ViewActivityLog::class, ['record' => $activity->getKey()])
         ->assertSee('127.0.0.1')
         ->assertSee('Mozilla/5.0');
+});
+
+it('redacts sensitive values in the infolist', function () {
+    $user = User::create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $activity = Activity::query()->create([
+        'log_name' => 'default',
+        'description' => 'Password changed',
+        'subject_type' => User::class,
+        'subject_id' => $user->getKey(),
+        'event' => 'updated',
+        'causer_type' => User::class,
+        'causer_id' => $user->getKey(),
+        'properties' => [
+            'attributes' => ['password' => 'new-secret'],
+            'old' => ['password' => 'old-secret'],
+        ],
+    ]);
+
+    $this->actingAs($user);
+
+    livewire(ViewActivityLog::class, ['record' => $activity->getKey()])
+        ->assertSee('[redacted]')
+        ->assertDontSee('new-secret')
+        ->assertDontSee('old-secret');
 });

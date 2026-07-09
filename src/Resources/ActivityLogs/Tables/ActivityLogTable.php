@@ -9,7 +9,9 @@ use AlizHarb\ActivityLog\Models\Activity;
 use AlizHarb\ActivityLog\Support\ActivityChanges;
 use AlizHarb\ActivityLog\Support\ActivityGrouping;
 use AlizHarb\ActivityLog\Support\ActivityLogCauser;
+use AlizHarb\ActivityLog\Support\ActivityLogRedactor;
 use AlizHarb\ActivityLog\Support\ActivityLogTitle;
+use AlizHarb\ActivityLog\Support\ActivityRisk;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
@@ -72,6 +74,16 @@ class ActivityLogTable
                     ->searchable(config('filament-activity-log.table.columns.event.searchable', true))
                     ->sortable(config('filament-activity-log.table.columns.event.sortable', true))
                     ->visible(config('filament-activity-log.table.columns.event.visible', true)),
+
+                TextColumn::make('risk')
+                    ->label(__('filament-activity-log::activity.table.column.risk'))
+                    ->badge()
+                    ->state(fn ($record) => ActivityRisk::label($record))
+                    ->color(fn ($record) => ActivityRisk::color($record))
+                    ->visible(fn () => config('filament-activity-log.risk.enabled', true) &&
+                        config('filament-activity-log.table.columns.risk.visible', true)
+                    )
+                    ->toggleable(),
 
                 TextColumn::make('subject_type')
                     ->label(__('filament-activity-log::activity.table.column.subject'))
@@ -303,6 +315,7 @@ class ActivityLogTable
                             ->send();
                     })
                     ->visible(fn () => config('filament-activity-log.table.actions.prune', true) &&
+                        ! config('filament-activity-log.privacy.immutable_mode', false) &&
                         (config('filament-activity-log.permissions.enabled') === false || Gate::allows('delete_any_activity'))
                     ),
 
@@ -342,8 +355,8 @@ class ActivityLogTable
                                 $fields[] = Checkbox::make("revert_attributes.{$key}")
                                     ->label($key)
                                     ->helperText(__('filament-activity-log::activity.action.revert.helper_text', [
-                                        'old' => $value,
-                                        'new' => $currentValue,
+                                        'old' => ActivityLogRedactor::redactValue($key, $value),
+                                        'new' => ActivityLogRedactor::redactValue($key, $currentValue),
                                     ]));
                             }
 
@@ -375,6 +388,7 @@ class ActivityLogTable
                             Notification::make()->success()->title(__('filament-activity-log::activity.action.revert.success'))->send();
                         })
                         ->visible(fn ($record) => config('filament-activity-log.table.actions.revert', true) &&
+                            ! config('filament-activity-log.privacy.immutable_mode', false) &&
                             $record->event === 'updated' &&
                             ActivityChanges::hasOldValues($record) &&
                             $record->subject !== null &&
@@ -403,6 +417,7 @@ class ActivityLogTable
                             Notification::make()->success()->title(__('filament-activity-log::activity.action.restore.success'))->send();
                         })
                         ->visible(fn ($record) => config('filament-activity-log.table.actions.restore', true) &&
+                            ! config('filament-activity-log.privacy.immutable_mode', false) &&
                             $record->event === 'deleted' &&
                             $record->subject === null &&
                             (config('filament-activity-log.permissions.enabled') === false || Gate::allows('restore', $record))
@@ -413,6 +428,7 @@ class ActivityLogTable
                         ->modalDescription(__('filament-activity-log::activity.action.delete.confirmation'))
                         ->modalSubmitActionLabel(__('filament-activity-log::activity.action.delete.button'))
                         ->visible(fn ($record) => config('filament-activity-log.table.actions.delete', true) &&
+                            ! config('filament-activity-log.privacy.immutable_mode', false) &&
                             (config('filament-activity-log.permissions.enabled') === false || Gate::allows('delete', $record))
                         ),
                 ]),
@@ -421,7 +437,9 @@ class ActivityLogTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->modalDescription(__('filament-activity-log::activity.action.bulk.delete.confirmation'))
-                        ->visible(config('filament-activity-log.table.bulk_actions.delete', true)),
+                        ->visible(fn () => config('filament-activity-log.table.bulk_actions.delete', true) &&
+                            ! config('filament-activity-log.privacy.immutable_mode', false)
+                        ),
 
                     BulkAction::make('restore_selected')
                         ->label(__('filament-activity-log::activity.action.bulk.restore.label'))
@@ -460,7 +478,9 @@ class ActivityLogTable
                                     ->send();
                             }
                         })
-                        ->visible(fn () => config('filament-activity-log.table.actions.restore', true)),
+                        ->visible(fn () => config('filament-activity-log.table.actions.restore', true) &&
+                            ! config('filament-activity-log.privacy.immutable_mode', false)
+                        ),
 
                     BulkAction::make('revert_selected')
                         ->label(__('filament-activity-log::activity.action.bulk.revert.label'))
@@ -488,7 +508,9 @@ class ActivityLogTable
                                     ->send();
                             }
                         })
-                        ->visible(fn () => config('filament-activity-log.table.actions.revert', true)),
+                        ->visible(fn () => config('filament-activity-log.table.actions.revert', true) &&
+                            ! config('filament-activity-log.privacy.immutable_mode', false)
+                        ),
                 ]),
             ]);
     }

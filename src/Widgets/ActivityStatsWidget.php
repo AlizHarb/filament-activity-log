@@ -3,6 +3,7 @@
 namespace AlizHarb\ActivityLog\Widgets;
 
 use AlizHarb\ActivityLog\Support\ActivityLogTitle;
+use AlizHarb\ActivityLog\Support\ActivityRisk;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,7 @@ class ActivityStatsWidget extends BaseWidget
             $subjectLabel = ActivityLogTitle::get($subject);
         }
 
-        return [
+        $stats = [
             Stat::make(__('filament-activity-log::activity.widgets.stats.total_activities'), $activityModel::count())
                 ->description(__('filament-activity-log::activity.widgets.stats.total_description'))
                 ->descriptionIcon('heroicon-m-clipboard-document-list')
@@ -54,5 +55,21 @@ class ActivityStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-cube')
                 ->color('warning'),
         ];
+
+        if (config('filament-activity-log.risk.enabled', true)) {
+            $highRiskCount = $activityModel::query()
+                ->latest()
+                ->limit((int) config('filament-activity-log.widgets.stats.risk_sample_size', 500))
+                ->get()
+                ->filter(fn (Activity $activity): bool => in_array(ActivityRisk::level($activity), ['high', 'critical'], true))
+                ->count();
+
+            $stats[] = Stat::make(__('filament-activity-log::activity.widgets.stats.high_risk'), $highRiskCount)
+                ->description(__('filament-activity-log::activity.widgets.stats.high_risk_description'))
+                ->descriptionIcon('heroicon-m-shield-exclamation')
+                ->color($highRiskCount > 0 ? 'danger' : 'success');
+        }
+
+        return $stats;
     }
 }

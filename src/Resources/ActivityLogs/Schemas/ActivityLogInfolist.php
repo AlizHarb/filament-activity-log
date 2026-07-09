@@ -4,6 +4,7 @@ namespace AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas;
 
 use AlizHarb\ActivityLog\Support\ActivityChanges;
 use AlizHarb\ActivityLog\Support\ActivityLogTitle;
+use AlizHarb\ActivityLog\Support\ActivityRisk;
 use Filament\Facades\Filament;
 use Filament\Infolists\Components\CodeEntry;
 use Filament\Infolists\Components\KeyValueEntry;
@@ -55,6 +56,15 @@ class ActivityLogInfolist
                                                     'gray' => 'restored',
                                                 ])
                                                 ->visible(config('filament-activity-log.infolist.entries.event', true)),
+
+                                            TextEntry::make('risk')
+                                                ->label(__('filament-activity-log::activity.infolist.entry.risk'))
+                                                ->badge()
+                                                ->state(fn ($record) => ActivityRisk::label($record))
+                                                ->color(fn ($record) => ActivityRisk::color($record))
+                                                ->visible(fn () => config('filament-activity-log.risk.enabled', true) &&
+                                                    config('filament-activity-log.infolist.entries.risk', true)
+                                                ),
 
                                             TextEntry::make('created_at')
                                                 ->label(__('filament-activity-log::activity.infolist.entry.created_at'))
@@ -147,14 +157,14 @@ class ActivityLogInfolist
                                     ->label(__('filament-activity-log::activity.infolist.entry.attributes'))
                                     ->keyLabel(__('filament-activity-log::activity.infolist.entry.key'))
                                     ->valueLabel(__('filament-activity-log::activity.infolist.entry.value'))
-                                    ->getStateUsing(fn ($record) => ActivityChanges::getNewValues($record))
+                                    ->getStateUsing(fn ($record) => ActivityChanges::getRedactedNewValues($record))
                                     ->visible(fn ($record) => ActivityChanges::hasNewValues($record) && config('filament-activity-log.infolist.entries.properties_attributes', true)),
 
                                 KeyValueEntry::make('old_values')
                                     ->label(__('filament-activity-log::activity.infolist.entry.old'))
                                     ->keyLabel(__('filament-activity-log::activity.infolist.entry.key'))
                                     ->valueLabel(__('filament-activity-log::activity.infolist.entry.value'))
-                                    ->getStateUsing(fn ($record) => ActivityChanges::getOldValues($record))
+                                    ->getStateUsing(fn ($record) => ActivityChanges::getRedactedOldValues($record))
                                     ->visible(fn ($record) => ActivityChanges::hasOldValues($record) && config('filament-activity-log.infolist.entries.properties_old', true)),
                             ]),
 
@@ -165,6 +175,7 @@ class ActivityLogInfolist
                             ->schema([
                                 CodeEntry::make('properties')
                                     ->label(__('filament-activity-log::activity.infolist.entry.properties'))
+                                    ->getStateUsing(fn ($record) => ActivityChanges::getRedactedProperties($record))
                                     ->formatStateUsing(fn ($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
                                     ->columnSpanFull()
                                     ->visible(config('filament-activity-log.infolist.entries.properties_raw', true)),

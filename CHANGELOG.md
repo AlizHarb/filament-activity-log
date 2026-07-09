@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Audit Risk Scoring** - Added configurable activity risk scoring with low, medium, high, and critical levels. The Activity Log table and audit stats widget now surface high-risk activity so destructive and security-sensitive events are easier to notice.
+- **Privacy-Safe Redaction** - Added default redaction for sensitive fields such as passwords, tokens, API keys, secrets, and private keys. Redacted values are used in change displays, raw property views, and revert helper text.
+- **Immutable Audit Mode** - Added an optional compliance mode that hides destructive panel actions including delete, bulk delete, prune, restore, and revert.
+- **Laravel Boost Guidelines** - Added package-specific Boost guidance for installation, Spatie v4/v5 behavior, privacy, risk scoring, immutable mode, authorization, performance, and Filament usage.
+- **Audit Compliance Documentation** - Added dedicated documentation for risk scoring, redaction, immutable mode, retention recommendations, and operational audit practices.
+
 ### Fixed
 
 - **ActivityPolicy Type Hint** ([#27](https://github.com/alizharb/filament-activity-log/issues/27)) - Changed all `$user` parameter type hints in `ActivityPolicy` from the concrete `Illuminate\Foundation\Auth\User` class to the `Illuminate\Contracts\Auth\Authenticatable` contract. This resolves a fatal `TypeError` thrown when an application's `User` model does not extend `Illuminate\Foundation\Auth\User` but instead implements the auth contracts manually via traits. Permission checks now use `Gate::forUser($user)->allows()` so they remain fully functional for any `Authenticatable` implementation.

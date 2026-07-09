@@ -26,6 +26,16 @@ class ActivityChanges
     }
 
     /**
+     * Get old values with sensitive fields redacted for display/export.
+     *
+     * @return array<string, mixed>
+     */
+    public static function getRedactedOldValues(Activity $activity): array
+    {
+        return ActivityLogRedactor::redact(static::getOldValues($activity));
+    }
+
+    /**
      * Get new values from the activity, preferring attribute_changes over properties.
      *
      * @return array<string, mixed>
@@ -39,6 +49,24 @@ class ActivityChanges
         }
 
         return (array) ($activity->properties['attributes'] ?? []);
+    }
+
+    /**
+     * Get new values with sensitive fields redacted for display/export.
+     *
+     * @return array<string, mixed>
+     */
+    public static function getRedactedNewValues(Activity $activity): array
+    {
+        return ActivityLogRedactor::redact(static::getNewValues($activity));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getRedactedProperties(Activity $activity): array
+    {
+        return ActivityLogRedactor::redact($activity->properties->toArray());
     }
 
     /**
