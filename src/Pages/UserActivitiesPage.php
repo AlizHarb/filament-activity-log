@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace AlizHarb\ActivityLog\Pages;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
-use AlizHarb\ActivityLog\Models\Activity;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\ActivityLogResource;
 use AlizHarb\ActivityLog\Support\ActivityLogCauser;
 use Filament\Pages\Page;
@@ -16,6 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\Models\Activity;
 use UnitEnum;
 
 /**
@@ -99,7 +99,7 @@ class UserActivitiesPage extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(fn () => Activity::query()
+            ->query(fn () => (config('activitylog.activity_model') ?? Activity::class)::query()
                 ->with(['causer', 'subject'])
                 ->whereNotNull('causer_id')
                 ->latest())
@@ -177,7 +177,7 @@ class UserActivitiesPage extends Page implements HasTable
                     ->label(__('filament-activity-log::activity.filter.subject_type'))
                     ->options(function () {
                         /** @var Builder $query */
-                        $query = Activity::query();
+                        $query = (config('activitylog.activity_model') ?? Activity::class)::query();
 
                         return $query
                             ->whereNotNull('subject_type')

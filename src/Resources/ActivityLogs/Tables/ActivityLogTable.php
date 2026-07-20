@@ -5,7 +5,6 @@ namespace AlizHarb\ActivityLog\Resources\ActivityLogs\Tables;
 use AlizHarb\ActivityLog\Actions\ActivityLogTimelineTableAction;
 use AlizHarb\ActivityLog\Enums\ActivityLogEvent;
 use AlizHarb\ActivityLog\Exporters\ActivityLogExporter;
-use AlizHarb\ActivityLog\Models\Activity;
 use AlizHarb\ActivityLog\Support\ActivityChanges;
 use AlizHarb\ActivityLog\Support\ActivityGrouping;
 use AlizHarb\ActivityLog\Support\ActivityLogCauser;
@@ -32,6 +31,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
+use Spatie\Activitylog\Models\Activity;
 
 /**
  * Class ActivityLogTable
@@ -205,7 +205,7 @@ class ActivityLogTable
             ->filters([
                 SelectFilter::make('log_name')
                     ->label(__('filament-activity-log::activity.table.column.log_name'))
-                    ->options(fn () => Activity::query()->distinct()->whereNotNull('log_name')->pluck('log_name', 'log_name')->toArray())
+                    ->options(fn () => (config('activitylog.activity_model') ?? Activity::class)::query()->distinct()->whereNotNull('log_name')->pluck('log_name', 'log_name')->toArray())
                     ->visible(config('filament-activity-log.table.filters.log_name', true)),
 
                 SelectFilter::make('event')
@@ -221,7 +221,7 @@ class ActivityLogTable
                             return [];
                         }
 
-                        $query = $causerClass::query()->whereIn('id', Activity::query()
+                        $query = $causerClass::query()->whereIn('id', (config('activitylog.activity_model') ?? Activity::class)::query()
                             ->distinct()
                             ->whereNotNull('causer_id')
                             ->pluck('causer_id')
@@ -234,7 +234,7 @@ class ActivityLogTable
 
                 SelectFilter::make('subject_type')
                     ->label(__('filament-activity-log::activity.table.filter.subject_type'))
-                    ->options(fn () => Activity::query()
+                    ->options(fn () => (config('activitylog.activity_model') ?? Activity::class)::query()
                         ->distinct()
                         ->whereNotNull('subject_type')
                         ->pluck('subject_type', 'subject_type')
@@ -305,7 +305,7 @@ class ActivityLogTable
                     ->modalHeading(__('filament-activity-log::activity.action.prune.heading'))
                     ->modalDescription(__('filament-activity-log::activity.action.prune.confirmation'))
                     ->action(function (array $data) {
-                        $count = Activity::query()
+                        $count = (config('activitylog.activity_model') ?? Activity::class)::query()
                             ->where('created_at', '<', $data['prune_until'])
                             ->delete();
 
