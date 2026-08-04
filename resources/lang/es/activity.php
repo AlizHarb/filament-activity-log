@@ -5,8 +5,10 @@ return [
     'plural_label' => 'Registros de actividad',
     'table' => [
         'column' => [
+            'id' => 'ID',
             'log_name' => 'Nombre del registro',
             'event' => 'Evento',
+            'risk' => 'Riesgo',
             'subject_id' => 'ID del sujeto',
             'subject_type' => 'Tipo de sujeto',
             'causer_id' => 'ID del causante',
@@ -17,12 +19,12 @@ return [
             'description' => 'Descripción',
             'subject' => 'Sujeto',
             'causer' => 'Causante',
-            'id' => 'ID',
             'ip_address' => 'Dirección IP',
             'browser' => 'Navegador',
         ],
         'filter' => [
             'event' => 'Evento',
+            'risk' => 'Riesgo',
             'created_at' => 'Creado el',
             'created_from' => 'Creado desde',
             'created_until' => 'Creado hasta',
@@ -119,7 +121,6 @@ return [
             ],
         ],
     ],
-    'filters' => 'Filtros',
     'pages' => [
         'user_activities' => [
             'title' => 'Actividades de Usuario',
@@ -161,12 +162,15 @@ return [
             'top_causer_description' => ':count actividades',
             'top_subject' => 'Sujeto principal',
             'top_subject_description' => ':count modificaciones',
+            'high_risk' => 'Alto riesgo',
+            'high_risk_description' => 'Actividad alta o crítica en los registros recientes',
             'no_data' => 'Sin datos',
         ],
     ],
     'dashboard' => [
         'title' => 'Panel de control de auditoría',
     ],
+    'filters' => 'Filtros',
     'system' => 'Sistema',
     'row' => 'fila',
     'rows' => 'filas',
