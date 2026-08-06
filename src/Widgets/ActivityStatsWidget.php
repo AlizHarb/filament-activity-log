@@ -47,11 +47,11 @@ class ActivityStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-clipboard-document-list')
                 ->color('info'),
             Stat::make(__('filament-activity-log::activity.widgets.stats.top_causer'), $causerLabel)
-                ->description($topCauser ? __('filament-activity-log::activity.widgets.stats.top_causer_description', ['count' => $topCauser->total]) : __('filament-activity-log::activity.widgets.stats.no_data'))
+                ->description($topCauser ? trans_choice('filament-activity-log::activity.widgets.stats.top_causer_description', $topCauser->total) : __('filament-activity-log::activity.widgets.stats.no_data'))
                 ->descriptionIcon('heroicon-m-user')
                 ->color('success'),
             Stat::make(__('filament-activity-log::activity.widgets.stats.top_subject'), $subjectLabel)
-                ->description($topSubject ? __('filament-activity-log::activity.widgets.stats.top_subject_description', ['count' => $topSubject->total]) : __('filament-activity-log::activity.widgets.stats.no_data'))
+                ->description($topSubject ? trans_choice('filament-activity-log::activity.widgets.stats.top_subject_description', $topSubject->total) : __('filament-activity-log::activity.widgets.stats.no_data'))
                 ->descriptionIcon('heroicon-m-cube')
                 ->color('warning'),
         ];
