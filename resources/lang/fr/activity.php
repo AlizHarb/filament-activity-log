@@ -152,7 +152,7 @@ return [
             'heading' => 'Carte thermique d\'activité',
             'less' => 'Moins',
             'more' => 'Plus',
-            'tooltip' => ':count activités le :date',
+            'tooltip' => ':count activité le :date|:count activités le :date',
         ],
         'stats' => [
             'total_activities' => 'Activités totales',

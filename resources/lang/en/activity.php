@@ -131,7 +131,7 @@ return [
             'heading' => 'Activity Heatmap',
             'less' => 'Less',
             'more' => 'More',
-            'tooltip' => ':count activities on :date',
+            'tooltip' => ':count activity on :date|:count activities on :date',
         ],
         'stats' => [
             'total_activities' => 'Total Activities',

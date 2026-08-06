@@ -153,7 +153,7 @@ return [
             'heading' => 'Mapa de calor de actividad',
             'less' => 'Menos',
             'more' => 'Más',
-            'tooltip' => ':count actividades el :date',
+            'tooltip' => ':count actividad el :date|:count actividades el :date',
         ],
         'stats' => [
             'total_activities' => 'Actividades totales',

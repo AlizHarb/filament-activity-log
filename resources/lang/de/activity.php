@@ -152,7 +152,7 @@ return [
             'heading' => 'Aktivitäts-Heatmap',
             'less' => 'Weniger',
             'more' => 'Mehr',
-            'tooltip' => ':count Aktivitäten am :date',
+            'tooltip' => ':count Aktivität am :date|:count Aktivitäten am :date',
         ],
         'stats' => [
             'total_activities' => 'Gesamte Aktivitäten',
