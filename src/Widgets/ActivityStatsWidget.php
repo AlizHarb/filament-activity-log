@@ -11,6 +11,16 @@ use Spatie\Activitylog\Models\Activity;
 
 class ActivityStatsWidget extends BaseWidget
 {
+    /**
+     * Get the polling interval for auto-refresh.
+     *
+     * @return string|null The polling interval (e.g., '10s', '1m') or null to disable
+     */
+    protected function getPollingInterval(): ?string
+    {
+        return config('filament-activity-log.widgets.stats.polling_interval');
+    }
+
     protected function getStats(): array
     {
         $activityModel = config('activitylog.activity_model') ?? Activity::class;

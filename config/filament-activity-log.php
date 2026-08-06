@@ -333,6 +333,7 @@ return [
 
         'stats' => [
             'risk_sample_size' => 500,
+            'polling_interval' => '5s', // e.g., '10s', '1m', null to disable
         ],
     ],
     /*
