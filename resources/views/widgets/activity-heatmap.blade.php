@@ -13,13 +13,13 @@
             
             // Calculate months with smart spacing to avoid overlap
             $months = [];
-            $currentMonth = $startDate->format('M');
+            $currentMonth = $startDate->isoFormat('MMM');
             $months[] = ['name' => $currentMonth, 'week_index' => 0];
             $lastLabelWeek = 0;
             
             $dt = $startDate->copy();
             for ($weekIndex = 0; $weekIndex < 52; $weekIndex++) {
-                $month = $dt->addWeek()->format('M');
+                $month = $dt->addWeek()->isoFormat('MMM');
                 if ($month !== $currentMonth) {
                     // Only add label if it's been at least 4 weeks since the last one
                     if (($weekIndex - $lastLabelWeek) >= 4) {
@@ -72,9 +72,8 @@
                                 default => 'rgba(128, 128, 128, 0.1)',
                             };
                             
-                            $tooltip = __('filament-activity-log::activity.widgets.heatmap.tooltip', [
-                                'count' => $count,
-                                'date' => $currentDate->format('M j, Y'),
+                            $tooltip = trans_choice('filament-activity-log::activity.widgets.heatmap.tooltip', $count, [
+                                'date' => $currentDate->isoFormat('ll'),
                             ]);
                         @endphp
                         

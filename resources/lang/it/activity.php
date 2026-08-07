@@ -160,7 +160,7 @@ return [
             'top_causer' => 'Autore principale',
             'top_causer_description' => ':count attività',
             'top_subject' => 'Soggetto principale',
-            'top_subject_description' => ':count modifiche',
+            'top_subject_description' => ':count modifica|:count modifiche',
             'no_data' => 'Nessun dato',
         ],
     ],

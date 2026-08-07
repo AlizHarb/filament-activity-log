@@ -11,6 +11,16 @@ use Spatie\Activitylog\Models\Activity;
 
 class ActivityStatsWidget extends BaseWidget
 {
+    /**
+     * Get the polling interval for auto-refresh.
+     *
+     * @return string|null The polling interval (e.g., '10s', '1m') or null to disable
+     */
+    protected function getPollingInterval(): ?string
+    {
+        return config('filament-activity-log.widgets.stats.polling_interval');
+    }
+
     protected function getStats(): array
     {
         $activityModel = config('activitylog.activity_model') ?? Activity::class;
@@ -47,11 +57,11 @@ class ActivityStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-clipboard-document-list')
                 ->color('info'),
             Stat::make(__('filament-activity-log::activity.widgets.stats.top_causer'), $causerLabel)
-                ->description($topCauser ? __('filament-activity-log::activity.widgets.stats.top_causer_description', ['count' => $topCauser->total]) : __('filament-activity-log::activity.widgets.stats.no_data'))
+                ->description($topCauser ? trans_choice('filament-activity-log::activity.widgets.stats.top_causer_description', $topCauser->total) : __('filament-activity-log::activity.widgets.stats.no_data'))
                 ->descriptionIcon('heroicon-m-user')
                 ->color('success'),
             Stat::make(__('filament-activity-log::activity.widgets.stats.top_subject'), $subjectLabel)
-                ->description($topSubject ? __('filament-activity-log::activity.widgets.stats.top_subject_description', ['count' => $topSubject->total]) : __('filament-activity-log::activity.widgets.stats.no_data'))
+                ->description($topSubject ? trans_choice('filament-activity-log::activity.widgets.stats.top_subject_description', $topSubject->total) : __('filament-activity-log::activity.widgets.stats.no_data'))
                 ->descriptionIcon('heroicon-m-cube')
                 ->color('warning'),
         ];
