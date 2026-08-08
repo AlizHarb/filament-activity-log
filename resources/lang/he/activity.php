@@ -56,6 +56,7 @@ return [
             'key' => 'מפתח',
             'value' => 'ערך',
             'properties' => 'מאפיינים',
+            'risk' => 'סיכון',
         ],
     ],
     'action' => [

@@ -56,6 +56,7 @@ return [
             'key' => '键',
             'value' => '值',
             'properties' => '属性',
+            'risk' => '风险',
         ],
     ],
     'action' => [

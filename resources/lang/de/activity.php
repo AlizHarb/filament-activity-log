@@ -56,6 +56,7 @@ return [
             'key' => 'Schlüssel',
             'value' => 'Wert',
             'properties' => 'Eigenschaften',
+            'risk' => 'Risiko',
         ],
     ],
     'action' => [
