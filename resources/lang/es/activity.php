@@ -2,7 +2,7 @@
 
 return [
     'label' => 'Registro de actividad',
-    'plural_label' => 'Registros de actividad',
+    'plural_label' => 'Registro de actividades',
     'table' => [
         'column' => [
             'id' => 'ID',
