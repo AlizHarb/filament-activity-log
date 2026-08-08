@@ -169,4 +169,12 @@ return [
     'system' => 'System',
     'row' => 'row',
     'rows' => 'rows',
+    'risk' => [
+        'level' => [
+            'critical' => 'حرج',
+            'high' => 'مرتفع',
+            'medium' => 'متوسط',
+            'low' => 'منخفض',
+        ],
+    ],
 ];

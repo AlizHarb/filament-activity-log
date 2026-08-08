@@ -170,4 +170,12 @@ return [
     'system' => 'System',
     'row' => 'Zeile',
     'rows' => 'Zeilen',
+    'risk' => [
+        'level' => [
+            'critical' => 'kritisch',
+            'high' => 'hoch',
+            'medium' => 'mittel',
+            'low' => 'niedrig',
+        ],
+    ],
 ];
