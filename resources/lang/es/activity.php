@@ -181,6 +181,6 @@ return [
             'high' => 'alto',
             'medium' => 'medio',
             'low' => 'bajo',
-        ]
+        ],
     ],
 ];
