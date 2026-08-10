@@ -58,6 +58,7 @@ return [
             'key' => 'Key',
             'value' => 'Value',
             'properties' => 'Properties',
+            'risk' => 'Risk',
         ],
     ],
     'action' => [
@@ -174,4 +175,12 @@ return [
     'system' => 'System',
     'row' => 'row',
     'rows' => 'rows',
+    'risk' => [
+        'level' => [
+            'critical' => 'critical',
+            'high' => 'high',
+            'medium' => 'medium',
+            'low' => 'low',
+        ]
+    ],
 ];

@@ -56,6 +56,7 @@ return [
             'key' => 'المفتاح',
             'value' => 'القيمة',
             'properties' => 'الخصائص',
+            'risk' => 'المخاطر',
         ],
     ],
     'action' => [
@@ -169,4 +170,12 @@ return [
     'system' => 'System',
     'row' => 'row',
     'rows' => 'rows',
+    'risk' => [
+        'level' => [
+            'critical' => 'حرج',
+            'high' => 'مرتفع',
+            'medium' => 'متوسط',
+            'low' => 'منخفض',
+        ],
+    ],
 ];

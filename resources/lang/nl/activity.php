@@ -56,6 +56,7 @@ return [
             'key' => 'Sleutel',
             'value' => 'Waarde',
             'properties' => 'Eigenschappen',
+            'risk' => 'Risico',
         ],
     ],
     'action' => [
@@ -170,4 +171,12 @@ return [
     'system' => 'Systeem',
     'row' => 'rij',
     'rows' => 'rijen',
+    'risk' => [
+        'level' => [
+            'critical' => 'kritiek',
+            'high' => 'hoog',
+            'medium' => 'gemiddeld',
+            'low' => 'laag',
+        ],
+    ],
 ];

@@ -2,7 +2,7 @@
 
 return [
     'label' => 'Registro de actividad',
-    'plural_label' => 'Registros de actividad',
+    'plural_label' => 'Registro de actividades',
     'table' => [
         'column' => [
             'id' => 'ID',
@@ -58,6 +58,7 @@ return [
             'key' => 'Clave',
             'value' => 'Valor',
             'properties' => 'Propiedades',
+            'risk' => 'Riesgo',
         ],
     ],
     'action' => [
@@ -174,4 +175,12 @@ return [
     'system' => 'Sistema',
     'row' => 'fila',
     'rows' => 'filas',
+    'risk' => [
+        'level' => [
+            'critical' => 'crítico',
+            'high' => 'alto',
+            'medium' => 'medio',
+            'low' => 'bajo',
+        ]
+    ],
 ];

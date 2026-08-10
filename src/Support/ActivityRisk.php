@@ -56,7 +56,7 @@ class ActivityRisk
 
     public static function label(Activity $activity): string
     {
-        return ucfirst(static::level($activity)).' ('.static::score($activity).')';
+        return ucfirst(__('filament-activity-log::activity.risk.level.'.static::level($activity))).' ('.static::score($activity).')';
     }
 
     protected static function eventScore(string $event): int

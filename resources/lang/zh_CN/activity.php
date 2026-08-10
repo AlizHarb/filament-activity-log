@@ -56,6 +56,7 @@ return [
             'key' => '键',
             'value' => '值',
             'properties' => '属性',
+            'risk' => '风险',
         ],
     ],
     'action' => [
@@ -170,4 +171,12 @@ return [
     'system' => '系统',
     'row' => '行',
     'rows' => '行',
+    'risk' => [
+        'level' => [
+            'critical' => '严重',
+            'high' => '高',
+            'medium' => '中',
+            'low' => '低',
+        ],
+    ],
 ];
