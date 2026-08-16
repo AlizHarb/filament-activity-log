@@ -1,0 +1,49 @@
+name: Feature request
+description: Propose a focused package improvement
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the user or operational problem, not only the desired implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Explain the behavior and API you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include workarounds or existing Filament and Spatie features you considered.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Resource and tables
+        - Dashboard and widgets
+        - Security and authorization
+        - Retention and integrity
+        - Performance
+        - Localization
+        - Developer experience
+        - Documentation
+    validations:
+      required: true
+  - type: checkboxes
+    id: compatibility
+    attributes:
+      label: Compatibility
+      options:
+        - label: I considered Filament 4 and 5 compatibility.
+        - label: I considered whether this belongs in the package or application configuration.
+        - label: I searched existing issues and discussions.
+          required: true

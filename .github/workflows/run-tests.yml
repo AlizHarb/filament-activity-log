@@ -6,61 +6,53 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         include:
-          # v4 lane: PHP 8.3 + Spatie v4
           - php: '8.3'
-            laravel: '12.*'
-            testbench: '10.*'
+            testbench: '^10.0'
+            filament: '^4.2'
             spatie: '^4.0'
-            dependency-version: prefer-stable
-            os: ubuntu-latest
-          # v4 lane: PHP 8.4 + Spatie v4
-          - php: '8.4'
-            laravel: '12.*'
-            testbench: '10.*'
+            stability: prefer-lowest
+          - php: '8.3'
+            testbench: '^10.0'
+            filament: '^4.2'
             spatie: '^4.0'
-            dependency-version: prefer-stable
-            os: ubuntu-latest
-          # v5 lane: PHP 8.4 + Spatie v5
+            stability: prefer-stable
           - php: '8.4'
-            laravel: '12.*'
-            testbench: '10.*'
+            testbench: '^10.0'
+            filament: '^5.0'
+            spatie: '^4.0'
+            stability: prefer-stable
+          - php: '8.4'
+            testbench: '^11.0'
+            filament: '^5.0'
             spatie: '^5.0'
-            dependency-version: prefer-stable
-            os: ubuntu-latest
+            stability: prefer-stable
+          - php: '8.5'
+            testbench: '^11.0'
+            filament: '^5.0'
+            spatie: '^5.0'
+            stability: prefer-stable
 
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - Spatie ${{ matrix.spatie }} - ${{ matrix.os }}
+    name: PHP ${{ matrix.php }} / Testbench ${{ matrix.testbench }} / Filament ${{ matrix.filament }} / Spatie ${{ matrix.spatie }} / ${{ matrix.stability }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, fileinfo
           coverage: none
-
-      - name: Setup problem matchers
-        run: |
-          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
-      - name: Install dependencies
-        env:
-          SPATIE_VERSION: ${{ matrix.spatie }}
-          DEP_VERSION: ${{ matrix.dependency-version }}
-        run: |
-          composer require "spatie/laravel-activitylog:${SPATIE_VERSION}" --no-interaction --no-update
-          composer update --${DEP_VERSION} --prefer-dist --no-interaction
-
-      - name: Execute tests
-        run: vendor/bin/pest
+      - run: composer require "orchestra/testbench:${{ matrix.testbench }}" "filament/filament:${{ matrix.filament }}" "spatie/laravel-activitylog:${{ matrix.spatie }}" --no-interaction --no-update
+      - run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+      - run: vendor/bin/pest
+      - if: matrix.php == '8.5'
+        run: composer audit --locked

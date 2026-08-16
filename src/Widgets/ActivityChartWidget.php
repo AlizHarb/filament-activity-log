@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog\Widgets;
 
+use AlizHarb\ActivityLog\Support\ActivityCache;
+use AlizHarb\ActivityLog\Support\ActivityQuery;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
-use Spatie\Activitylog\Models\Activity;
 
 /**
  * Activity Chart Widget.
@@ -97,16 +98,15 @@ class ActivityChartWidget extends ChartWidget
         $fillColor = config('filament-activity-log.widgets.activity_chart.fill_color', 'rgba(16, 185, 129, 0.1)');
         $borderColor = config('filament-activity-log.widgets.activity_chart.border_color', '#10b981');
 
-        $driver = DB::getDriverName();
+        $activityQuery = app(ActivityQuery::class);
+        $driver = $activityQuery->driverName();
 
         $dateExpression = match ($driver) {
             'oracle' => 'TRUNC(created_at)',
             default => 'DATE(created_at)',
         };
 
-        $activityModel = config('activitylog.activity_model') ?? Activity::class;
-
-        $data = $activityModel::query()
+        $data = app(ActivityCache::class)->remember("widget:chart:{$days}", fn (): array => $activityQuery->query()
             ->select(
                 DB::raw("$dateExpression as activity_date"),
                 DB::raw('COUNT(*) as count')
@@ -115,20 +115,22 @@ class ActivityChartWidget extends ChartWidget
             ->groupBy(DB::raw($dateExpression))
             ->orderBy(DB::raw($dateExpression))
             ->get()
-            ->pluck('count', 'activity_date');
+            ->pluck('count', 'activity_date')
+            ->toArray());
 
         return [
             'datasets' => [
                 [
-                    'label' => config('filament-activity-log.widgets.activity_chart.label', __('filament-activity-log::activity.widgets.activity_chart.label')),
-                    'data' => $data->values()->toArray(),
+                    'label' => config('filament-activity-log.widgets.activity_chart.label')
+                        ?? __('filament-activity-log::activity.widgets.activity_chart.label'),
+                    'data' => array_values($data),
                     'borderColor' => $borderColor,
                     'backgroundColor' => $fillColor,
                     'fill' => config('filament-activity-log.widgets.activity_chart.fill', true),
                     'tension' => config('filament-activity-log.widgets.activity_chart.tension', 0.3),
                 ],
             ],
-            'labels' => $data->keys()->map(fn ($date) => Carbon::parse($date)->format(
+            'labels' => collect(array_keys($data))->map(fn ($date) => Carbon::parse($date)->format(
                 config('filament-activity-log.widgets.activity_chart.date_format', 'M d')
             ))->toArray(),
         ];

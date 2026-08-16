@@ -1,12 +1,12 @@
 # 🚀 Filament Activity Log
 
 <div align="center">
-    <img src="https://banners.beyondco.de/Filament%20Activity%20Log.png?theme=light&packageManager=composer+require&packageName=alizharb%2Ffilament-activity-log&pattern=architect&style=style_1&description=Advanced+activity+tracking+for+Filament+v4&md=1&showWatermark=0&fontSize=100px&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg" alt="Filament Activity Log">
+    <img src="https://banners.beyondco.de/Filament%20Activity%20Log.png?theme=light&packageManager=composer+require&packageName=alizharb%2Ffilament-activity-log&pattern=architect&style=style_1&description=Security-first+audit+control+for+Filament+v4+%26+v5&md=1&showWatermark=0&fontSize=100px&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg" alt="Filament Activity Log">
 </div>
 
 <div align="center">
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE.md)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/alizharb/filament-activity-log.svg?style=for-the-badge&color=orange)](https://packagist.org/packages/alizharb/filament-activity-log)
 [![Total Downloads](https://img.shields.io/packagist/dt/alizharb/filament-activity-log.svg?style=for-the-badge&color=green)](https://packagist.org/packages/alizharb/filament-activity-log)
 [![PHP Version](https://img.shields.io/packagist/php-v/alizharb/filament-activity-log.svg?style=for-the-badge&color=purple)](https://packagist.org/packages/alizharb/filament-activity-log)
@@ -29,7 +29,6 @@
 - [Quick Start](#-quick-start)
 - [Core Features](#-core-features)
 - [Configuration](#️-configuration)
-- [Usage Examples](#-usage-examples)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -45,6 +44,13 @@
 - **🛡️ Audit Risk Scoring** - Surface high-risk and critical activity before it gets buried
 - **🔒 Privacy-Safe Redaction** - Mask secrets in diffs, raw data, exports, and UI views
 - **🏛️ Compliance Mode** - Optional immutable mode for audit trails that should not be changed from the panel
+- **🏢 Tenant-Safe Query Boundary** - Apply one security scope across every resource, widget, export, timeline, and maintenance action
+- **🧭 Investigation Filters** - Persisted risk levels, retention holds, request IDs, IP addresses, subjects, causers, and batches
+- **⚖️ Authorized Retention Holds** - Place or release single and bulk legal holds while protected records stay outside pruning
+- **⚡ Scope-Safe Aggregate Cache** - Cache dashboard analytics without crossing tenant or security boundaries
+- **🔏 Tamper-Evident Signatures** - Verify activity integrity with HMAC signatures and an Artisan audit command
+- **🚨 Extensible Alert Rules** - Dispatch structured findings to Laravel notifications, queues, or incident tooling
+- **🧩 Extension Contracts** - Add context collectors, timeline sources, audit rules, and domain-safe subject restorers
 - **🔗 Relation Manager** - Add activity history to any resource
 - **🎨 Highly Customizable** - Configure labels, colors, icons, and visibility
 - **🔐 Role-Based Access** - Fully compatible with Filament's authorization
@@ -69,7 +75,9 @@
 | Spatie Version | Support | Notes |
 | --- | --- | --- |
 | ^4.0 | Full | Legacy support with native `batch_uuid` and `properties`-based tracking |
-| ^5.0 | Full | Requires the official v5 upgrade migration (see below) |
+| ^5.0 | Full on Laravel 13 / PHP 8.4–8.5 | Requires the official v5 upgrade migration (see below) |
+
+The release matrix verifies Laravel 12 with Filament 4 or 5 and Spatie 4, plus Laravel 13 with Filament 5 and Spatie 5 on PHP 8.4 and 8.5. Version 2 does not claim Laravel 11 support.
 
 > **Important for v5 users:** You must follow [Spatie's official v5 upgrade guide](https://spatie.be/docs/laravel-activitylog) before using this plugin on v5. This includes:
 > 1. Adding the `attribute_changes` column
@@ -100,6 +108,7 @@ Add to your `AdminPanelProvider`:
 
 ```php
 use AlizHarb\ActivityLog\ActivityLogPlugin;
+use App\Filament\Clusters\SystemCluster;
 
 public function panel(Panel $panel): Panel
 {
@@ -109,18 +118,30 @@ public function panel(Panel $panel): Panel
                 ->label('Log')
                 ->pluralLabel('Logs')
                 ->navigationGroup('System')
-                ->cluster('System'), // Optional: Group inside a cluster
+                ->cluster(SystemCluster::class), // Optional: Group inside a cluster
         ]);
 }
 ```
 
-### Step 3: Install Assets & Config
+### Step 3: Publish Config and Migrations
 
 Run the installation command to publish the configuration, assets, and migrations:
 
 ```bash
 php artisan filament-activity-log:install
 ```
+
+For an existing installation upgrading to v2:
+
+```bash
+php artisan vendor:publish --tag=filament-activity-log-migrations
+php artisan migrate
+php artisan filament-activity-log:backfill
+php artisan filament-activity-log:verify-integrity
+php artisan filament-activity-log:doctor
+```
+
+See the [v2 upgrade guide](UPGRADE.md) before enabling mutations or exports.
 
 ---
 
@@ -131,8 +152,9 @@ php artisan filament-activity-log:install
 Ensure your models use the `LogsActivity` trait:
 
 ```php
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
+// Spatie v5:
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class User extends Authenticatable
 {
@@ -145,6 +167,8 @@ class User extends Authenticatable
     }
 }
 ```
+
+On Spatie v4, import `Spatie\Activitylog\Traits\LogsActivity` and `Spatie\Activitylog\LogOptions` instead. The package supports both schemas; these upstream namespaces differ between major versions.
 
 ### 2. Configure Tracking (Optional)
 
@@ -276,7 +300,7 @@ For advanced applications, provide a custom resolver class in `risk.resolver` an
 
 ### 🔒 Privacy-Safe Redaction
 
-Sensitive values are redacted by default before they appear in changes, raw properties, action helper text, and future export workflows.
+Sensitive values are redacted by default before they appear in changes, raw properties, action helper text, and supported export fields.
 
 ```php
 'privacy' => [
@@ -300,11 +324,59 @@ For stricter environments, enable immutable mode to hide destructive panel actio
 ],
 ```
 
+> This setting protects the package UI. It does not make the underlying database immutable. Version 2 integrity signatures detect row modification, while database permissions, backups, and external retention controls remain operational responsibilities.
+
+### 🏢 Tenant and Security Scoping
+
+All package-owned queries flow through one boundary. Configure it once for tenant-separated applications:
+
+```php
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+
+ActivityLogPlugin::make()
+    ->scopeActivitiesUsing(
+        fn (Builder $query, ?Model $tenant): Builder => $query->when(
+            $tenant,
+            fn (Builder $query): Builder => $query->where('tenant_id', $tenant->getKey()),
+        ),
+    );
+```
+
+Use a class implementing `ScopesActivityQueries` in config when the configuration must be cacheable.
+
+### ⚡ Scope-Safe Caching
+
+Dashboard aggregates and filter options use a short cache by default. Global installations are safe automatically. When a query scope is configured, caching switches off unless the application supplies a stable security-context key:
+
+```php
+'cache' => [
+    'ttl' => 60,
+    'context_key' => fn (?Model $tenant): ?string => $tenant?->getMorphClass().':'.$tenant?->getKey(),
+],
+```
+
+Use an invokable class instead of a closure when running `php artisan config:cache`. New and deleted activities, metadata backfills, and retention changes invalidate the aggregate cache.
+
+### 🔐 Controlled Restore and Revert
+
+Mutating actions are disabled by default. Version 2 checks activity and subject policies, blocks stale overwrites, removes sensitive/system attributes, uses transactions, and records compensating activities. Models with required fields or relationships should provide a `RestoresActivitySubjects` implementation.
+
+### 🔏 Integrity and Alerts
+
+New records receive persisted risk metadata and tamper-evident signatures after the package migration is installed. Run `filament-activity-log:verify-integrity` during scheduled compliance checks. Enable `alerts.enabled` and listen for `AuditRuleMatched` to deliver findings through your preferred notification channel.
+
+### ⚖️ Retention Holds
+
+Grant `manage_activity_retention_holds` to authorized compliance staff to place or release holds from the activity table. Hold changes are re-signed, emit `RetentionHoldChanged`, and create a minimal compensating audit record by default. Prune operations always exclude held records.
+
 ---
 
 ## ⚙️ Configuration
 
 You can customize almost every aspect of the package via the `filament-activity-log.php` config file.
+
+Version 2 keeps the existing column configuration for upgrade compatibility. New application-specific table behavior belongs in fluent callbacks, keeping the published config stable and avoiding a new option for every Filament table feature.
 
 ### Customizing Table Columns
 
@@ -320,6 +392,21 @@ You can customize almost every aspect of the package via the `filament-activity-
     ],
 ],
 ```
+
+The resource and relation manager ship with deferred loading and filters, search-on-blur, persistent search/filter/sort state, reorderable columns, a two-column manager, striped rows, improved pagination, and localized empty states. Override any table behavior per panel:
+
+```php
+use Filament\Tables\Table;
+
+ActivityLogPlugin::make()
+    ->configureTableUsing(fn (Table $table): Table => $table
+        ->deferLoading(false)
+        ->poll('30s'))
+    ->configureRelationManagerTableUsing(fn (Table $table): Table => $table
+        ->paginated([10, 25]));
+```
+
+This callback is also the recommended way to add application-owned columns, filters, groups, or actions without publishing and modifying package classes.
 
 ### Customizing Widgets
 
@@ -372,6 +459,9 @@ Then register it in the config:
 ### Advanced Documentation
 
 - [Audit, Privacy, and Compliance](docs/audit-compliance.md)
+- [v2 Upgrade Guide](UPGRADE.md)
+- [Architecture and Extension Points](docs/architecture.md)
+- [Production Operations](docs/operations.md)
 - [Laravel Boost Guidelines](resources/boost/guidelines/core.blade.php)
 
 ---
@@ -431,4 +521,4 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE.m
 - [FilamentPHP](https://filamentphp.com)
 - [Spatie Activitylog](https://spatie.be/docs/laravel-activitylog)
 - [Ali Harb](https://github.com/alizharb)
-- [All Contributors](../../contributors)
+- [All Contributors](https://github.com/alizharb/filament-activity-log/graphs/contributors)

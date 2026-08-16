@@ -7,6 +7,7 @@ use AlizHarb\ActivityLog\Widgets\ActivityChartWidget;
 use AlizHarb\ActivityLog\Widgets\ActivityHeatmapWidget;
 use AlizHarb\ActivityLog\Widgets\ActivityStatsWidget;
 use Filament\Pages\Page;
+use UnitEnum;
 
 class AuditDashboard extends Page
 {
@@ -14,7 +15,7 @@ class AuditDashboard extends Page
 
     protected string $view = 'filament-activity-log::pages.audit-dashboard';
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string|UnitEnum|null
     {
         try {
             return ActivityLogPlugin::get()->getNavigationGroup();

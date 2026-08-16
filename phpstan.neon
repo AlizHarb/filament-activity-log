@@ -6,17 +6,5 @@ parameters:
         - src
         - config
 
-    # Level 9 is the highest level
-    level: 5
+    level: 8
     tmpDir: .phpstan-cache
-
-    ignoreErrors:
-
-
-#    ignoreErrors:
-#        - '#PHPDoc tag @var#'
-#
-#    excludePaths:
-#        - ./*/*/FileToBeExcluded.php
-#
-#    checkMissingIterableValueType: false

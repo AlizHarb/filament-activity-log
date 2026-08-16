@@ -3,12 +3,76 @@
 declare(strict_types=1);
 use AlizHarb\ActivityLog\Pages\UserActivitiesPage;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\ActivityLogResource;
+use AlizHarb\ActivityLog\Rules\HighRiskActivityRule;
+use AlizHarb\ActivityLog\Support\DefaultSubjectRestorer;
+use AlizHarb\ActivityLog\Support\RequestContextCollector;
+use AlizHarb\ActivityLog\Timeline\SpatieActivitySource;
 use AlizHarb\ActivityLog\Widgets\ActivityChartWidget;
 use AlizHarb\ActivityLog\Widgets\ActivityHeatmapWidget;
 use AlizHarb\ActivityLog\Widgets\ActivityStatsWidget;
 use AlizHarb\ActivityLog\Widgets\LatestActivityWidget;
+use Illuminate\Support\Env;
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Query Boundary
+    |--------------------------------------------------------------------------
+    |
+    | Set a class implementing ScopesActivityQueries to enforce tenant or
+    | security isolation across resources, widgets, exports, and actions.
+    | A per-panel callable may also be registered with scopeActivitiesUsing().
+    |
+    */
+    'query' => [
+        'scope' => null,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Aggregate Cache
+    |--------------------------------------------------------------------------
+    |
+    | Dashboard aggregates and filter options are cached briefly. When a query
+    | scope is configured, caching is disabled unless context_key returns a
+    | stable tenant/security-context identifier.
+    |
+    */
+    'cache' => [
+        'ttl' => 60,
+        'store' => null,
+        'context_key' => null,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Controlled Mutations
+    |--------------------------------------------------------------------------
+    |
+    | Restoring and reverting business records is intentionally opt-in. The
+    | default workflow checks the subject policy, blocks stale overwrites, and
+    | writes a compensating audit record without copying sensitive values.
+    |
+    */
+    'mutations' => [
+        'enabled' => false,
+        'custom_authorization' => null,
+        'authorize_subject' => true,
+        'allow_sensitive_attributes' => false,
+        'log_compensating_activity' => true,
+        'log_name' => 'audit-control',
+        'revert' => [
+            'block_on_conflict' => true,
+            'denied_attributes' => ['id', 'created_at', 'updated_at', 'deleted_at'],
+        ],
+        'restore' => [
+            'restorer' => DefaultSubjectRestorer::class,
+            'allowed_attributes' => null,
+            'denied_attributes' => ['created_at', 'updated_at', 'deleted_at'],
+            'preserve_primary_key' => false,
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Resource Settings
@@ -31,7 +95,7 @@ return [
         ],
         'pagination' => [
             'options' => [10, 25, 50, 100],
-            'default' => 50,
+            'default' => 25,
         ],
     ],
 
@@ -95,7 +159,7 @@ return [
             ],
             'risk' => [
                 'visible' => true,
-                'sortable' => false,
+                'sortable' => true,
             ],
             'subject_type' => [
                 'visible' => true,
@@ -119,7 +183,7 @@ return [
             ],
             'created_at' => [
                 'visible' => true,
-                'searchable' => true,
+                'searchable' => false,
                 'sortable' => true,
             ],
             'ip_address' => [
@@ -128,28 +192,34 @@ return [
             ],
             'user_agent' => [
                 'visible' => true,
-                'searchable' => true,
+                'searchable' => false,
             ],
         ],
         'filters' => [
             'log_name' => true,
             'event' => true,
+            'risk' => true,
+            'retention_hold' => true,
             'created_at' => true,
             'causer' => true,
             'subject_type' => true,
             'subject_id' => true,
+            'request_id' => true,
+            'ip_address' => true,
         ],
         'actions' => [
             'timeline' => true,
             'view' => true,
-            'revert' => true,
-            'restore' => true,
-            'delete' => true,
+            'revert' => false,
+            'restore' => false,
+            'delete' => false,
             'export' => true,
-            'prune' => true,
+            'prune' => false,
+            'retention_hold' => true,
         ],
         'bulk_actions' => [
-            'delete' => true,
+            'delete' => false,
+            'retention_hold' => true,
         ],
     ],
 
@@ -179,6 +249,7 @@ return [
             'properties_old' => true,
             'properties_raw' => true,
             'ip_address' => true,
+            'request_id' => true,
             'user_agent' => true,
         ],
     ],
@@ -192,8 +263,11 @@ return [
     |
     */
     'timeline' => [
-        'show_action' => true,
         'icon' => 'heroicon-m-clock',
+        'limit' => 50,
+        'sources' => [
+            SpatieActivitySource::class,
+        ],
     ],
 
     /*
@@ -234,8 +308,13 @@ return [
         'create' => 'create_activity',
         'update' => 'update_activity',
         'delete' => 'delete_activity',
+        'delete_any' => 'delete_any_activity',
+        'prune' => 'prune_activity_logs',
         'restore' => 'restore_activity',
         'force_delete' => 'force_delete_activity',
+        'export' => 'export_activity_logs',
+        'hold' => 'manage_activity_retention_holds',
+        'allow_export_when_disabled' => false,
     ],
 
     /*
@@ -267,7 +346,6 @@ return [
     */
     'widgets' => [
         'enabled' => true,
-        'dashboard' => true,
         'widgets' => [
             ActivityChartWidget::class,
             LatestActivityWidget::class,
@@ -280,13 +358,13 @@ return [
          */
         'activity_chart' => [
             'enabled' => true,
-            'heading' => 'Activity Over Time',
+            'heading' => null,
             'sort' => 1,
             'max_height' => '300px',
             'polling_interval' => null, // e.g., '10s', '1m', null to disable
             'days' => 30,
             'type' => 'line', // 'line', 'bar', 'pie', 'doughnut', 'polarArea', 'radar'
-            'label' => 'Activities',
+            'label' => null,
             'fill' => true,
             'tension' => 0.3, // Curve smoothness (0 = straight lines, 0.4 = smooth curves)
             'border_color' => '#10b981', // Chart line/border color
@@ -333,15 +411,15 @@ return [
 
         'stats' => [
             'risk_sample_size' => 500,
-            'polling_interval' => '5s', // e.g., '10s', '1m', null to disable
+            'polling_interval' => null, // e.g., '10s', '1m', null to disable
         ],
     ],
     /*
     |--------------------------------------------------------------------------
-    | Advanced Settings (v1.3.0)
+    | Dashboard and Request Context
     |--------------------------------------------------------------------------
     |
-    | Configuration for new features in v1.3.0.
+    | Configure the dashboard and privacy-aware request context collectors.
     |
     */
     'dashboard' => [
@@ -355,8 +433,14 @@ return [
     'auto_context' => [
         'enabled' => true,
         'capture_ip' => true,
+        'anonymize_ip' => false,
         'capture_browser' => true,
         'capture_batch' => true,
+        'capture_request' => true,
+        'capture_tenant' => true,
+        'collectors' => [
+            RequestContextCollector::class,
+        ],
     ],
 
     /*
@@ -425,6 +509,33 @@ return [
         ],
         'signals' => [
             'context' => ['ip_address'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tamper-Evident Integrity
+    |--------------------------------------------------------------------------
+    |
+    | Each new activity receives an HMAC signature after it is persisted. This
+    | detects row modification; it does not prevent database-level deletion.
+    |
+    */
+    'integrity' => [
+        'enabled' => true,
+        'key' => Env::get('ACTIVITY_LOG_INTEGRITY_KEY'),
+    ],
+
+    'retention' => [
+        'enabled' => true,
+        'log_activity' => true,
+    ],
+
+    'alerts' => [
+        'enabled' => false,
+        'high_risk_threshold' => 55,
+        'rules' => [
+            HighRiskActivityRule::class,
         ],
     ],
 

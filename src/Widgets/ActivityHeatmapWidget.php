@@ -2,9 +2,10 @@
 
 namespace AlizHarb\ActivityLog\Widgets;
 
+use AlizHarb\ActivityLog\Support\ActivityCache;
+use AlizHarb\ActivityLog\Support\ActivityQuery;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\DB;
-use Spatie\Activitylog\Models\Activity;
 
 class ActivityHeatmapWidget extends Widget
 {
@@ -13,17 +14,19 @@ class ActivityHeatmapWidget extends Widget
 
     protected int $days = 365;
 
+    /**
+     * @return array{data: array<string, int>, max: int}
+     */
     public function getData(): array
     {
-        $driver = DB::getDriverName();
+        $activityQuery = app(ActivityQuery::class);
+        $driver = $activityQuery->driverName();
         $dateExpression = match ($driver) {
             'oracle' => 'TRUNC(created_at)',
             default => 'DATE(created_at)',
         };
 
-        $activityModel = config('activitylog.activity_model') ?? Activity::class;
-
-        $data = $activityModel::query()
+        $data = app(ActivityCache::class)->remember("widget:heatmap:{$this->days}", fn (): array => $activityQuery->query()
             ->select(
                 DB::raw("$dateExpression as date"),
                 DB::raw('COUNT(*) as count')
@@ -31,11 +34,13 @@ class ActivityHeatmapWidget extends Widget
             ->where('created_at', '>=', now()->subDays($this->days))
             ->groupBy(DB::raw($dateExpression))
             ->get()
-            ->pluck('count', 'date');
+            ->pluck('count', 'date')
+            ->map(fn (mixed $count): int => (int) $count)
+            ->toArray());
 
         return [
             'data' => $data,
-            'max' => $data->max() ?: 1,
+            'max' => max($data ?: [1]),
         ];
     }
 }

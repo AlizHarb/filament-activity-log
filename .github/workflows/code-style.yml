@@ -1,0 +1,26 @@
+name: code-style
+
+on:
+  push:
+    paths:
+      - '**.php'
+      - 'pint.json'
+  pull_request:
+    paths:
+      - '**.php'
+      - 'pint.json'
+
+permissions:
+  contents: read
+
+jobs:
+  pint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+      - run: composer install --prefer-dist --no-interaction
+      - run: vendor/bin/pint --test

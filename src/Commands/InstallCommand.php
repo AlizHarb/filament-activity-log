@@ -15,60 +15,66 @@ class InstallCommand extends Command
      */
     protected $signature = 'filament-activity-log:install';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Install the Filament Activity Log package and its dependencies';
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->setDescription((string) __('filament-activity-log::activity.commands.install.description'));
+    }
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $this->info('Installing Filament Activity Log...');
+        $this->info(__('filament-activity-log::activity.commands.install.installing'));
 
-        $this->info('Publishing Spatie Activity Log configuration...');
+        $this->info(__('filament-activity-log::activity.commands.install.publish_spatie_config'));
         $this->call('vendor:publish', [
             '--provider' => "Spatie\Activitylog\ActivitylogServiceProvider",
             '--tag' => 'activitylog-config',
         ]);
 
-        $this->info('Publishing Spatie Activity Log migration...');
+        $this->info(__('filament-activity-log::activity.commands.install.publish_spatie_migration'));
         $this->call('vendor:publish', [
             '--provider' => "Spatie\Activitylog\ActivitylogServiceProvider",
             '--tag' => 'activitylog-migrations',
         ]);
 
-        $this->info('Publishing Filament Activity Log configuration...');
+        $this->info(__('filament-activity-log::activity.commands.install.publish_package_config'));
         $this->call('vendor:publish', [
             '--tag' => 'filament-activity-log-config',
         ]);
 
-        if ($this->confirm('Would you like to publish the translations?', false)) {
+        $this->info(__('filament-activity-log::activity.commands.install.publish_package_migration'));
+        $this->call('vendor:publish', [
+            '--tag' => 'filament-activity-log-migrations',
+        ]);
+
+        if ($this->confirm(__('filament-activity-log::activity.commands.install.publish_translations'), false)) {
             $this->call('vendor:publish', [
                 '--tag' => 'filament-activity-log-translations',
             ]);
         }
 
-        if ($this->confirm('Would you like to publish the views?', false)) {
+        if ($this->confirm(__('filament-activity-log::activity.commands.install.publish_views'), false)) {
             $this->call('vendor:publish', [
                 '--tag' => 'filament-activity-log-views',
             ]);
         }
 
-        $this->info('Filament Activity Log installed successfully!');
+        $this->info(__('filament-activity-log::activity.commands.install.installed'));
 
-        if ($this->confirm('Would you like to run the migrations now?')) {
+        if ($this->confirm(__('filament-activity-log::activity.commands.install.run_migrations'))) {
             $this->call('migrate');
+            $this->call('filament-activity-log:doctor');
         } else {
-            $this->comment('Please run "php artisan migrate" to create the activity logs table.');
+            $this->comment(__('filament-activity-log::activity.commands.install.migration_reminder'));
         }
 
         $this->newLine();
-        $this->line('  ⭐️ <bg=blue;options=bold> SHOW SOME LOVE </>');
-        $this->line('  If you find this package useful, please consider starring it on GitHub:');
+        $this->line(__('filament-activity-log::activity.commands.install.support_title'));
+        $this->line(__('filament-activity-log::activity.commands.install.support_message'));
         $this->line('  <options=underscore>https://github.com/alizharb/filament-activity-log</>');
         $this->newLine();
 

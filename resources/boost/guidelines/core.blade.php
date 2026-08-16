@@ -6,7 +6,7 @@
     </summary>
 
     <installation>
-        Install the package with Composer, register <code>AlizHarb\ActivityLog\ActivityLogPlugin::make()</code> in the Filament panel, and run <code>php artisan filament-activity-log:install</code> when publishing configuration or assets is needed.
+        Install the package with Composer, register <code>AlizHarb\ActivityLog\ActivityLogPlugin::make()</code> in the Filament panel, and run <code>php artisan filament-activity-log:install</code>. Existing applications upgrading to v2 must publish the package migration, migrate, backfill metadata, and run the doctor command.
     </installation>
 
     <spatie-activitylog>
@@ -21,12 +21,12 @@
         Use the configured risk system to highlight destructive, security-sensitive, and privacy-sensitive activity. Customize <code>filament-activity-log.risk</code> or provide a resolver class when application-specific scoring is required.
     </risk-scoring>
 
-    <immutable-mode>
-        For compliance-heavy panels, enable <code>filament-activity-log.privacy.immutable_mode</code>. This hides delete, bulk delete, prune, restore, and revert actions from the package UI.
-    </immutable-mode>
+    <integrity>
+        UI immutable mode only hides package actions. It does not make the database immutable. Use integrity verification to detect row modification and retain database access controls, backups, and external retention policies.
+    </integrity>
 
     <authorization>
-        Prefer Filament/Laravel authorization for access control. If the application needs a simple package-level rule, configure <code>permissions.custom_authorization</code> with an invokable class instead of a closure so config caching remains safe.
+        Configure a global activity query scope for every tenant-separated panel. Mutations and exports are disabled unless explicitly authorized. Restore and revert must also pass the subject model policy.
     </authorization>
 
     <performance>

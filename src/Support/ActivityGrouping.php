@@ -51,6 +51,12 @@ class ActivityGrouping
      * On v5, filters by properties->group.
      * Falls back to properties->batch_uuid for legacy plugin data.
      */
+    /**
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     *
+     * @param  Builder<TModel>  $query
+     * @return Builder<TModel>
+     */
     public static function applyGroupFilter(Builder $query, string $groupId): Builder
     {
         if (static::hasBatchUuidColumn()) {
@@ -72,16 +78,22 @@ class ActivityGrouping
      */
     protected static function hasBatchUuidColumn(): bool
     {
-        static $hasBatchUuid = null;
+        static $columns = [];
 
-        if ($hasBatchUuid === null) {
+        $modelClass = app(ActivityQuery::class)->modelClass();
+        $activity = new $modelClass;
+        $connection = $activity->getConnectionName();
+        $table = $activity->getTable();
+        $cacheKey = ($connection ?? 'default').':'.$table;
+
+        if (! array_key_exists($cacheKey, $columns)) {
             try {
-                $hasBatchUuid = Schema::hasColumn('activity_log', 'batch_uuid');
+                $columns[$cacheKey] = Schema::connection($connection)->hasColumn($table, 'batch_uuid');
             } catch (\Throwable) {
-                $hasBatchUuid = false;
+                $columns[$cacheKey] = false;
             }
         }
 
-        return $hasBatchUuid;
+        return $columns[$cacheKey];
     }
 }

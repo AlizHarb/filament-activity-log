@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a reproducible package problem
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve Filament Activity Log. For security vulnerabilities, use the private process in SECURITY.md instead.
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      placeholder: v2.0.0
+    validations:
+      required: true
+  - type: input
+    id: stack
+    attributes:
+      label: Runtime versions
+      description: Include PHP, Laravel, Filament, and Spatie Activitylog versions.
+      placeholder: PHP 8.5, Laravel 13.x, Filament 5.x, Spatie Activitylog 5.x
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What happened, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest complete sequence that reproduces the issue, including relevant configuration or code.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs and context
+      description: Paste relevant stack traces or `filament-activity-log:doctor` output. Remove secrets and personal data.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and discussions.
+          required: true
+        - label: I removed credentials, tokens, and personal data from this report.
+          required: true

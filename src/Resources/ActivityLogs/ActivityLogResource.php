@@ -9,9 +9,13 @@ use AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas\ActivityLogForm;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas\ActivityLogInfolist;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Tables\ActivityLogTable;
 use AlizHarb\ActivityLog\Support\ActivityLogTitle;
+use AlizHarb\ActivityLog\Support\ActivityQuery;
+use BackedEnum;
+use Filament\Clusters\Cluster;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Activity;
@@ -33,7 +37,7 @@ class ActivityLogResource extends Resource
 
     public static function getModel(): string
     {
-        return config('activitylog.activity_model') ?? Activity::class;
+        return app(ActivityQuery::class)->modelClass();
     }
 
     public static function getLabel(): ?string
@@ -63,6 +67,9 @@ class ActivityLogResource extends Resource
         }
     }
 
+    /**
+     * @return class-string<Cluster>|null
+     */
     public static function getCluster(): ?string
     {
         try {
@@ -81,7 +88,7 @@ class ActivityLogResource extends Resource
         }
     }
 
-    public static function getNavigationIcon(): ?string
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
     {
         try {
             return ActivityLogPlugin::get()->getNavigationIcon() ?? parent::getNavigationIcon();
@@ -102,17 +109,23 @@ class ActivityLogResource extends Resource
             return $badge;
         }
 
-        return config('filament-activity-log.resource.navigation_count_badge') ? number_format(static::getModel()::count()) : null;
+        return config('filament-activity-log.resource.navigation_count_badge')
+            ? number_format(app(ActivityQuery::class)->query()->count())
+            : null;
     }
 
     public static function getGlobalSearchEloquentQuery(): Builder
     {
-        return parent::getGlobalSearchEloquentQuery()->with(['causer', 'subject']);
+        return app(ActivityQuery::class)
+            ->applyScope(parent::getGlobalSearchEloquentQuery())
+            ->with(['causer', 'subject']);
     }
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['causer', 'subject']);
+        return app(ActivityQuery::class)
+            ->applyScope(parent::getEloquentQuery())
+            ->with(['causer', 'subject']);
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
@@ -131,9 +144,16 @@ class ActivityLogResource extends Resource
         return $details;
     }
 
+    /**
+     * @return array<string>
+     */
     public static function getGlobalSearchAttributes(): array
     {
-        return config('filament-activity-log.resource.global_search.attributes', []);
+        $attributes = config('filament-activity-log.resource.global_search.attributes', []);
+
+        return is_array($attributes)
+            ? array_values(array_filter($attributes, 'is_string'))
+            : [];
     }
 
     /**

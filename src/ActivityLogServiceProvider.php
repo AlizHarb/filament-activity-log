@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace AlizHarb\ActivityLog;
 
 use AlizHarb\ActivityLog\Policies\ActivityPolicy;
-use Filament\Support\Assets\Asset;
+use AlizHarb\ActivityLog\Support\ActivityCache;
+use AlizHarb\ActivityLog\Support\ActivityMutation;
+use AlizHarb\ActivityLog\Support\ActivityPruner;
+use AlizHarb\ActivityLog\Support\ActivityQuery;
+use AlizHarb\ActivityLog\Support\AuditMetadata;
+use AlizHarb\ActivityLog\Support\AuditRuleEngine;
+use AlizHarb\ActivityLog\Support\AuditSchema;
+use AlizHarb\ActivityLog\Support\RetentionManager;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
-use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Support\Facades\Gate;
-use Spatie\Activitylog\Models\Activity;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -41,7 +46,13 @@ class ActivityLogServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasTranslations()
             ->hasViews(static::$viewNamespace)
-            ->hasCommand(Commands\InstallCommand::class);
+            ->hasMigration('upgrade_activity_log_with_audit_control_columns')
+            ->hasCommands([
+                Commands\InstallCommand::class,
+                Commands\BackfillAuditMetadataCommand::class,
+                Commands\VerifyIntegrityCommand::class,
+                Commands\DoctorCommand::class,
+            ]);
     }
 
     /**
@@ -68,7 +79,7 @@ class ActivityLogServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         Gate::policy(
-            config('activitylog.activity_model') ?? Activity::class,
+            app(ActivityQuery::class)->modelClass(),
             ActivityPolicy::class
         );
 
@@ -77,20 +88,34 @@ class ActivityLogServiceProvider extends PackageServiceProvider
             $this->getAssetPackageName()
         );
 
-        FilamentAsset::registerScriptData(
-            $this->getScriptData(),
-            $this->getAssetPackageName()
-        );
+        $activityModel = app(ActivityQuery::class)->modelClass();
+        $activityModel::created(function ($activity): void {
+            app(AuditMetadata::class)->persist($activity);
+            app(AuditRuleEngine::class)->evaluate($activity);
+            app(ActivityCache::class)->flush();
+        });
 
-        FilamentIcon::register($this->getIcons());
+        $activityModel::deleted(function (): void {
+            app(ActivityCache::class)->flush();
+        });
+    }
+
+    public function packageRegistered(): void
+    {
+        $this->app->singleton(ActivityQuery::class);
+        $this->app->singleton(ActivityMutation::class);
+        $this->app->singleton(ActivityPruner::class);
+        $this->app->singleton(ActivityCache::class);
+        $this->app->singleton(AuditSchema::class);
+        $this->app->singleton(RetentionManager::class);
     }
 
     /**
      * Get the package name for asset registration.
      *
-     * @return string|null The package name
+     * @return string The package name
      */
-    protected function getAssetPackageName(): ?string
+    protected function getAssetPackageName(): string
     {
         return 'alizharb/filament-activity-log';
     }
@@ -98,32 +123,12 @@ class ActivityLogServiceProvider extends PackageServiceProvider
     /**
      * Get the assets to register with Filament.
      *
-     * @return array<Asset> Array of CSS assets
+     * @return array<Css> Array of CSS assets
      */
     protected function getAssets(): array
     {
         return [
             Css::make('filament-activity-log', __DIR__.'/../resources/css/filament-activity-log.css'),
         ];
-    }
-
-    /**
-     * Get the script data to register with Filament.
-     *
-     * @return array<string, mixed> Array of script data
-     */
-    protected function getScriptData(): array
-    {
-        return [];
-    }
-
-    /**
-     * Get the icons to register with Filament.
-     *
-     * @return array<string> Array of icon names
-     */
-    protected function getIcons(): array
-    {
-        return [];
     }
 }

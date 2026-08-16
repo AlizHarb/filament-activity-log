@@ -125,4 +125,11 @@ describe('ActivityLogPlugin', function () {
         expect($widgets)->toBeArray()
             ->and($widgets)->toBeEmpty();
     });
+
+    it('can configure a per-panel activity query scope', function () {
+        $scope = fn ($query) => $query;
+        $plugin = ActivityLogPlugin::make()->scopeActivitiesUsing($scope);
+
+        expect($plugin->getActivityQueryScope())->toBe($scope);
+    });
 });

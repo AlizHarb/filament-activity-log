@@ -2,30 +2,43 @@
 
 namespace AlizHarb\ActivityLog\Taps;
 
+use AlizHarb\ActivityLog\Contracts\CollectsActivityContext;
+use AlizHarb\ActivityLog\Exceptions\InvalidConfigurationException;
+use AlizHarb\ActivityLog\Support\RiskProjector;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\Contracts\Activity;
+use Spatie\Activitylog\Contracts\Activity as ActivityContract;
+use Spatie\Activitylog\Models\Activity;
 
 class SetActivityContextTap
 {
-    public function __invoke(Activity $activity, string $eventName, ?Model $subject = null, ?Model $causer = null, ?array $properties = null): void
+    /**
+     * @param  array<string, mixed>|null  $properties
+     */
+    public function __invoke(ActivityContract $activity, string $eventName, ?Model $subject = null, ?Model $causer = null, ?array $properties = null): void
     {
-        /** @var \Spatie\Activitylog\Models\Activity $activity */
-        $context = [];
-
-        if (config('filament-activity-log.auto_context.capture_ip', true)) {
-            $context['ip_address'] = request()->ip();
+        if (! $activity instanceof Activity) {
+            throw new InvalidConfigurationException('configuration.tap_activity_model');
         }
 
-        if (config('filament-activity-log.auto_context.capture_browser', true)) {
-            $context['user_agent'] = request()->userAgent();
+        $context = [];
+
+        foreach (config('filament-activity-log.auto_context.collectors', []) as $collectorClass) {
+            $collector = app($collectorClass);
+
+            if (! $collector instanceof CollectsActivityContext) {
+                throw new InvalidConfigurationException('configuration.context_collector', ['class' => $collectorClass]);
+            }
+
+            $context = array_replace($context, $collector->collect(request(), $subject, $causer));
         }
 
         if (config('filament-activity-log.auto_context.capture_batch', true)) {
             $groupId = static::getBatchUuid();
+            $context['request_id'] ??= $groupId;
 
-            if (static::hasBatchUuidColumn()) {
+            if (static::hasBatchUuidColumn($activity)) {
                 // v4: use the native batch_uuid column
                 $activity->setAttribute('batch_uuid', $groupId);
             } else {
@@ -34,7 +47,8 @@ class SetActivityContextTap
             }
         }
 
-        $activity->properties = $activity->properties->merge($context);
+        $activity->properties = ($activity->properties ?? collect())->merge($context);
+        app(RiskProjector::class)->project($activity);
     }
 
     /**
@@ -55,18 +69,22 @@ class SetActivityContextTap
     /**
      * Check if the activity_log table has a native batch_uuid column (v4).
      */
-    protected static ?bool $hasBatchUuidColumn = null;
+    /** @var array<string, bool> */
+    protected static array $hasBatchUuidColumn = [];
 
-    protected static function hasBatchUuidColumn(): bool
+    protected static function hasBatchUuidColumn(Activity $activity): bool
     {
-        if (static::$hasBatchUuidColumn === null) {
+        $cacheKey = ($activity->getConnectionName() ?? 'default').':'.$activity->getTable();
+
+        if (! array_key_exists($cacheKey, static::$hasBatchUuidColumn)) {
             try {
-                static::$hasBatchUuidColumn = Schema::hasColumn('activity_log', 'batch_uuid');
+                static::$hasBatchUuidColumn[$cacheKey] = Schema::connection($activity->getConnectionName())
+                    ->hasColumn($activity->getTable(), 'batch_uuid');
             } catch (\Throwable) {
-                static::$hasBatchUuidColumn = false;
+                static::$hasBatchUuidColumn[$cacheKey] = false;
             }
         }
 
-        return static::$hasBatchUuidColumn;
+        return static::$hasBatchUuidColumn[$cacheKey];
     }
 }

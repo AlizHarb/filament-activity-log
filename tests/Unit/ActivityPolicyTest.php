@@ -66,10 +66,10 @@ describe('ActivityPolicy', function () {
     });
 
     describe('update', function () {
-        it('returns true when permissions are disabled', function () {
+        it('returns false when mutations are disabled', function () {
             config()->set('filament-activity-log.permissions.enabled', false);
 
-            expect($this->policy->update($this->user, $this->activity))->toBeTrue();
+            expect($this->policy->update($this->user, $this->activity))->toBeFalse();
         });
 
         it('returns false when permissions enabled but no permission configured', function () {
@@ -81,10 +81,10 @@ describe('ActivityPolicy', function () {
     });
 
     describe('delete', function () {
-        it('returns true when permissions are disabled', function () {
+        it('returns false when mutations are disabled', function () {
             config()->set('filament-activity-log.permissions.enabled', false);
 
-            expect($this->policy->delete($this->user, $this->activity))->toBeTrue();
+            expect($this->policy->delete($this->user, $this->activity))->toBeFalse();
         });
 
         it('returns false when permissions enabled but no permission configured', function () {
@@ -93,13 +93,22 @@ describe('ActivityPolicy', function () {
 
             expect($this->policy->delete($this->user, $this->activity))->toBeFalse();
         });
+
+        it('protects retention-held activities from every delete authorization path', function () {
+            config()->set('filament-activity-log.mutations.enabled', true);
+            config()->set('filament-activity-log.mutations.custom_authorization', fn (): bool => true);
+            $this->activity->setAttribute('retention_hold', true);
+
+            expect($this->policy->delete($this->user, $this->activity))->toBeFalse()
+                ->and($this->policy->forceDelete($this->user, $this->activity))->toBeFalse();
+        });
     });
 
     describe('restore', function () {
-        it('returns true when permissions are disabled', function () {
+        it('returns false when mutations are disabled', function () {
             config()->set('filament-activity-log.permissions.enabled', false);
 
-            expect($this->policy->restore($this->user, $this->activity))->toBeTrue();
+            expect($this->policy->restore($this->user, $this->activity))->toBeFalse();
         });
 
         it('returns false when permissions enabled but no permission configured', function () {
@@ -111,10 +120,10 @@ describe('ActivityPolicy', function () {
     });
 
     describe('forceDelete', function () {
-        it('returns true when permissions are disabled', function () {
+        it('returns false when mutations are disabled', function () {
             config()->set('filament-activity-log.permissions.enabled', false);
 
-            expect($this->policy->forceDelete($this->user, $this->activity))->toBeTrue();
+            expect($this->policy->forceDelete($this->user, $this->activity))->toBeFalse();
         });
 
         it('returns false when permissions enabled but no permission configured', function () {
@@ -122,6 +131,23 @@ describe('ActivityPolicy', function () {
             config()->set('filament-activity-log.permissions.force_delete', null);
 
             expect($this->policy->forceDelete($this->user, $this->activity))->toBeFalse();
+        });
+    });
+
+    describe('hold', function () {
+        it('returns false when permissions are disabled', function () {
+            config()->set('filament-activity-log.permissions.enabled', false);
+
+            expect($this->policy->hold($this->user, $this->activity))->toBeFalse();
+        });
+
+        it('allows an explicitly authorized retention hold', function () {
+            config()->set(
+                'filament-activity-log.mutations.custom_authorization',
+                fn (string $ability): bool => $ability === 'hold'
+            );
+
+            expect($this->policy->hold($this->user, $this->activity))->toBeTrue();
         });
     });
 });
@@ -153,25 +179,25 @@ describe('ActivityPolicy with contract-only user (no concrete base class)', func
     it('update accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->update(new ContractOnlyUser, $this->activity))->toBeTrue();
+        expect($this->policy->update(new ContractOnlyUser, $this->activity))->toBeFalse();
     });
 
     it('delete accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->delete(new ContractOnlyUser, $this->activity))->toBeTrue();
+        expect($this->policy->delete(new ContractOnlyUser, $this->activity))->toBeFalse();
     });
 
     it('restore accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->restore(new ContractOnlyUser, $this->activity))->toBeTrue();
+        expect($this->policy->restore(new ContractOnlyUser, $this->activity))->toBeFalse();
     });
 
     it('forceDelete accepts a non-Illuminate\\Foundation\\Auth\\User authenticatable', function () {
         config()->set('filament-activity-log.permissions.enabled', false);
 
-        expect($this->policy->forceDelete(new ContractOnlyUser, $this->activity))->toBeTrue();
+        expect($this->policy->forceDelete(new ContractOnlyUser, $this->activity))->toBeFalse();
     });
 
     it('policy view handles custom activity models implementing Spatie contract', function () {
@@ -180,5 +206,16 @@ describe('ActivityPolicy with contract-only user (no concrete base class)', func
         config()->set('filament-activity-log.permissions.enabled', false);
 
         expect($this->policy->view(new ContractOnlyUser, $customActivity))->toBeTrue();
+    });
+
+    it('allows an explicitly authorized mutation', function () {
+        config()->set('filament-activity-log.mutations.enabled', true);
+        config()->set(
+            'filament-activity-log.mutations.custom_authorization',
+            fn (string $ability): bool => $ability === 'update'
+        );
+
+        expect($this->policy->update(new ContractOnlyUser, $this->activity))->toBeTrue()
+            ->and($this->policy->delete(new ContractOnlyUser, $this->activity))->toBeFalse();
     });
 });

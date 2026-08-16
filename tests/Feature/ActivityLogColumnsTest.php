@@ -17,7 +17,7 @@ it('renders ip and browser columns in table', function () {
     $this->actingAs($user);
 
     livewire(ListActivityLogs::class)
-        ->assertTableColumnVisible('properties.ip_address')
+        ->assertTableColumnVisible('ip_address')
         ->assertTableColumnVisible('properties.user_agent');
 });
 
@@ -79,7 +79,38 @@ it('can filter activity logs by subject id', function () {
     $this->actingAs($user);
 
     livewire(ListActivityLogs::class)
+        ->loadTable()
         ->filterTable('subject_id', ['value' => 101])
+        ->assertCanSeeTableRecords([$matchingActivity])
+        ->assertCanNotSeeTableRecords([$otherActivity]);
+});
+
+it('can correlate activity logs by request id and ip address', function () {
+    $user = User::create([
+        'name' => 'Test User',
+        'email' => 'correlation@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $matchingActivity = Activity::query()->create([
+        'log_name' => 'default',
+        'description' => 'Matching request',
+        'event' => 'updated',
+        'properties' => ['request_id' => 'req-123', 'ip_address' => '192.0.2.10'],
+    ]);
+    $otherActivity = Activity::query()->create([
+        'log_name' => 'default',
+        'description' => 'Other request',
+        'event' => 'updated',
+        'properties' => ['request_id' => 'req-456', 'ip_address' => '192.0.2.11'],
+    ]);
+
+    $this->actingAs($user);
+
+    livewire(ListActivityLogs::class)
+        ->loadTable()
+        ->filterTable('request_id', ['value' => 'req-123'])
+        ->filterTable('ip_address', ['value' => '192.0.2.10'])
         ->assertCanSeeTableRecords([$matchingActivity])
         ->assertCanNotSeeTableRecords([$otherActivity]);
 });

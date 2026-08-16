@@ -88,6 +88,22 @@ Use pruning carefully. Before enabling automated cleanup, decide:
 
 For strict environments, keep immutable mode enabled and perform retention from reviewed application jobs instead of ad-hoc panel actions.
 
+Version 2 adds authorized single-record and bulk retention holds. Grant `manage_activity_retention_holds` only to compliance operators. Package pruning excludes held rows, hold changes remain inside the configured query boundary, and each change is re-signed and logged as a minimal control activity by default.
+
+## Integrity Verification
+
+The package signs activity rows with HMAC after persistence and can verify the stored signatures later:
+
+```bash
+php artisan filament-activity-log:verify-integrity --chunk=500
+```
+
+Signatures detect row modification, not deletion. Database permissions, backups, key management, external storage, and a reviewed incident process remain necessary for stronger evidence guarantees.
+
+## Tenant-safe caching
+
+Aggregate caching is automatic for unscoped installations. When `query.scope` or `scopeActivitiesUsing()` is active, the package disables caching unless `cache.context_key` returns a stable identifier for the current tenant or security context. This fail-closed behavior prevents aggregate data from being reused across boundaries.
+
 ## Spatie v4 and v5 Notes
 
 The package reads changes from both Spatie schemas:

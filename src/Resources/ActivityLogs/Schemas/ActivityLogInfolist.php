@@ -30,7 +30,7 @@ class ActivityLogInfolist
     {
         return $schema
             ->schema([
-                Tabs::make('Activity Details')
+                Tabs::make(__('filament-activity-log::activity.infolist.section.activity_details'))
                     ->tabs([
                         Tab::make('Overview')
                             ->label(__('filament-activity-log::activity.infolist.tab.overview'))
@@ -75,7 +75,7 @@ class ActivityLogInfolist
                                         Group::make([
                                             TextEntry::make('causer')
                                                 ->label(__('filament-activity-log::activity.infolist.entry.causer'))
-                                                ->getStateUsing(fn ($record) => $record->causer->name ?? 'System')
+                                                ->getStateUsing(fn ($record) => $record->causer->name ?? __('filament-activity-log::activity.system'))
                                                 ->url(function ($record) {
                                                     $causer = $record->causer;
                                                     if (! $causer) {
@@ -117,7 +117,14 @@ class ActivityLogInfolist
 
                                             TextEntry::make('properties.ip_address')
                                                 ->label(__('filament-activity-log::activity.infolist.entry.ip_address'))
+                                                ->getStateUsing(fn ($record) => $record->getAttribute('ip_address') ?? data_get($record->properties, 'ip_address'))
                                                 ->visible(config('filament-activity-log.infolist.entries.ip_address', true)),
+
+                                            TextEntry::make('request_id')
+                                                ->label(__('filament-activity-log::activity.infolist.entry.request_id'))
+                                                ->getStateUsing(fn ($record) => $record->getAttribute('request_id') ?? data_get($record->properties, 'request_id'))
+                                                ->copyable()
+                                                ->visible(config('filament-activity-log.infolist.entries.request_id', true)),
 
                                             TextEntry::make('properties.user_agent')
                                                 ->label(__('filament-activity-log::activity.infolist.entry.browser'))
@@ -181,7 +188,7 @@ class ActivityLogInfolist
                                     ->visible(config('filament-activity-log.infolist.entries.properties_raw', true)),
 
                                 CodeEntry::make('attribute_changes')
-                                    ->label('Attribute Changes')
+                                    ->label(__('filament-activity-log::activity.infolist.entry.attribute_changes'))
                                     ->getStateUsing(fn ($record) => ActivityChanges::getAttributeChanges($record))
                                     ->formatStateUsing(fn ($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
                                     ->columnSpanFull()

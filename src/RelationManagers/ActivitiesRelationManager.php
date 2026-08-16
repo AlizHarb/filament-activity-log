@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace AlizHarb\ActivityLog\RelationManagers;
 
 use AlizHarb\ActivityLog\Actions\ActivityLogTimelineTableAction;
+use AlizHarb\ActivityLog\ActivityLogPlugin;
+use AlizHarb\ActivityLog\Enums\ActivityLogEvent;
+use AlizHarb\ActivityLog\Exceptions\InvalidConfigurationException;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas\ActivityLogInfolist;
+use AlizHarb\ActivityLog\Support\ActivityQuery;
 use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -14,6 +18,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Str;
 
 /**
  * Activities Relation Manager.
@@ -31,15 +36,21 @@ class ActivitiesRelationManager extends RelationManager
     /**
      * The title of the relationship.
      */
-    protected static ?string $relationshipTitle = 'Activities';
-
     /**
      * The attribute to use for the record title.
      */
     protected static ?string $recordTitleAttribute = 'description';
 
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return (string) __('filament-activity-log::activity.plural_label');
+    }
+
     /**
      * Resolve the relationship dynamically based on the owner record's methods.
+     */
+    /**
+     * @return Relation<Model, Model, mixed>|Builder<Model>
      */
     public function getRelationship(): Relation|Builder
     {
@@ -49,8 +60,15 @@ class ActivitiesRelationManager extends RelationManager
             return $record->activitiesAsSubject();
         }
 
-        /** @var Relation|Builder $relation */
-        $relation = call_user_func([$record, 'activities']);
+        if (! method_exists($record, 'activities')) {
+            throw new InvalidConfigurationException('configuration.relation_missing');
+        }
+
+        $relation = $record->{'activities'}();
+
+        if (! $relation instanceof Relation && ! $relation instanceof Builder) {
+            throw new InvalidConfigurationException('configuration.relation_invalid');
+        }
 
         return $relation;
     }
@@ -85,8 +103,19 @@ class ActivitiesRelationManager extends RelationManager
      */
     public function table(Table $table): Table
     {
-        return $table
+        $table = $table
             ->recordTitleAttribute('description')
+            ->deferLoading()
+            ->searchOnBlur()
+            ->persistSearchInSession()
+            ->persistSortInSession()
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
+            ->extremePaginationLinks()
+            ->striped()
+            ->emptyStateIcon('heroicon-o-clipboard-document-list')
+            ->emptyStateHeading(__('filament-activity-log::activity.table.empty.relation_heading'))
+            ->emptyStateDescription(__('filament-activity-log::activity.table.empty.relation_description'))
             ->defaultSort(
                 config('filament-activity-log.resource.default_sort_column', 'created_at'),
                 config('filament-activity-log.resource.default_sort_direction', 'desc')
@@ -94,10 +123,16 @@ class ActivitiesRelationManager extends RelationManager
             ->modifyQueryUsing(function (Builder $query) {
                 /** @var Model $record */
                 $record = $this->getOwnerRecord();
+                $activityQuery = app(ActivityQuery::class);
+
+                $activityQuery->applyScope($query);
+                $query->with(['causer', 'subject']);
 
                 // Also include activities the record caused (v5: activitiesAsCauser, v4: actions)
                 if (method_exists($record, 'activitiesAsCauser') || method_exists($record, 'actions')) {
-                    $query->orWhere(function (Builder $subQuery) use ($record) {
+                    $query->orWhere(function (Builder $subQuery) use ($record, $activityQuery) {
+                        $activityQuery->applyScope($subQuery);
+
                         $subQuery->where('causer_id', $record->getKey())
                             ->where('causer_type', $record->getMorphClass());
                     });
@@ -123,12 +158,9 @@ class ActivitiesRelationManager extends RelationManager
                 TextColumn::make('event')
                     ->label(__('filament-activity-log::activity.table.column.event'))
                     ->badge()
-                    ->colors([
-                        'success' => 'created',
-                        'warning' => 'updated',
-                        'danger' => 'deleted',
-                        'gray' => 'restored',
-                    ])
+                    ->formatStateUsing(fn ($state) => ActivityLogEvent::tryFrom($state)?->getLabel() ?? ucfirst((string) $state))
+                    ->color(fn ($state) => ActivityLogEvent::tryFrom($state)?->getColor() ?? 'gray')
+                    ->icon(fn ($state) => ActivityLogEvent::tryFrom($state)?->getIcon())
                     ->searchable(config('filament-activity-log.table.columns.event.searchable', true))
                     ->sortable(config('filament-activity-log.table.columns.event.sortable', true))
                     ->visible(config('filament-activity-log.table.columns.event.visible', true)),
@@ -146,7 +178,7 @@ class ActivitiesRelationManager extends RelationManager
                     ->limit(config('filament-activity-log.table.columns.description.limit', 50))
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
-                        if (strlen($state) <= config('filament-activity-log.table.columns.description.limit', 50)) {
+                        if (Str::length($state) <= config('filament-activity-log.table.columns.description.limit', 50)) {
                             return null;
                         }
 
@@ -170,5 +202,13 @@ class ActivitiesRelationManager extends RelationManager
                 ActivityLogTimelineTableAction::make()
                     ->visible(config('filament-activity-log.table.actions.timeline', true)),
             ]);
+
+        try {
+            $plugin = ActivityLogPlugin::get();
+        } catch (\Throwable) {
+            return $table;
+        }
+
+        return $plugin->configureRelationManagerTable($table);
     }
 }

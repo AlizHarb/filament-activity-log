@@ -6,6 +6,7 @@ namespace AlizHarb\ActivityLog\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Activitylog\Contracts\Activity;
 
@@ -43,6 +44,45 @@ class ActivityPolicy
         }
 
         return null;
+    }
+
+    protected function checkMutationAuthorization(Authenticatable $user, string $ability, ?Activity $activity = null): ?bool
+    {
+        $authorizer = config('filament-activity-log.mutations.custom_authorization');
+
+        if (is_string($authorizer) && class_exists($authorizer)) {
+            $authorizer = app($authorizer);
+        }
+
+        if (! is_callable($authorizer)) {
+            return null;
+        }
+
+        return (bool) app()->call($authorizer, [
+            'user' => $user,
+            'ability' => $ability,
+            'activity' => $activity,
+        ]);
+    }
+
+    protected function mutationAllowed(Authenticatable $user, string $ability, ?Activity $activity = null): bool
+    {
+        if (! config('filament-activity-log.mutations.enabled', false)) {
+            return false;
+        }
+
+        $customResult = $this->checkMutationAuthorization($user, $ability, $activity);
+        if ($customResult !== null) {
+            return $customResult;
+        }
+
+        if (! config('filament-activity-log.permissions.enabled', false)) {
+            return false;
+        }
+
+        $permission = config("filament-activity-log.permissions.{$ability}");
+
+        return is_string($permission) && $permission !== '' && Gate::forUser($user)->allows($permission);
     }
 
     /**
@@ -136,19 +176,7 @@ class ActivityPolicy
      */
     public function update(Authenticatable $user, Activity $activity): bool
     {
-        // Check for custom authorization callback first
-        $result = $this->checkCustomAuthorization($user);
-        if ($result !== null) {
-            return $result;
-        }
-
-        if (! config('filament-activity-log.permissions.enabled', false)) {
-            return true;
-        }
-
-        $permission = config('filament-activity-log.permissions.update');
-
-        return $permission ? Gate::forUser($user)->allows($permission) : false;
+        return $this->mutationAllowed($user, 'update', $activity);
     }
 
     /**
@@ -163,19 +191,11 @@ class ActivityPolicy
      */
     public function delete(Authenticatable $user, Activity $activity): bool
     {
-        // Check for custom authorization callback first
-        $result = $this->checkCustomAuthorization($user);
-        if ($result !== null) {
-            return $result;
+        if ($this->isRetentionHeld($activity)) {
+            return false;
         }
 
-        if (! config('filament-activity-log.permissions.enabled', false)) {
-            return true;
-        }
-
-        $permission = config('filament-activity-log.permissions.delete');
-
-        return $permission ? Gate::forUser($user)->allows($permission) : false;
+        return $this->mutationAllowed($user, 'delete', $activity);
     }
 
     /**
@@ -190,19 +210,7 @@ class ActivityPolicy
      */
     public function restore(Authenticatable $user, Activity $activity): bool
     {
-        // Check for custom authorization callback first
-        $result = $this->checkCustomAuthorization($user);
-        if ($result !== null) {
-            return $result;
-        }
-
-        if (! config('filament-activity-log.permissions.enabled', false)) {
-            return true;
-        }
-
-        $permission = config('filament-activity-log.permissions.restore');
-
-        return $permission ? Gate::forUser($user)->allows($permission) : false;
+        return $this->mutationAllowed($user, 'restore', $activity);
     }
 
     /**
@@ -217,18 +225,56 @@ class ActivityPolicy
      */
     public function forceDelete(Authenticatable $user, Activity $activity): bool
     {
-        // Check for custom authorization callback first
-        $result = $this->checkCustomAuthorization($user);
-        if ($result !== null) {
-            return $result;
+        if ($this->isRetentionHeld($activity)) {
+            return false;
+        }
+
+        return $this->mutationAllowed($user, 'force_delete', $activity);
+    }
+
+    public function deleteAny(Authenticatable $user): bool
+    {
+        return $this->mutationAllowed($user, 'delete_any');
+    }
+
+    public function pruneAny(Authenticatable $user): bool
+    {
+        return $this->mutationAllowed($user, 'prune');
+    }
+
+    public function exportAny(Authenticatable $user): bool
+    {
+        if (! config('filament-activity-log.permissions.enabled', false)) {
+            return config('filament-activity-log.permissions.allow_export_when_disabled', false);
+        }
+
+        $permission = config('filament-activity-log.permissions.export');
+
+        return is_string($permission) && $permission !== '' && Gate::forUser($user)->allows($permission);
+    }
+
+    public function hold(Authenticatable $user, Activity $activity): bool
+    {
+        if (! config('filament-activity-log.retention.enabled', true)) {
+            return false;
+        }
+
+        $customResult = $this->checkMutationAuthorization($user, 'hold', $activity);
+        if ($customResult !== null) {
+            return $customResult;
         }
 
         if (! config('filament-activity-log.permissions.enabled', false)) {
-            return true;
+            return false;
         }
 
-        $permission = config('filament-activity-log.permissions.force_delete');
+        $permission = config('filament-activity-log.permissions.hold');
 
-        return $permission ? Gate::forUser($user)->allows($permission) : false;
+        return is_string($permission) && $permission !== '' && Gate::forUser($user)->allows($permission);
+    }
+
+    protected function isRetentionHeld(Activity $activity): bool
+    {
+        return $activity instanceof Model && (bool) $activity->getAttribute('retention_hold');
     }
 }

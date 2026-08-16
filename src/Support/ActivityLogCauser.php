@@ -51,6 +51,9 @@ class ActivityLogCauser
     /**
      * Pluck the causer display names and IDs for filter options.
      *
+     * @template TModel of Model
+     *
+     * @param  Builder<TModel>  $query
      * @return array<int|string, string>
      */
     public static function pluckOptions(Builder $query): array

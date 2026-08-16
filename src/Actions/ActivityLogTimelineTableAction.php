@@ -2,6 +2,7 @@
 
 namespace AlizHarb\ActivityLog\Actions;
 
+use AlizHarb\ActivityLog\Timeline\ActivityTimeline;
 use Filament\Actions\Action;
 use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Schema;
@@ -82,6 +83,8 @@ class ActivityLogTimelineTableAction extends Action
      * Retrieve activities for the given record.
      *
      * Fetches activities where the record is the subject or the causer.
+     *
+     * @return Collection<int, Activity>
      */
     protected function getActivities(?Model $record): Collection
     {
@@ -89,59 +92,15 @@ class ActivityLogTimelineTableAction extends Action
             return collect();
         }
 
-        $with = ['causer', 'subject'];
-
-        // Get activities where the record is the subject
         if ($record instanceof Activity) {
-            $subject = $record->subject;
-            $activities = $subject ? static::getSubjectActivities($subject, $with) : collect();
-        } else {
-            $activities = static::getSubjectActivities($record, $with);
+            $record = $record->subject;
+
+            if (! $record) {
+                return collect();
+            }
         }
 
-        // Also include activities the record caused
-        $causalActivities = static::getCausalActivities($record, $with);
-        if ($causalActivities->isNotEmpty()) {
-            $activities = $activities->merge($causalActivities);
-        }
-
-        return $activities->sortByDesc('created_at');
-    }
-
-    /**
-     * Get subject-side activities using capability detection.
-     *
-     * Prefers activitiesAsSubject() (v5), then activities() (v4), then raw morphMany.
-     */
-    protected static function getSubjectActivities(Model $record, array $with): Collection
-    {
-        if (method_exists($record, 'activitiesAsSubject')) {
-            return $record->activitiesAsSubject()->with($with)->latest()->limit(50)->get();
-        }
-
-        if (method_exists($record, 'activities')) {
-            return $record->activities()->with($with)->latest()->limit(50)->get();
-        }
-
-        return $record->morphMany(Activity::class, 'subject')->with($with)->latest()->limit(50)->get();
-    }
-
-    /**
-     * Get causer-side activities using capability detection.
-     *
-     * Prefers activitiesAsCauser() (v5), then actions() (v4).
-     */
-    protected static function getCausalActivities(Model $record, array $with): Collection
-    {
-        if (method_exists($record, 'activitiesAsCauser')) {
-            return $record->activitiesAsCauser()->with($with)->latest()->limit(50)->get();
-        }
-
-        if (method_exists($record, 'actions')) {
-            return $record->actions()->with($with)->latest()->limit(50)->get();
-        }
-
-        return collect();
+        return app(ActivityTimeline::class)->for($record);
     }
 
     /**

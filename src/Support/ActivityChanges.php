@@ -66,7 +66,7 @@ class ActivityChanges
      */
     public static function getRedactedProperties(Activity $activity): array
     {
-        return ActivityLogRedactor::redact($activity->properties->toArray());
+        return ActivityLogRedactor::redact(($activity->properties ?? collect())->toArray());
     }
 
     /**

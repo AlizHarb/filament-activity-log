@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog\Widgets;
 
+use AlizHarb\ActivityLog\Support\ActivityQuery;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Spatie\Activitylog\Models\Activity;
 
 /**
  * Latest Activity Widget.
@@ -134,9 +134,7 @@ class LatestActivityWidget extends BaseWidget
 
         return $table
             ->query(function () {
-                $activityModel = config('activitylog.activity_model') ?? Activity::class;
-
-                return $activityModel::query()
+                return app(ActivityQuery::class)->query()
                     ->with(['causer', 'subject'])
                     ->latest()
                     ->limit(config('filament-activity-log.widgets.latest_activity.limit', 10));

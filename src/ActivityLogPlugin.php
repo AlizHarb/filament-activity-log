@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog;
 
+use AlizHarb\ActivityLog\Contracts\ScopesActivityQueries;
+use AlizHarb\ActivityLog\Exceptions\InvalidConfigurationException;
 use AlizHarb\ActivityLog\Http\Middleware\ActivityLogContextMiddleware;
 use AlizHarb\ActivityLog\Pages\AuditDashboard;
 use AlizHarb\ActivityLog\Pages\UserActivitiesPage;
@@ -13,9 +15,13 @@ use AlizHarb\ActivityLog\Widgets\ActivityHeatmapWidget;
 use AlizHarb\ActivityLog\Widgets\ActivityStatsWidget;
 use AlizHarb\ActivityLog\Widgets\LatestActivityWidget;
 use Closure;
+use Filament\Clusters\Cluster;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Filament\Tables\Table;
+use Filament\Widgets\Widget;
+use Filament\Widgets\WidgetConfiguration;
 use UnitEnum;
 
 /**
@@ -69,17 +75,8 @@ class ActivityLogPlugin implements Plugin
     /**
      * The cluster for the activity log resource.
      */
+    /** @var class-string<Cluster>|Closure|null */
     protected string|Closure|null $cluster = null;
-
-    /**
-     * Whether resource actions should be hidden.
-     */
-    protected bool|Closure|null $isResourceActionHidden = null;
-
-    /**
-     * Whether restore actions should be hidden.
-     */
-    protected bool|Closure|null $isRestoreActionHidden = null;
 
     /**
      * Whether the audit dashboard is enabled.
@@ -95,6 +92,15 @@ class ActivityLogPlugin implements Plugin
      * Whether automatic context tracking is enabled.
      */
     protected bool|Closure $isAutoContextTrackingEnabled = true;
+
+    /**
+     * Optional security or tenant scope applied to every activity query.
+     */
+    protected Closure|string|ScopesActivityQueries|null $activityQueryScope = null;
+
+    protected ?Closure $tableConfigurator = null;
+
+    protected ?Closure $relationManagerTableConfigurator = null;
 
     /**
      * Get the ID of the plugin.
@@ -137,7 +143,7 @@ class ActivityLogPlugin implements Plugin
      * Returns an array of widget class names based on configuration.
      * Returns empty array if widgets are disabled in config.
      *
-     * @return array<class-string>
+     * @return array<class-string<Widget>|WidgetConfiguration>
      */
     public function getWidgets(): array
     {
@@ -145,12 +151,34 @@ class ActivityLogPlugin implements Plugin
             return [];
         }
 
-        return config('filament-activity-log.widgets.widgets', [
+        $widgets = config('filament-activity-log.widgets.widgets', [
             ActivityChartWidget::class,
             LatestActivityWidget::class,
             ActivityHeatmapWidget::class,
             ActivityStatsWidget::class,
         ]);
+
+        if (! is_array($widgets)) {
+            throw new InvalidConfigurationException('configuration.widgets_array');
+        }
+
+        $validatedWidgets = [];
+
+        foreach ($widgets as $widget) {
+            if ($widget instanceof WidgetConfiguration) {
+                $validatedWidgets[] = $widget;
+
+                continue;
+            }
+
+            if (! is_string($widget) || ! is_a($widget, Widget::class, true)) {
+                throw new InvalidConfigurationException('configuration.widget_invalid');
+            }
+
+            $validatedWidgets[] = $widget;
+        }
+
+        return $validatedWidgets;
     }
 
     /**
@@ -168,6 +196,42 @@ class ActivityLogPlugin implements Plugin
     public static function make(): static
     {
         return app(static::class);
+    }
+
+    public function scopeActivitiesUsing(Closure|string|ScopesActivityQueries|null $scope): static
+    {
+        $this->activityQueryScope = $scope;
+
+        return $this;
+    }
+
+    public function getActivityQueryScope(): Closure|string|ScopesActivityQueries|null
+    {
+        return $this->activityQueryScope;
+    }
+
+    public function configureTableUsing(?Closure $callback): static
+    {
+        $this->tableConfigurator = $callback;
+
+        return $this;
+    }
+
+    public function configureTable(Table $table): Table
+    {
+        return $this->evaluate($this->tableConfigurator, ['table' => $table]) ?? $table;
+    }
+
+    public function configureRelationManagerTableUsing(?Closure $callback): static
+    {
+        $this->relationManagerTableConfigurator = $callback;
+
+        return $this;
+    }
+
+    public function configureRelationManagerTable(Table $table): Table
+    {
+        return $this->evaluate($this->relationManagerTableConfigurator, ['table' => $table]) ?? $table;
     }
 
     /**
@@ -318,6 +382,9 @@ class ActivityLogPlugin implements Plugin
     /**
      * Set the cluster for the activity log resource.
      */
+    /**
+     * @param  class-string<Cluster>|Closure|null  $cluster
+     */
     public function cluster(string|Closure|null $cluster): static
     {
         $this->cluster = $cluster;
@@ -328,9 +395,22 @@ class ActivityLogPlugin implements Plugin
     /**
      * Get the evaluated cluster.
      */
+    /**
+     * @return class-string<Cluster>|null
+     */
     public function getCluster(): ?string
     {
-        return $this->evaluate($this->cluster);
+        $cluster = $this->evaluate($this->cluster);
+
+        if ($cluster === null) {
+            return null;
+        }
+
+        if (! is_string($cluster) || ! is_a($cluster, Cluster::class, true)) {
+            throw new InvalidConfigurationException('configuration.cluster');
+        }
+
+        return $cluster;
     }
 
     /**

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and support
+    url: https://github.com/alizharb/filament-activity-log/discussions
+    about: Ask usage and configuration questions in GitHub Discussions.
+  - name: Security vulnerability
+    url: https://github.com/alizharb/filament-activity-log/security/advisories/new
+    about: Privately report a suspected security vulnerability.

@@ -10,6 +10,17 @@ class ActivityRisk
 {
     public static function score(Activity $activity): int
     {
+        $persistedScore = $activity->getAttribute('risk_score');
+
+        if (is_numeric($persistedScore)) {
+            return min(max((int) $persistedScore, 0), 100);
+        }
+
+        return static::calculateScore($activity);
+    }
+
+    public static function calculateScore(Activity $activity): int
+    {
         $resolver = config('filament-activity-log.risk.resolver');
 
         if (is_string($resolver) && class_exists($resolver)) {
@@ -34,8 +45,17 @@ class ActivityRisk
 
     public static function level(Activity $activity): string
     {
-        $score = static::score($activity);
+        $persistedLevel = $activity->getAttribute('risk_level');
 
+        if (is_string($persistedLevel) && in_array($persistedLevel, ['low', 'medium', 'high', 'critical'], true)) {
+            return $persistedLevel;
+        }
+
+        return static::levelForScore(static::score($activity));
+    }
+
+    public static function levelForScore(int $score): string
+    {
         return match (true) {
             $score >= 80 => 'critical',
             $score >= 55 => 'high',

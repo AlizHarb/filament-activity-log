@@ -16,6 +16,26 @@ However, if you file a bug report, your issue should contain a title and a clear
 
 This package follows the [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standard and the [PSR-4](https://www.php-fig.org/psr/psr-4/) autoloading standard.
 
+## Development
+
+```bash
+composer install
+composer check
+composer audit
+```
+
+Add or update tests for every behavior change. Changes to user-facing text must update every shipped locale; `LocalizationTest` enforces key and placeholder parity.
+
+## Pull Requests and Commits
+
+- Keep each pull request focused on one concern.
+- Use clear commit subjects such as `feat:`, `fix:`, `docs:`, `test:`, or `chore:`.
+- Avoid separate formatting-only follow-up commits; run `composer format` before pushing.
+- Do not rewrite commits after review has started unless a maintainer requests it.
+- Pull requests are squash-merged so each merged change produces one meaningful commit on `main`.
+
+Maintainers should follow [the release procedure](docs/releasing.md) for version tags and release verification.
+
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within this package, please send an email to Ali Harb at [email address]. All security vulnerabilities will be promptly addressed.
+Follow the private reporting process in [SECURITY.md](SECURITY.md). Do not disclose suspected vulnerabilities in public issues.

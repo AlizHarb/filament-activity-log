@@ -2,16 +2,22 @@
 
 namespace AlizHarb\ActivityLog\Exporters;
 
+use AlizHarb\ActivityLog\Support\ActivityQuery;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
-use Spatie\Activitylog\Models\Activity;
+use Illuminate\Database\Eloquent\Builder;
 
 class ActivityLogExporter extends Exporter
 {
     public static function getModel(): string
     {
-        return Activity::class;
+        return app(ActivityQuery::class)->modelClass();
+    }
+
+    public static function modifyQuery(Builder $query): Builder
+    {
+        return app(ActivityQuery::class)->applyScope($query);
     }
 
     public static function getColumns(): array
@@ -41,7 +47,10 @@ class ActivityLogExporter extends Exporter
             ExportColumn::make('event')
                 ->label(__('filament-activity-log::activity.table.column.event')),
 
-            ExportColumn::make('properties.ip_address')
+            ExportColumn::make('request_id')
+                ->label(__('filament-activity-log::activity.table.column.request_id')),
+
+            ExportColumn::make('ip_address')
                 ->label(__('filament-activity-log::activity.table.column.ip_address')),
 
             ExportColumn::make('properties.user_agent')

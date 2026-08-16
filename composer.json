@@ -1,6 +1,6 @@
 {
   "name": "alizharb/filament-activity-log",
-  "description": "A powerful, feature-rich activity logging solution for FilamentPHP v4 & v5 with timeline views, dashboard widgets, and revert actions.",
+  "description": "A security-first audit control center for Filament v4 and v5 with tenant isolation, risk scoring, integrity checks, retention holds, timelines, and dashboards.",
   "type": "filament-plugin",
   "keywords": [
     "filament",
@@ -16,7 +16,10 @@
     "filament-v4",
     "filament-v5",
     "php",
-    "laravel-12"
+    "laravel-12",
+    "laravel-13",
+    "compliance",
+    "security"
   ],
   "homepage": "https://github.com/alizharb/filament-activity-log",
   "license": "MIT",
@@ -42,15 +45,26 @@
   "scripts": {
     "test": "vendor/bin/pest",
     "test-coverage": "vendor/bin/pest --coverage",
-    "format": "vendor/bin/pint"
+    "format": "vendor/bin/pint",
+    "lint": "vendor/bin/pint --test",
+    "analyse": "vendor/bin/phpstan analyse --memory-limit=2G",
+    "check": [
+      "@test",
+      "@analyse",
+      "@lint",
+      "composer validate --strict --no-check-publish"
+    ]
   },
   "require": {
     "php": "^8.3",
     "filament/actions": "^4.2|^5.0",
     "filament/filament": "^4.0|^5.0",
     "filament/tables": "^4.0|^5.0",
+    "illuminate/database": "^12.0|^13.0",
+    "illuminate/support": "^12.0|^13.0",
     "phiki/phiki": "^1.1|^2.0",
-    "spatie/laravel-activitylog": "^4.0|^5.0"
+    "spatie/laravel-activitylog": "^4.0|^5.0",
+    "spatie/laravel-package-tools": "^1.92"
   },
   "require-dev": {
     "larastan/larastan": "^3.0",

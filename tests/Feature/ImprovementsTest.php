@@ -8,6 +8,7 @@ use AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas\ActivityLogInfolist;
 use AlizHarb\ActivityLog\Support\ActivityGrouping;
 use AlizHarb\ActivityLog\Support\ActivityLogTitle;
 use AlizHarb\ActivityLog\Tests\Fixtures\CustomActivityModel;
+use AlizHarb\ActivityLog\Tests\Fixtures\TestCluster;
 use AlizHarb\ActivityLog\Tests\Fixtures\User;
 use AlizHarb\ActivityLog\Tests\TestCase;
 use Filament\Schemas\Schema;
@@ -32,9 +33,9 @@ it('can resolve activity log event icons', function () {
 
 it('can set and get cluster in plugin', function () {
     $plugin = new ActivityLogPlugin;
-    $plugin->cluster('System');
+    $plugin->cluster(TestCluster::class);
 
-    expect($plugin->getCluster())->toBe('System');
+    expect($plugin->getCluster())->toBe(TestCluster::class);
 });
 
 it('resolves subject title using helper', function () {
@@ -53,8 +54,6 @@ it('resolves subject title using helper', function () {
     };
     $post->setAttribute('title', 'Test Post');
     $post->setAttribute('id', 2);
-
-    expect(ActivityLogTitle::get($post))->toBe('Test Post');
 
     expect(ActivityLogTitle::get($post))->toBe('Test Post');
 

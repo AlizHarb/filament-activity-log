@@ -1,299 +1,178 @@
 # Changelog
 
-All notable changes to `filament-activity-log` will be documented in this file.
+All notable changes to `filament-activity-log` are documented here.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-08-15
+
+### Added
+
+- A tenant-aware activity query boundary shared by resources, widgets, filters, exports, timelines, pruning, and mutation services.
+- Persisted risk scores, retention holds, indexed request-ID and IP projections, and an upgrade/backfill migration.
+- HMAC integrity signatures and the `filament-activity-log:verify-integrity` command.
+- Safe restore and revert services with subject authorization, conflict detection, protected attributes, transactions, and compensating audit records.
+- Extensible contracts for query scopes, context collectors, timeline sources, audit rules, and subject restorers.
+- Audit-rule events, built-in high-risk detection, scoped aggregate caching, and automatic cache invalidation.
+- Authorized single and bulk retention-hold controls that are always respected by package pruning.
+- The `filament-activity-log:doctor` installation and security diagnostic command.
+- Localized domain exceptions with stable translation keys and structured logging context.
+- Fluent main-resource and relation-manager table configuration callbacks.
+- Exact key, value, and placeholder parity tests for all 12 shipped locales.
+- Security, architecture, operations, upgrade, contribution, and release documentation.
+
+### Changed
+
+- Laravel 12 is now the minimum supported Laravel version; Laravel 13 and PHP 8.5 are explicitly tested.
+- Destructive actions and exports now require explicit authorization, and mutations are disabled by default.
+- Dashboard polling is disabled by default.
+- Activity tables use deferred loading and filters, search-on-blur, persistent state, reorderable columns, localized empty states, and configurable pagination.
+- Risk, request, IP, and retention filters use indexed scalar columns after the v2 migration while preserving JSON fallbacks during upgrades.
+- Existing `table.columns` configuration remains supported; application-specific Filament behavior can use fluent table callbacks.
+- CI now covers compatible Filament 4/5, Spatie Activitylog 4/5, Laravel 12/13, and PHP 8.3-8.5 combinations.
+
+### Security
+
+- Query scopes now consistently protect every package-owned activity query, including exports and aggregate widgets.
+- Revert blocks stale overwrites by default and restore/revert exclude sensitive and system attributes.
+- Display and export paths consistently redact configured secrets.
+- Held records cannot be removed by package pruning.
+
 ### Fixed
 
-- **ActivityPolicy Type Hint** ([#27](https://github.com/alizharb/filament-activity-log/issues/27)) - Changed all `$user` parameter type hints in `ActivityPolicy` from the concrete `Illuminate\Foundation\Auth\User` class to the `Illuminate\Contracts\Auth\Authenticatable` contract. This resolves a fatal `TypeError` thrown when an application's `User` model does not extend `Illuminate\Foundation\Auth\User` but instead implements the auth contracts manually via traits. Permission checks now use `Gate::forUser($user)->allows()` so they remain fully functional for any `Authenticatable` implementation.
+- Configured activity model connections and tables are honored by migrations and schema detection.
+- Fresh installs deterministically run Spatie's table migration before the package upgrade migration.
+- Upgrade rollback tolerates partially applied schemas and missing indexes.
+- Policies accept any `Authenticatable` implementation and use the correct user-specific gate.
+
+### Removed
+
+- Unused `timeline.show_action` and `widgets.dashboard` configuration keys.
+- Unused empty script-data and icon registration hooks.
+
+See [UPGRADE.md](UPGRADE.md) before upgrading an existing installation.
 
 ## [1.5.0] - 2026-07-09
 
 ### Added
 
-- **Audit Risk Scoring** - Added configurable activity risk scoring with low, medium, high, and critical levels. The Activity Log table and audit stats widget now surface high-risk activity so destructive and security-sensitive events are easier to notice.
-- **Privacy-Safe Redaction** - Added default redaction for sensitive fields such as passwords, tokens, API keys, secrets, and private keys. Redacted values are used in change displays, raw property views, and revert helper text.
-- **Immutable Audit Mode** - Added an optional compliance mode that hides destructive panel actions including delete, bulk delete, prune, restore, and revert.
-- **Laravel Boost Guidelines** - Added package-specific Boost guidance for installation, Spatie v4/v5 behavior, privacy, risk scoring, immutable mode, authorization, performance, and Filament usage.
-- **Audit Compliance Documentation** - Added dedicated documentation for risk scoring, redaction, immutable mode, retention recommendations, and operational audit practices.
+- Configurable audit risk scoring and risk badges.
+- Privacy-safe redaction for changes, properties, exports, and action descriptions.
+- Immutable audit mode and audit-compliance documentation.
 
-## [1.3.2] - 2026-04-16
+## [1.4.0] - 2026-07-02
+
+### Added
+
+- Configurable causer display attributes, including virtual accessors.
+
+## [1.3.3] - 2026-06-29
 
 ### Fixed
 
-- **Widget Registration Config** - `ActivityLogPlugin::getWidgets()` now respects the configured `filament-activity-log.widgets.widgets` list instead of always registering a hardcoded widget set.
-- **Documentation Cleanup** - Removed stale references to `CONFIGURATION.md` and corrected the custom authorizer example namespace in the README.
-- **Relation Manager Sorting** - `ActivitiesRelationManager` now uses the configured default sort column and direction, matching the main activity resource.
-- **Subject ID Discovery** - Added a configurable `subject_id` table column and exact-match filter to make locating activity records by related model ID much easier.
-- **Spatie v5 Compatibility** - Hardened test bootstrap and change normalization logic for the v5 `attribute_changes` schema and migration flow.
+- Relationship compatibility, conditional changes-tab visibility, custom activity models, morph maps, and policy type declarations.
 
-### Technical Details
+## [1.3.2] - 2026-04-16
 
-- ✅ Full Pest suite passing
-- ✅ Verified on the Spatie v5 lane
-- ✅ Backward compatible configuration defaults preserved
+### Added
+
+- Spatie Activitylog v5 compatibility and Kurdish Sorani translations.
+
+### Fixed
+
+- Widget registration configuration, subject-ID filtering, relation-manager sorting, JSON change fields, timeline PHPStan findings, and config-cache-safe authorizer guidance.
 
 ## [1.3.1] - 2026-02-06
 
 ### Fixed
 
-- **Multi-Panel Support** - Fixed an issue where Select filters and causer resolution failed in multi-panel applications using different auth guards.
-  - Introduced `ActivityLogCauser` support class for dynamic model resolution based on current panel guard.
-  - Refactored `UserActivitiesPage` and `ActivityLogTable` to use panel-aware causer resolution.
+- Multi-panel authorization and panel-aware causer resolution.
 
 ## [1.3.0] - 2026-01-31
 
 ### Added
 
-- **Audit Dashboard** - A comprehensive new dashboard page for high-level activity monitoring.
-  - **Activity Stats** - View total activities, top causer, and top subject at a glance.
-  - **Activity Heatmap** - Visualize activity frequency over the past year.
-  - **Activity Chart** - Integrated trend analysis widget.
-- **Integrated Middleware Context** - Automatically capture IP Address, User Agent, and Batch UUID without manual tap configuration.
-- **Selective Revert** - Enhanced revert action allows selecting specific fields to roll back via a checkbox-based form.
-- **Restore Action** - Recreate deleted models directly from activity log data with a single click.
-- **Log Pruning UI** - New "Prune" action in the `ActivityLogResource` to clean up old logs based on date.
-- **Slim Timeline** - Introduced a compact "slim" mode for the timeline view, optimized for dashboards and sidebars.
-- **Activity Heatmap** - Completely redesigned GitHub-style contribution graph with dark mode support.
-- **Improved Timeline** - Added auto-pagination (limit 50) for significantly better performance on large datasets.
-
-### Improved
-
-- **Localization** - Expanded dictionary with support for all new v1.3.0 actions and dashboard components.
-- **Authorization** - Improved Gate-based authorization checks for all resource actions.
+- Audit dashboard, statistics, activity heatmap, charts, request context, selective revert, subject restore, pruning, timeline pagination, and batch views.
+- Global localization coverage for the new resource, action, and dashboard features.
 
 ### Fixed
 
-- **Resource Links** - Corrected URL generation for subject and causer resources in `ActivityLogTable`.
-- **UI Consistency** - Standardized button colors, icons, and labels across all actions.
+- Resource URL generation and navigation-group handling.
 
-### Technical Details
-
-- ✅ All tests passed (Feature and Unit)
-- ✅ Code simplified and linted (Laravel Pint)
-- ✅ 100% strict typing consistency
-
-## [1.2.0] - 2026-01-17
+## [1.2.0] - 2026-01-16
 
 ### Added
 
-- **Filament v5 Support** - Package now supports both Filament v4 and v5
-  - Dual version constraint: `^4.0|^5.0` for seamless compatibility
-  - Full Livewire v4 compatibility (required by Filament v5)
-  - All features work identically across both Filament versions
-- **Strict Enums** - Introduced `ActivityLogEvent` Enum for strictly typed events with Filament badge/color/icon support.
-- **Naming Helper** - Standardized subject naming via `ActivityLogTitle` helper and `HasActivityLogTitle` interface.
-- **Batch Support** - Added `View Batch` action to group activities by request/job UUID.
-- **Cluster Support** - Added `cluster()` configuration method to `ActivityLogPlugin` for nesting the resource in Filament Clusters.
-
-### Improved
-
-- **Localization** - Completed translation coverage for all supported languages.
-- **Performance** - Fixed lazy loading issues in `ActivityLogResource` and `UserActivitiesPage` by eager loading `causer` and `subject`.
-- **Testing** - Reached 66 passing tests covering new features and improvements.
+- Filament 5 and Livewire 4 compatibility.
+- Strict activity event enums, customizable subject titles, batch support, and cluster integration.
 
 ### Changed
 
-- **Minimum PHP Version** - Increased to PHP 8.3+ (required for Livewire v4)
-- **Minimum Laravel Version** - Updated to Laravel 11+ for optimal compatibility
-- **Dependencies** - Updated Filament packages to support v4 and v5
+- The minimum PHP version became PHP 8.3.
 
 ### Fixed
 
-- **[Issue #8]** Fixed `php artisan view:cache` errors by replacing direct Heroicon Blade components with Filament's icon wrapper (`<x-filament::icon>`) in `timeline.blade.php`
-- **[Issue #10]** Added comprehensive documentation for IP address and user agent tracking setup in `INSTALLATION.md`
-
-### Technical Details
-
-- ✅ Backward compatible with Filament v4 (PHP 8.3+, Laravel 11+)
-- ✅ Forward compatible with Filament v5
-- ✅ No code changes required for existing users
-- ✅ All 57 tests passing
-- ✅ Code formatted with Laravel Pint
-- ✅ PHPStan Level 8 compliant
-
-### Migration
-
-See [UPGRADE.md](UPGRADE.md) for detailed migration instructions.
+- Cached-view icon rendering and static-analysis findings.
 
 ## [1.1.3] - 2025-12-15
 
 ### Fixed
 
-- **Custom Authorization Serialization** - Fixed `Your configuration files could not be serialized` error when using `custom_authorization` with config caching.
-  - Added support for Class-Based Authorization (`checkCustomAuthorization` in `ActivityPolicy`).
-  - Updated documentation with examples and troubleshooting steps.
+- Config serialization when using class-based custom authorization.
+- Code-style automation running unnecessarily for tags.
 
-## [1.1.1] - 2025-12-12
-
-### Fixed
-
-- **Navigation Group Plugin Integration** - Fixed issue where `navigationGroup()` set on the plugin was not being used by the resource
-  - `ActivityLogResource` now properly checks plugin settings before falling back to config
-  - Plugin settings for navigation group, sort, icon, and badge now take precedence over config file
-  - Maintains full backward compatibility with config-only setups
+## [1.1.2] - 2025-12-12
 
 ### Added
 
-- **Custom Authorization Callback** - New `custom_authorization` option in permissions config
-  - Allows custom authorization logic without setting up a full permission system
-  - Perfect for restricting access to specific users (e.g., user ID 1) or roles
-  - Takes precedence over standard permission checks
-  - Example: `'custom_authorization' => fn($user) => $user->id === 1`
+- Configurable custom authorization for activity-log access.
 
-- **Documentation**
-  - Added `SOLUTIONS.md` - Direct solutions to common configuration issues
+### Fixed
 
-### Changed
+- Plugin navigation settings now take precedence over config defaults.
 
-- **ActivityLogResource** - Updated navigation methods to prioritize plugin settings
-  - `getNavigationGroup()` - Checks plugin first, then config
-  - `getNavigationSort()` - Checks plugin first, then config
-  - `getNavigationIcon()` - Checks plugin first, then config
-  - `getNavigationBadge()` - Checks plugin first, then config
+## [1.1.1] - 2025-12-08
 
-- **ActivityPolicy** - Enhanced `viewAny()` method to support custom authorization callbacks
-  - Custom callback checked first before permission system
-  - Provides flexible authorization without Laravel permissions
+### Fixed
 
-- **README.md** - Added configuration and custom authorization examples
-
-### Technical Details
-
-- ✅ All 57 tests passing
-- ✅ Code formatted with Laravel Pint
-- ✅ Fully backward compatible
-- ✅ No breaking changes
+- PHPStan handling for tap-populated activity properties.
 
 ## [1.1.0] - 2025-12-08
 
 ### Added
 
-- **IP Address & Browser Tracking** - Automatically capture and display IP address and User Agent for every activity.
-- **Export to CSV/Excel** - Export activity logs directly from the table using Filament's export action.
-- **Clickable Resource Links** - Subject and Causer names are now clickable links that navigate to their respective Filament resources (if available).
-- **SetActivityContextTap** - New tap class to inject request context into activity logs.
-- **Enhanced UI** - Added columns and infolist entries for IP and Browser details.
-- **Multilingual Support** - Added translations for IP and Browser fields in all supported languages.
-  - Added 5 new locales: German (de), Italian (it), Dutch (nl), Russian (ru), Chinese Simplified (zh_CN).
+- IP and browser tracking, exports, resource links, the activity context tap, and five additional locales.
+
+## [1.0.1] - 2025-12-03
+
+### Changed
+
+- Modernized the timeline UI, CSS, and localization.
+
+### Fixed
+
+- View-string static-analysis errors.
 
 ## [1.0.0] - 2025-12-02
 
 ### Added
 
-#### Core Features
+- Initial Filament activity resource, filters, timeline, widgets, relation manager, authorization, configuration, translations, and tests.
 
-- **Filament v4 Support** - Built with the latest Filament Schema API
-- **PHP 8.4 & Laravel 12** - Optimized for the latest tech stack
-- **Activity Log Resource** - Full-featured resource for viewing and managing activity logs
-- **Timeline View** - Beautiful timeline visualization with customizable icons and colors
-- **Dashboard Widgets** - Two powerful widgets for real-time activity monitoring
-  - Activity Chart Widget - Visual chart showing activity trends over time
-  - Latest Activity Widget - Table widget displaying recent activities
-- **Revert Action** - One-click rollback to previous states for update events
-
-#### Components
-
-- **ActivitiesRelationManager** - Drop-in relation manager for any resource
-- **ActivityLogTimelineTableAction** - Beautiful timeline modal action for tables
-- **ActivityPolicy** - Pre-configured policy for role-based access control
-- **ActivityLogResource** - Complete resource with list, view, and filter capabilities
-
-#### Features
-
-- **Advanced Filtering** - Filter by event type, date range, causer, subject type, and log name
-- **Global Search** - Search activities from Filament's global search
-- **Multi-Language Support** - Available in 6 languages:
-  - English (en)
-  - Arabic (ar)
-  - French (fr)
-  - Spanish (es)
-  - Portuguese (pt)
-  - Hebrew (he)
-
-#### Configuration
-
-- **Extensive Customization** - Configure every aspect via config file:
-  - Resource settings (navigation, icons, sorting, pagination)
-  - Event icons and colors (created, updated, deleted, restored)
-  - Table columns and filters
-  - Widget configuration (chart type, colors, polling intervals)
-  - Permissions and access control
-  - Infolist tabs and entries
-- **Fluent API** - Configure plugin settings using fluent methods
-- **Event Customization** - Define custom icons and colors for any event type
-
-#### Technical Features
-
-- **Strict Type Declarations** - Full PHP 8.4 type safety
-- **PSR-4 Autoloading** - Standard autoloading for optimal performance
-- **Comprehensive Tests** - Full test coverage with Pest PHP
-- **Code Quality** - Laravel Pint for code formatting, PHPStan for static analysis
-- **Service Provider Auto-Discovery** - Automatic Laravel package discovery
-
-#### Documentation
-
-- **Comprehensive README** - Detailed documentation with examples
-- **Installation Guide** - Step-by-step setup instructions
-- **Configuration Examples** - Complete configuration reference
-- **Usage Examples** - Real-world implementation examples
-- **Contributing Guidelines** - Clear contribution process
-- **Security Policy** - Responsible disclosure guidelines
-
-#### Developer Experience
-
-- **Zero Configuration Required** - Works out of the box with sensible defaults
-- **Highly Extensible** - Easy to customize and extend
-- **Well-Documented** - Inline documentation and comprehensive README
-- **Active Maintenance** - Regular updates and bug fixes
-
-### Technical Details
-
-#### Dependencies
-
-- `php`: ^8.4
-- `filament/filament`: ^4.0
-- `spatie/laravel-activitylog`: ^4.0
-- `illuminate/support`: ^12.0
-- `phiki/phiki`: ^2.0
-
-#### Dev Dependencies
-
-- `larastan/larastan`: ^3.8
-- `laravel/pint`: ^1.26
-- `orchestra/testbench`: ^10.8
-- `pestphp/pest`: ^4.1
-- `pestphp/pest-plugin-laravel`: ^4.0
-- `pestphp/pest-plugin-livewire`: ^4.0
-- `phpstan/phpstan`: ^2.1
-
-### Package Information
-
-- **License**: MIT
-- **Author**: Ali Harb
-- **Repository**: https://github.com/alizharb/filament-activity-log
-- **Package Type**: filament-plugin
-
----
-
-## Future Releases
-
-Future versions will be documented here following the same format.
-
-### Planned Features
-
-- Additional chart types for Activity Chart Widget
-- Export functionality for activity logs
-- Advanced analytics and reporting
-- Custom event types and handlers
-- Batch operations support
-
----
-
-[1.1.1]: https://github.com/alizharb/filament-activity-log/releases/tag/v1.1.1
-[1.1.0]: https://github.com/alizharb/filament-activity-log/releases/tag/v1.1.0
+[Unreleased]: https://github.com/alizharb/filament-activity-log/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/alizharb/filament-activity-log/compare/v1.5.0...v2.0.0
+[1.5.0]: https://github.com/alizharb/filament-activity-log/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/alizharb/filament-activity-log/compare/v1.3.3...v1.4.0
+[1.3.3]: https://github.com/alizharb/filament-activity-log/compare/v1.3.2...v1.3.3
+[1.3.2]: https://github.com/alizharb/filament-activity-log/compare/v1.3.1...v1.3.2
+[1.3.1]: https://github.com/alizharb/filament-activity-log/compare/v1.3.0...v1.3.1
+[1.3.0]: https://github.com/alizharb/filament-activity-log/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/alizharb/filament-activity-log/compare/v1.1.3...v1.2.0
+[1.1.3]: https://github.com/alizharb/filament-activity-log/compare/v1.1.2...v1.1.3
+[1.1.2]: https://github.com/alizharb/filament-activity-log/compare/v1.1.1...v1.1.2
+[1.1.1]: https://github.com/alizharb/filament-activity-log/compare/v1.1.0...v1.1.1
+[1.1.0]: https://github.com/alizharb/filament-activity-log/compare/v1.0.1...v1.1.0
+[1.0.1]: https://github.com/alizharb/filament-activity-log/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/alizharb/filament-activity-log/releases/tag/v1.0.0

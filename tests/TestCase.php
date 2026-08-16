@@ -34,7 +34,15 @@ class TestCase extends Orchestra
 
         $this->loadLaravelMigrations();
 
-        $migration = include __DIR__.'/../vendor/spatie/laravel-activitylog/database/migrations/create_activity_log_table.php.stub';
+        $migrationPath = __DIR__.'/../vendor/spatie/laravel-activitylog/database/migrations/create_activity_log_table.php.stub';
+
+        if (static::isSpatieV4()) {
+            require_once $migrationPath;
+            $migration = new \CreateActivityLogTable;
+        } else {
+            $migration = include $migrationPath;
+        }
+
         $migration->up();
 
         // Ensure database schema satisfies the installed Spatie major version
@@ -59,6 +67,9 @@ class TestCase extends Orchestra
                 $table->string('event')->nullable();
             });
         }
+
+        $auditMigration = include __DIR__.'/../database/migrations/upgrade_activity_log_with_audit_control_columns.php';
+        $auditMigration->up();
 
         Model::unguard();
     }
