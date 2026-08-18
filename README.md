@@ -256,8 +256,24 @@ public static function getRelations(): array
 
 ### 🏷️ Customizable Subject Titles
 
-The package automatically checks for `name`, `title`, or `label` attributes on your models.
-For more control, implement the `HasActivityLogTitle` interface on your model:
+By default the package checks the following attributes on your models, in order, and uses the first one that exists:
+
+```php
+// config/filament-activity-log.php
+'subject' => [
+    'title_attributes' => ['name', 'title', 'email', 'username', 'label'],
+],
+```
+
+You can change that list (and its order) globally — handy when your models share an internal attribute such as `working_title`:
+
+```php
+'subject' => [
+    'title_attributes' => ['working_title', 'name', 'title', 'email', 'username', 'label'],
+],
+```
+
+For full control on a specific model, implement the `HasActivityLogTitle` interface:
 
 ```php
 use AlizHarb\ActivityLog\Contracts\HasActivityLogTitle;
