@@ -74,6 +74,48 @@ it('resolves subject title using helper', function () {
     expect(ActivityLogTitle::get($unknown))->toContain('#3');
 });
 
+it('resolves activity log titles from the configured subject attributes', function () {
+    config()->set('filament-activity-log.subject.title_attributes', ['working_title', 'name']);
+
+    $page = new class extends Model
+    {
+        protected $guarded = [];
+    };
+    $page->setAttribute('name', 'Public name');
+    $page->setAttribute('working_title', 'Internal working title');
+    $page->setAttribute('id', 4);
+
+    expect(ActivityLogTitle::get($page))->toBe('Internal working title');
+
+    $user = new class extends Model
+    {
+        protected $guarded = [];
+    };
+    $user->setAttribute('name', 'Test User');
+    $user->setAttribute('title', 'Ignored title');
+    $user->setAttribute('id', 5);
+
+    expect(ActivityLogTitle::get($user))->toBe('Test User');
+});
+
+it('ignores subject title attributes that are not present on the model', function () {
+    config()->set('filament-activity-log.subject.title_attributes', ['working_title']);
+
+    $post = new class extends Model
+    {
+        protected $guarded = [];
+
+        public function getTable()
+        {
+            return 'posts';
+        }
+    };
+    $post->setAttribute('title', 'Test Post');
+    $post->setAttribute('id', 6);
+
+    expect(ActivityLogTitle::get($post))->toContain('#6');
+});
+
 it('applies v4 native batch_uuid filter', function () {
     if (! TestCase::isSpatieV4()) {
         $this->markTestSkipped('Only runs on Spatie v4 (native batch_uuid).');

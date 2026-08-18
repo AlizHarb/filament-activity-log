@@ -55,7 +55,7 @@ class ActivityLogTitle
             return $model->getActivityLogTitle();
         }
 
-        foreach (['name', 'title', 'email', 'username', 'label'] as $attribute) {
+        foreach (config('filament-activity-log.subject.title_attributes', []) as $attribute) {
             if ($model->hasAttribute($attribute)) {
                 return (string) $model->getAttribute($attribute);
             }

@@ -6,6 +6,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- `subject.title_attributes` config option to define which model attributes (and in which order) are used as the subject title when a model does not implement `HasActivityLogTitle`.
+
 ## [2.0.0] - 2026-08-15
 
 ### Added

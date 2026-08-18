@@ -551,4 +551,18 @@ return [
     'causer' => [
         'display_attribute' => 'name',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Subject Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the subject (the record an activity was performed on).
+    | When a subject does not implement HasActivityLogTitle, the first of these
+    | attributes that exists on the model is used as its display title.
+    |
+    */
+    'subject' => [
+        'title_attributes' => ['name', 'title', 'email', 'username', 'label'],
+    ],
 ];
