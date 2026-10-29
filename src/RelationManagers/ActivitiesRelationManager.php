@@ -6,9 +6,9 @@ namespace AlizHarb\ActivityLog\RelationManagers;
 
 use AlizHarb\ActivityLog\Actions\ActivityLogTimelineTableAction;
 use AlizHarb\ActivityLog\ActivityLogPlugin;
-use AlizHarb\ActivityLog\Enums\ActivityLogEvent;
 use AlizHarb\ActivityLog\Exceptions\InvalidConfigurationException;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas\ActivityLogInfolist;
+use AlizHarb\ActivityLog\Support\ActivityEvents;
 use AlizHarb\ActivityLog\Support\ActivityQuery;
 use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -158,9 +158,9 @@ class ActivitiesRelationManager extends RelationManager
                 TextColumn::make('event')
                     ->label(__('filament-activity-log::activity.table.column.event'))
                     ->badge()
-                    ->formatStateUsing(fn ($state) => ActivityLogEvent::tryFrom($state)?->getLabel() ?? ucfirst((string) $state))
-                    ->color(fn ($state) => ActivityLogEvent::tryFrom($state)?->getColor() ?? 'gray')
-                    ->icon(fn ($state) => ActivityLogEvent::tryFrom($state)?->getIcon())
+                    ->formatStateUsing(fn ($state) => ActivityEvents::label($state))
+                    ->color(fn ($state) => ActivityEvents::color($state))
+                    ->icon(fn ($state) => ActivityEvents::icon($state))
                     ->searchable(config('filament-activity-log.table.columns.event.searchable', true))
                     ->sortable(config('filament-activity-log.table.columns.event.sortable', true))
                     ->visible(config('filament-activity-log.table.columns.event.visible', true)),

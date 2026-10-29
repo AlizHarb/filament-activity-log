@@ -4,9 +4,9 @@ namespace AlizHarb\ActivityLog\Resources\ActivityLogs\Tables;
 
 use AlizHarb\ActivityLog\Actions\ActivityLogTimelineTableAction;
 use AlizHarb\ActivityLog\ActivityLogPlugin;
-use AlizHarb\ActivityLog\Enums\ActivityLogEvent;
 use AlizHarb\ActivityLog\Exporters\ActivityLogExporter;
 use AlizHarb\ActivityLog\Support\ActivityCache;
+use AlizHarb\ActivityLog\Support\ActivityEvents;
 use AlizHarb\ActivityLog\Support\ActivityGrouping;
 use AlizHarb\ActivityLog\Support\ActivityLogCauser;
 use AlizHarb\ActivityLog\Support\ActivityLogRedactor;
@@ -92,9 +92,9 @@ class ActivityLogTable
                 TextColumn::make('event')
                     ->label(__('filament-activity-log::activity.table.column.event'))
                     ->badge()
-                    ->formatStateUsing(fn ($state) => ActivityLogEvent::tryFrom($state)?->getLabel() ?? ucfirst((string) $state))
-                    ->color(fn ($state) => ActivityLogEvent::tryFrom($state)?->getColor() ?? 'gray')
-                    ->icon(fn ($state) => ActivityLogEvent::tryFrom($state)?->getIcon())
+                    ->formatStateUsing(fn ($state) => ActivityEvents::label($state))
+                    ->color(fn ($state) => ActivityEvents::color($state))
+                    ->icon(fn ($state) => ActivityEvents::icon($state))
                     ->searchable(config('filament-activity-log.table.columns.event.searchable', true))
                     ->sortable(config('filament-activity-log.table.columns.event.sortable', true))
                     ->visible(config('filament-activity-log.table.columns.event.visible', true)),
@@ -260,7 +260,7 @@ class ActivityLogTable
 
                 SelectFilter::make('event')
                     ->label(__('filament-activity-log::activity.table.filter.event'))
-                    ->options(ActivityLogEvent::class)
+                    ->options(fn (): array => ActivityEvents::options())
                     ->visible(config('filament-activity-log.table.filters.event', true)),
 
                 SelectFilter::make('risk_level')

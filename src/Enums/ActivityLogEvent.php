@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog\Enums;
 
+use AlizHarb\ActivityLog\Support\ActivityEvents;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
@@ -17,31 +18,21 @@ enum ActivityLogEvent: string implements HasColor, HasIcon, HasLabel
 
     public function getLabel(): string
     {
-        return match ($this) {
-            self::Created => __('filament-activity-log::activity.event.created'),
-            self::Updated => __('filament-activity-log::activity.event.updated'),
-            self::Deleted => __('filament-activity-log::activity.event.deleted'),
-            self::Restored => __('filament-activity-log::activity.event.restored'),
-        };
+        return ActivityEvents::label($this->value);
     }
 
     public function getColor(): string|array|null
     {
-        return match ($this) {
-            self::Created => config('filament-activity-log.events.created.color', 'success'),
-            self::Updated => config('filament-activity-log.events.updated.color', 'warning'),
-            self::Deleted => config('filament-activity-log.events.deleted.color', 'danger'),
-            self::Restored => config('filament-activity-log.events.restored.color', 'gray'),
-        };
+        return ActivityEvents::color($this->value);
     }
 
     public function getIcon(): string
     {
-        return match ($this) {
-            self::Created => config('filament-activity-log.events.created.icon', 'heroicon-m-plus'),
-            self::Updated => config('filament-activity-log.events.updated.icon', 'heroicon-m-pencil'),
-            self::Deleted => config('filament-activity-log.events.deleted.icon', 'heroicon-m-trash'),
-            self::Restored => config('filament-activity-log.events.restored.icon', 'heroicon-m-arrow-uturn-left'),
+        return ActivityEvents::icon($this->value) ?? match ($this) {
+            self::Created => 'heroicon-m-plus',
+            self::Updated => 'heroicon-m-pencil',
+            self::Deleted => 'heroicon-m-trash',
+            self::Restored => 'heroicon-m-arrow-uturn-left',
         };
     }
 }
