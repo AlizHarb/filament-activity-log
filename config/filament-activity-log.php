@@ -105,7 +105,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | Define the icons and colors for different activity events.
-    | You can add custom events here as well.
+    | You can add custom events here as well. An optional "label" overrides
+    | the translated name. These entries are used for filter options, badges,
+    | icons, and colors on the activity log and user activities screens.
     |
     */
     'events' => [

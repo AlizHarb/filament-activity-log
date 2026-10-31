@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AlizHarb\ActivityLog\Widgets;
 
+use AlizHarb\ActivityLog\Support\ActivityEvents;
 use AlizHarb\ActivityLog\Support\ActivityQuery;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -95,12 +96,9 @@ class LatestActivityWidget extends BaseWidget
             $columns[] = TextColumn::make('event')
                 ->label(__('filament-activity-log::activity.table.column.event'))
                 ->badge()
-                ->colors([
-                    'success' => 'created',
-                    'warning' => 'updated',
-                    'danger' => 'deleted',
-                    'gray' => 'restored',
-                ]);
+                ->formatStateUsing(fn ($state) => ActivityEvents::label($state))
+                ->color(fn ($state) => ActivityEvents::color($state))
+                ->icon(fn ($state) => ActivityEvents::icon($state));
         }
 
         if (config('filament-activity-log.widgets.latest_activity.columns.causer', true)) {

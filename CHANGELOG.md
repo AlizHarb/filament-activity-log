@@ -10,6 +10,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - `subject.title_attributes` config option to define which model attributes (and in which order) are used as the subject title when a model does not implement `HasActivityLogTitle`.
 
+### Fixed
+
+- Activity log and user activity screens now use the configured `events` list for labels, icons, colors, and filter options.
+
 ## [2.0.0] - 2026-08-15
 
 ### Added

@@ -6,6 +6,7 @@ namespace AlizHarb\ActivityLog\Pages;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\ActivityLogResource;
+use AlizHarb\ActivityLog\Support\ActivityEvents;
 use AlizHarb\ActivityLog\Support\ActivityLogCauser;
 use AlizHarb\ActivityLog\Support\ActivityQuery;
 use Filament\Pages\Page;
@@ -112,12 +113,9 @@ class UserActivitiesPage extends Page implements HasTable
                 TextColumn::make('event')
                     ->label(__('filament-activity-log::activity.table.column.event'))
                     ->badge()
-                    ->colors([
-                        'success' => 'created',
-                        'warning' => 'updated',
-                        'danger' => 'deleted',
-                        'gray' => 'restored',
-                    ])
+                    ->formatStateUsing(fn ($state) => ActivityEvents::label($state))
+                    ->color(fn ($state) => ActivityEvents::color($state))
+                    ->icon(fn ($state) => ActivityEvents::icon($state))
                     ->searchable()
                     ->sortable(),
 
@@ -164,12 +162,7 @@ class UserActivitiesPage extends Page implements HasTable
 
                 SelectFilter::make('event')
                     ->label(__('filament-activity-log::activity.filter.event'))
-                    ->options([
-                        'created' => __('filament-activity-log::activity.event.created'),
-                        'updated' => __('filament-activity-log::activity.event.updated'),
-                        'deleted' => __('filament-activity-log::activity.event.deleted'),
-                        'restored' => __('filament-activity-log::activity.event.restored'),
-                    ])
+                    ->options(fn (): array => ActivityEvents::options())
                     ->multiple(),
 
                 SelectFilter::make('subject_type')

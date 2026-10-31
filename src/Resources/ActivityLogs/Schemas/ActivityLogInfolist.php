@@ -3,6 +3,7 @@
 namespace AlizHarb\ActivityLog\Resources\ActivityLogs\Schemas;
 
 use AlizHarb\ActivityLog\Support\ActivityChanges;
+use AlizHarb\ActivityLog\Support\ActivityEvents;
 use AlizHarb\ActivityLog\Support\ActivityLogTitle;
 use AlizHarb\ActivityLog\Support\ActivityRisk;
 use Filament\Facades\Filament;
@@ -48,13 +49,9 @@ class ActivityLogInfolist
                                             TextEntry::make('event')
                                                 ->badge()
                                                 ->label(__('filament-activity-log::activity.infolist.entry.event'))
-                                                ->formatStateUsing(fn ($state) => ucfirst($state))
-                                                ->colors([
-                                                    'success' => 'created',
-                                                    'warning' => 'updated',
-                                                    'danger' => 'deleted',
-                                                    'gray' => 'restored',
-                                                ])
+                                                ->formatStateUsing(fn ($state) => ActivityEvents::label($state))
+                                                ->color(fn ($state) => ActivityEvents::color($state))
+                                                ->icon(fn ($state) => ActivityEvents::icon($state))
                                                 ->visible(config('filament-activity-log.infolist.entries.event', true)),
 
                                             TextEntry::make('risk')
